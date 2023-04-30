@@ -1,0 +1,55 @@
+
+<nav class="sidenav shadow-right sidenav-light">
+    <div class="sidenav-menu">
+        <div class="nav accordion" id="accordionSidenav">
+            <!-- Sidenav Menu Heading (Core)-->
+            <div class="sidenav-menu-heading">Core</div>
+            <a class="nav-link" href="{{ route('dashboard') }}">
+                <div class="nav-link-icon"><i data-feather="activity"></i></div>
+                Dashboard
+            </a>
+
+            <!-- Sidenav Heading (Pages)-->
+            <div class="sidenav-menu-heading">Pages</div>
+
+            <!-- Sidenav Accordion (Pages)-->
+            {{-- <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                <div class="nav-link-icon"><i data-feather="grid"></i></div>
+                People
+                <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapsePages" data-bs-parent="#accordionSidenav">
+                <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPagesCustomers">
+                    <!-- Nested Sidenav Accordion (Pages -> People)-->
+                    <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#pagesCollapseCustomers" aria-expanded="false" aria-controls="pagesCollapseCustomers">
+                        Customers
+                        <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="pagesCollapseCustomers" data-bs-parent="#accordionSidenavPagesCustomers">
+                        <nav class="sidenav-menu-nested nav">
+                            <a class="nav-link" href="#">Show All</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link" href="#">Customers</a>
+                    <a class="nav-link" href="#">Suppliers</a>
+                </nav>
+            </div> --}}
+            <a class="nav-link" href="{{ route('dashboard') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                Customers
+            </a>
+            <a class="nav-link" href="{{ route('dashboard') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                Suppliers
+            </a>
+        </div>
+    </div>
+
+    <!-- Sidenav Footer-->
+    <div class="sidenav-footer">
+        <div class="sidenav-footer-content">
+            <div class="sidenav-footer-subtitle">Logged in as:</div>
+            <div class="sidenav-footer-title">{{ auth()->user()->name }}</div>
+        </div>
+    </div>
+</nav>

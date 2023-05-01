@@ -4,7 +4,7 @@
         <div class="nav accordion" id="accordionSidenav">
             <!-- Sidenav Menu Heading (Core)-->
             <div class="sidenav-menu-heading">Core</div>
-            <a class="nav-link" href="{{ route('dashboard') }}">
+            <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <div class="nav-link-icon"><i data-feather="activity"></i></div>
                 Dashboard
             </a>
@@ -34,13 +34,9 @@
                     <a class="nav-link" href="#">Suppliers</a>
                 </nav>
             </div> --}}
-            <a class="nav-link" href="{{ route('dashboard') }}">
+            <a class="nav-link {{ Request::is('customers*') ? 'active' : '' }}" href="{{ route('customers.index') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
                 Customers
-            </a>
-            <a class="nav-link" href="{{ route('dashboard') }}">
-                <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
-                Suppliers
             </a>
         </div>
     </div>

@@ -38,6 +38,10 @@
                 <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
                 Customers
             </a>
+            <a class="nav-link {{ Request::is('suppliers*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                Suppliers
+            </a>
         </div>
     </div>
 

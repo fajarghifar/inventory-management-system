@@ -47,11 +47,11 @@
 
 
 <!-- BEGIN: Main Page Content -->
-<div class="container-xl px-2 mt-n10">
+<div class="container px-2 mt-n10">
     <div class="card mb-4">
         <div class="card-body">
-            <div class="row">
-                <div class="col-lg-12 card-header mt-n2">
+            <div class="row mx-n4">
+                <div class="col-lg-12 card-header mt-n4">
                     <form action="{{ route('customers.index') }}" method="GET">
                         <div class="d-flex flex-wrap align-items-center justify-content-between">
                             <div class="form-group row align-items-center">

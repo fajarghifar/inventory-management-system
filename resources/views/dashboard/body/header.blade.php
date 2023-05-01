@@ -29,14 +29,19 @@
                     </div>
                 </h6>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="dashboard-1.html#!">
+                <a class="dropdown-item" href="{{ route('profile.edit') }}">
                     <div class="dropdown-item-icon"><i data-feather="settings"></i></div>
                     Account
                 </a>
-                <a class="dropdown-item" href="dashboard-1.html#!">
-                    <div class="dropdown-item-icon"><i data-feather="log-out"></i></div>
-                    Logout
-                </a>
+
+                <!-- Logout -->
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button class="dropdown-item" action="{{ route('logout') }}" method="POST" onclick="return confirm('Are you sure you want to logout?')">
+                        <div class="dropdown-item-icon"><i data-feather="log-out"></i></div>
+                        Logout
+                    </button>
+                </form>
             </div>
         </li>
     </ul>

@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between small">
-                    <a class="text-white stretched-link" href="dashboard-1.html#!">View Report</a>
+                    <a class="text-white stretched-link" href="#">View Report</a>
                     <div class="text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between small">
-                    <a class="text-white stretched-link" href="dashboard-1.html#!">View Report</a>
+                    <a class="text-white stretched-link" href="#">View Report</a>
                     <div class="text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between small">
-                    <a class="text-white stretched-link" href="dashboard-1.html#!">View Tasks</a>
+                    <a class="text-white stretched-link" href="#">View Tasks</a>
                     <div class="text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between small">
-                    <a class="text-white stretched-link" href="dashboard-1.html#!">View Requests</a>
+                    <a class="text-white stretched-link" href="#">View Requests</a>
                     <div class="text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -118,12 +118,12 @@
                     <div class="dropdown no-caret">
                         <button class="btn btn-transparent-dark btn-icon dropdown-toggle" id="areaChartDropdownExample" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="text-gray-500" data-feather="more-vertical"></i></button>
                         <div class="dropdown-menu dropdown-menu-end animated--fade-in-up" aria-labelledby="areaChartDropdownExample">
-                            <a class="dropdown-item" href="dashboard-1.html#!">Last 12 Months</a>
-                            <a class="dropdown-item" href="dashboard-1.html#!">Last 30 Days</a>
-                            <a class="dropdown-item" href="dashboard-1.html#!">Last 7 Days</a>
-                            <a class="dropdown-item" href="dashboard-1.html#!">This Month</a>
+                            <a class="dropdown-item" href="#">Last 12 Months</a>
+                            <a class="dropdown-item" href="#">Last 30 Days</a>
+                            <a class="dropdown-item" href="#">Last 7 Days</a>
+                            <a class="dropdown-item" href="#">This Month</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="dashboard-1.html#!">Custom Range</a>
+                            <a class="dropdown-item" href="#">Custom Range</a>
                         </div>
                     </div>
                 </div>
@@ -139,12 +139,12 @@
                     <div class="dropdown no-caret">
                         <button class="btn btn-transparent-dark btn-icon dropdown-toggle" id="areaChartDropdownExample" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="text-gray-500" data-feather="more-vertical"></i></button>
                         <div class="dropdown-menu dropdown-menu-end animated--fade-in-up" aria-labelledby="areaChartDropdownExample">
-                            <a class="dropdown-item" href="dashboard-1.html#!">Last 12 Months</a>
-                            <a class="dropdown-item" href="dashboard-1.html#!">Last 30 Days</a>
-                            <a class="dropdown-item" href="dashboard-1.html#!">Last 7 Days</a>
-                            <a class="dropdown-item" href="dashboard-1.html#!">This Month</a>
+                            <a class="dropdown-item" href="#">Last 12 Months</a>
+                            <a class="dropdown-item" href="#">Last 30 Days</a>
+                            <a class="dropdown-item" href="#">Last 7 Days</a>
+                            <a class="dropdown-item" href="#">This Month</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="dashboard-1.html#!">Custom Range</a>
+                            <a class="dropdown-item" href="#">Custom Range</a>
                         </div>
                     </div>
                 </div>

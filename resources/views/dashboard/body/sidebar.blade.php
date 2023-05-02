@@ -42,6 +42,17 @@
                 <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
                 Suppliers
             </a>
+
+            <!-- Sidenav Heading (Pages)-->
+            <div class="sidenav-menu-heading">Products</div>
+            <a class="nav-link {{ Request::is('products*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-store"></i></div>
+                Products
+            </a>
+            <a class="nav-link {{ Request::is('categories*') ? 'active' : '' }}" href="{{ route('categories.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-folder"></i></div>
+                Categories
+            </a>
         </div>
     </div>
 

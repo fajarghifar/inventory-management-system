@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
@@ -32,6 +33,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('/customers', CustomerController::class);
     Route::resource('/suppliers', SupplierController::class);
+    Route::resource('/categories', CategoryController::class);
 });
 
 require __DIR__.'/auth.php';

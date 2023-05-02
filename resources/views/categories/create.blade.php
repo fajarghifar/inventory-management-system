@@ -41,7 +41,7 @@
                     <div class="card-body">
                         <!-- Form Group (name) -->
                         <div class="mb-3">
-                            <label class="small mb-1" for="name">Name <span class="text-danger">*</span></label>
+                            <label class="small mb-1" for="name">Category Name <span class="text-danger">*</span></label>
                             <input class="form-control form-control-solid @error('name') is-invalid @enderror" id="name" name="name" type="text" placeholder="" value="{{ old('name') }}" />
                             @error('name')
                             <div class="invalid-feedback">
@@ -51,7 +51,7 @@
                         </div>
                         <!-- Form Group (slug) -->
                         <div class="mb-3">
-                            <label class="small mb-1" for="slug">Slug (non editable).</label>
+                            <label class="small mb-1" for="slug">Category Slug (non editable).</label>
                             <input class="form-control form-control-solid @error('slug') is-invalid @enderror" id="slug" name="slug" type="text" placeholder="" value="{{ old('slug') }}" readonly />
                             @error('slug')
                             <div class="invalid-feedback">

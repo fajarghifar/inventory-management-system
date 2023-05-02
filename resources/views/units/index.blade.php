@@ -9,19 +9,19 @@
                 <div class="col-auto mt-4">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i class="fa-solid fa-users"></i></div>
-                        Category List
+                        Unit List
                     </h1>
                 </div>
                 <div class="col-auto my-4">
-                    <a href="{{ route('categories.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                    <a href="{{ route('categories.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+                    <a href="{{ route('units.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus me-3"></i>Add</a>
+                    <a href="{{ route('units.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
                 </div>
             </div>
 
             <nav class="mt-4 rounded" aria-label="breadcrumb">
                 <ol class="breadcrumb px-3 py-2 rounded mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Categories</li>
+                    <li class="breadcrumb-item active">Units</li>
                 </ol>
             </nav>
         </div>
@@ -51,7 +51,7 @@
         <div class="card-body">
             <div class="row mx-n4">
                 <div class="col-lg-12 card-header mt-n4">
-                    <form action="{{ route('categories.index') }}" method="GET">
+                    <form action="{{ route('units.index') }}" method="GET">
                         <div class="d-flex flex-wrap align-items-center justify-content-between">
                             <div class="form-group row align-items-center">
                                 <label for="row" class="col-auto">Row:</label>
@@ -69,7 +69,7 @@
                                 <label class="control-label col-sm-3" for="search">Search:</label>
                                 <div class="col-sm-8">
                                     <div class="input-group">
-                                        <input type="text" id="search" class="form-control me-1" name="search" placeholder="Search category" value="{{ request('search') }}">
+                                        <input type="text" id="search" class="form-control me-1" name="search" placeholder="Search unit" value="{{ request('search') }}">
                                         <div class="input-group-append">
                                             <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20 text-white"></i></button>
                                         </div>
@@ -88,21 +88,21 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col">No.</th>
-                                    <th scope="col">@sortablelink('name', 'Category Name')</th>
-                                    <th scope="col">@sortablelink('slug', 'Category Slug')</th>
+                                    <th scope="col">@sortablelink('name', 'Unit Name')</th>
+                                    <th scope="col">@sortablelink('slug', 'Unit Slug')</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($categories as $category)
+                                @foreach ($units as $unit)
                                 <tr>
-                                    <th scope="row">{{ (($categories->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>
-                                    <td>{{ $category->name }}</td>
-                                    <td>{{ $category->slug }}</td>
+                                    <th scope="row">{{ (($units->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>
+                                    <td>{{ $unit->name }}</td>
+                                    <td>{{ $unit->slug }}</td>
                                     <td>
                                         <div class="d-flex">
-                                            <a href="{{ route('categories.edit', $category->slug) }}" class="btn btn-outline-primary btn-sm mx-1"><i class="fas fa-edit"></i></a>
-                                            <form action="{{ route('categories.destroy', $category->slug) }}" method="POST">
+                                            <a href="{{ route('units.edit', $unit->slug) }}" class="btn btn-outline-primary btn-sm mx-1"><i class="fas fa-edit"></i></a>
+                                            <form action="{{ route('units.destroy', $unit->slug) }}" method="POST">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this record?')">
@@ -118,7 +118,7 @@
                     </div>
                 </div>
 
-                {{ $categories->links() }}
+                {{ $units->links() }}
             </div>
         </div>
     </div>

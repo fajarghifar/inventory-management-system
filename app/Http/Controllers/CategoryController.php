@@ -20,12 +20,13 @@ class CategoryController extends Controller
             abort(400, 'The per_page parameter must be an integer between 1 and 100.');
         }
 
+        $categories = Category::filter(request(['search']))
+          ->sortable()
+          ->paginate($row)
+          ->appends(request()->query());
+
         return view('categories.index', [
-            'user' => auth()->user(),
-            'categories' => Category::filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query()),
+            'categories' => $categories,
         ]);
     }
 
@@ -34,9 +35,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('categories.create', [
-            'user' => auth()->user(),
-        ]);
+        return view('categories.create');
     }
 
     /**
@@ -61,7 +60,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-    abort(404);
+      abort(404);
     }
 
     /**
@@ -70,7 +69,6 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         return view('categories.edit', [
-            'user' => auth()->user(),
             'category' => $category
         ]);
     }

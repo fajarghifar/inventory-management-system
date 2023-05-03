@@ -45,8 +45,8 @@
 
             <!-- Sidenav Heading (Pages)-->
             <div class="sidenav-menu-heading">Products</div>
-            <a class="nav-link {{ Request::is('products*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}">
-                <div class="nav-link-icon"><i class="fa-solid fa-store"></i></div>
+            <a class="nav-link {{ Request::is('products*') ? 'active' : '' }}" href="{{ route('products.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
                 Products
             </a>
             <a class="nav-link {{ Request::is('categories*') ? 'active' : '' }}" href="{{ route('categories.index') }}">

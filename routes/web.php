@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
@@ -36,6 +37,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('/suppliers', SupplierController::class);
     Route::resource('/categories', CategoryController::class);
     Route::resource('/units', UnitController::class);
+
+
+    // Route Products
+    Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
+    Route::get('/products/import', [ProductController::class, 'import'])->name('products.import');
+    Route::post('/products/import', [ProductController::class, 'handleImport'])->name('products.handleImport');
+    Route::resource('/products', ProductController::class);
 });
 
 require __DIR__.'/auth.php';

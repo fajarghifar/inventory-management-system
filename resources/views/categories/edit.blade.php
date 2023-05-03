@@ -8,7 +8,7 @@
             <div class="row align-items-center justify-content-between">
                 <div class="col-auto mt-4">
                     <h1 class="page-header-title">
-                        <div class="page-header-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="page-header-icon"><i class="fa-solid fa-folder"></i></div>
                         Edit Category
                     </h1>
                 </div>
@@ -34,7 +34,7 @@
         <div class="row">
 
             <div class="col-xl-12">
-                <!-- BEGIN: Customer Details -->
+                <!-- BEGIN: Category Details -->
                 <div class="card mb-4">
                     <div class="card-header">
                         Category Details
@@ -43,7 +43,7 @@
                         <!-- Form Group (name) -->
                         <div class="mb-3">
                             <label class="small mb-1" for="name">Category Name <span class="text-danger">*</span></label>
-                            <input class="form-control form-control-solid @error('name') is-invalid @enderror" id="name" name="name" type="text" placeholder="" value="{{ old('name', $category->name) }}" />
+                            <input class="form-control form-control-solid @error('name') is-invalid @enderror" id="name" name="name" type="text" placeholder="" value="{{ old('name', $category->name) }}" autocomplete="off" />
                             @error('name')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -66,7 +66,7 @@
                         <a class="btn btn-danger" href="{{ route('categories.index') }}">Cancel</a>
                     </div>
                 </div>
-                <!-- END: Customer Details -->
+                <!-- END: Category Details -->
             </div>
         </div>
     </form>

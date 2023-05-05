@@ -4,9 +4,13 @@
         <div class="nav accordion" id="accordionSidenav">
             <!-- Sidenav Menu Heading (Core)-->
             <div class="sidenav-menu-heading">Core</div>
-            <a class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+            <a class="nav-link {{ Request::is('dashboard*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <div class="nav-link-icon"><i data-feather="activity"></i></div>
                 Dashboard
+            </a>
+            <a class="nav-link {{ Request::is('pos*') ? 'active' : '' }}" href="{{ route('pos.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                POS
             </a>
 
             <!-- Sidenav Heading (Pages)-->
@@ -43,7 +47,7 @@
                 Suppliers
             </a>
 
-            <!-- Sidenav Heading (Pages)-->
+            <!-- Sidenav Heading (Products)-->
             <div class="sidenav-menu-heading">Products</div>
             <a class="nav-link {{ Request::is('products*') ? 'active' : '' }}" href="{{ route('products.index') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
@@ -56,6 +60,17 @@
             <a class="nav-link {{ Request::is('units*') ? 'active' : '' }}" href="{{ route('units.index') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-folder"></i></div>
                 Units
+            </a>
+
+            <!-- Sidenav Heading (Orders)-->
+            <div class="sidenav-menu-heading">Orders</div>
+            <a class="nav-link {{ Request::is('products*') ? 'active' : '' }}" href="{{ route('products.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-clock"></i></div>
+                Pending
+            </a>
+            <a class="nav-link {{ Request::is('categories*') ? 'active' : '' }}" href="{{ route('categories.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
+                Complete
             </a>
         </div>
     </div>

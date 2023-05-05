@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PosController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
@@ -38,12 +40,20 @@ Route::middleware('auth')->group(function () {
     Route::resource('/categories', CategoryController::class);
     Route::resource('/units', UnitController::class);
 
-
     // Route Products
     Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
     Route::get('/products/import', [ProductController::class, 'import'])->name('products.import');
     Route::post('/products/import', [ProductController::class, 'handleImport'])->name('products.handleImport');
     Route::resource('/products', ProductController::class);
+
+    // Route POS
+    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+    Route::post('/pos/cart/add', [PosController::class, 'addCartItem'])->name('pos.addCartItem');
+    Route::post('/pos/cart/update/{rowId}', [PosController::class, 'updateCartItem'])->name('pos.updateCartItem');
+    Route::delete('/pos/cart/delete/{rowId}', [PosController::class, 'deleteCartItem'])->name('pos.deleteCartItem');
+    Route::post('/pos/invoice', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
+
+    Route::post('/pos', [OrderController::class, 'createOrder'])->name('pos.createOrder');
 });
 
 require __DIR__.'/auth.php';

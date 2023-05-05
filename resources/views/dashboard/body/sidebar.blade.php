@@ -64,11 +64,11 @@
 
             <!-- Sidenav Heading (Orders)-->
             <div class="sidenav-menu-heading">Orders</div>
-            <a class="nav-link {{ Request::is('products*') ? 'active' : '' }}" href="{{ route('products.index') }}">
+            <a class="nav-link {{ Request::is('orders/pending*') ? 'active' : '' }}" href="{{ route('order.pendingOrders') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-clock"></i></div>
                 Pending
             </a>
-            <a class="nav-link {{ Request::is('categories*') ? 'active' : '' }}" href="{{ route('categories.index') }}">
+            <a class="nav-link {{ Request::is('orders/complete*') ? 'active' : '' }}" href="{{ route('order.completeOrders') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
                 Complete
             </a>

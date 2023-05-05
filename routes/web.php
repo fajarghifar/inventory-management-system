@@ -54,6 +54,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/pos/invoice', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
 
     Route::post('/pos', [OrderController::class, 'createOrder'])->name('pos.createOrder');
+
+    // Route Orders
+    Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order.pendingOrders');
+    Route::get('/orders/complete', [OrderController::class, 'completeOrders'])->name('order.completeOrders');
+    Route::put('/orders/update', [OrderController::class, 'updateOrder'])->name('order.updateOrder');
+    Route::get('/orders/details/{order_id}', [OrderController::class, 'orderDetails'])->name('order.orderDetails');
+    Route::get('/orders/details/{order_id}/download', [OrderController::class, 'downloadInvoice'])->name('order.downloadInvoice');
 });
 
 require __DIR__.'/auth.php';

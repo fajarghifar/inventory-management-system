@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<!-- Invoice 16 start -->
+<!-- BEGIN: Invoice -->
 <div class="invoice-16 invoice-content">
     <div class="container">
         <div class="row">
@@ -44,7 +44,7 @@
                                 <div class="invoice-number">
                                     <h4 class="inv-title-1">Invoice date:</h4>
                                     <p class="invo-addr-1">
-                                        {{ Carbon\Carbon::now()->format('M d, Y') }}
+                                        {{ $order->order_date }}
                                     </p>
                                 </div>
                             </div>
@@ -52,17 +52,16 @@
                         <div class="row">
                             <div class="col-sm-6 mb-50">
                                 <h4 class="inv-title-1">Customer</h4>
-                                <p class="inv-from-1">{{ $customer->name }}</p>
-                                <p class="inv-from-1">{{ $customer->phone }}</p>
-                                <p class="inv-from-1">{{ $customer->email }}</p>
-                                <p class="inv-from-2">{{ $customer->address }}</p>
-                                <p class="inv-from-2">329 Queensberry Street, North Melbourne VIC 3051, Australia.</p>
+                                <p class="inv-from-1">{{ $order->customer->name }}</p>
+                                <p class="inv-from-1">{{ $order->customer->phone }}</p>
+                                <p class="inv-from-1">{{ $order->customer->email }}</p>
+                                <p class="inv-from-2">{{ $order->customer->address }}</p>
                             </div>
                             <div class="col-sm-6 text-end mb-50">
                                 <h4 class="inv-title-1">Store</h4>
                                 <p class="inv-from-1">Name Store</p>
-                                <p class="inv-from-1">email@example.com</p>
                                 <p class="inv-from-1">(+62) 123 123 123</p>
+                                <p class="inv-from-1">email@example.com</p>
                                 <p class="inv-from-2">Cirebon, Jawa Barat, Indonesia</p>
                             </div>
                         </div>
@@ -80,26 +79,32 @@
                                 </thead>
 
                                 <tbody>
-                                @foreach ($carts as $item)
+                                @foreach ($orderDetails as $item)
                                 <tr>
-                                    <td>{{ $item->name }}</td>
-                                    <td>{{ $item->price }}</td>
-                                    <td>{{ $item->qty }}</td>
-                                    <td>{{ $item->subtotal }}</td>
+                                    <td>{{ $item->product->product_name }}</td>
+                                    <td>{{ $item->unitcost }}</td>
+                                    <td>{{ $item->quantity }}</td>
+                                    <td>{{ $item->total }}</td>
                                 </tr>
                                 @endforeach
 
                                 <tr>
+                                    <td><strong>Subtotal</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><strong>{{ $order->sub_total }}</strong></td>
+                                </tr>
+                                <tr>
                                     <td><strong>Vat (21%)</strong></td>
                                     <td></td>
                                     <td></td>
-                                    <td><strong>{{ Cart::tax() }}</strong></td>
+                                    <td><strong>{{ $order->vat }}</strong></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Total</strong></td>
                                     <td></td>
                                     <td></td>
-                                    <td><strong>{{ Cart::total() }}</strong></td>
+                                    <td><strong>{{ $order->total }}</strong></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -114,18 +119,18 @@
                     </div>
                 </div>
                 <div class="invoice-btn-section clearfix d-print-none">
-                    {{-- <a id="invoice_download_btn"  class="btn btn-lg btn-print">
-                        Download
-                    </a> --}}
-                    <a class="btn btn-lg btn-download">
-                        Pay Now
+                    <a href="javascript:window.print()" class="btn btn-lg btn-print">
+                        <i class="fa fa-print"></i> Print Invoice
+                    </a>
+                    <a id="invoice_download_btn" class="btn btn-lg btn-download">
+                        <i class="fa fa-download"></i> Download Invoice
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Invoice 16 end -->
+<!-- END: Invoice -->
 
 <script src="{{ asset('assets/invoice/js/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/invoice/js/jspdf.min.js') }}"></script>

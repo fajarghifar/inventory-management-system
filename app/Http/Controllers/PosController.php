@@ -25,7 +25,7 @@ class PosController extends Controller
                 ->filter(request(['search']))
                 ->sortable()
                 ->paginate($row)
-                ->appends(request()->query());;
+                ->appends(request()->query());
 
         $customers = Customer::all()->sortBy('name');
 
@@ -93,7 +93,7 @@ class PosController extends Controller
     public function createInvoice(Request $request)
     {
         $rules = [
-            'customer_id' => 'required'
+            'customer_id' => 'required|string'
         ];
 
         $validatedData = $request->validate($rules);

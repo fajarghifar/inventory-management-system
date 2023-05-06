@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('product_name');
-            $table->integer('category_id');
-            $table->integer('unit_id');
+            $table->string('category_id');
+            $table->string('unit_id');
             $table->string('product_code')->nullable();
             $table->integer('stock');
             $table->integer('buying_price')->nullable();

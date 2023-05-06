@@ -75,6 +75,7 @@
                                     <th>Price</th>
                                     <th>Quantity</th>
                                     <th>Subtotal</th>
+                                    <th>Total</th>
                                 </tr>
                                 </thead>
 
@@ -95,7 +96,7 @@
                                     <td><strong>{{ Cart::subtotal() }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Vat (21%)</strong></td>
+                                    <td><strong>Tax</strong></td>
                                     <td></td>
                                     <td></td>
                                     <td><strong>{{ Cart::tax() }}</strong></td>

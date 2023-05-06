@@ -85,7 +85,7 @@
                     <div class="row gx-3 mb-3">
                         <!-- Form Group (due amount) -->
                         <div class="col-md-6">
-                            <label class="small mb-1">Vat</label>
+                            <label class="small mb-1">Tax</label>
                             <div class="form-control form-control-solid">{{ $order->vat }}</div>
                         </div>
                         <!-- Form Group (paid amount) -->
@@ -136,23 +136,23 @@
                                         <th scope="col">Product Code</th>
                                         <th scope="col">Quantity</th>
                                         <th scope="col">Price</th>
-                                        <th scope="col">Total(+vat)</th>
+                                        <th scope="col">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($orderDetails as $item)
                                     <tr>
-                                        <td>{{ $loop->iteration  }}</td>
-                                        <td>
+                                        <td scope="row">{{ $loop->iteration  }}</td>
+                                        <td scope="row">
                                             <div style="max-height: 80px; max-width: 80px;">
                                                 <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
                                             </div>
                                         </td>
-                                        <td>{{ $item->product->product_name }}</td>
-                                        <td>{{ $item->product->product_code }}</td>
-                                        <td>{{ $item->quantity }}</td>
-                                        <td>{{ $item->unitcost }}</td>
-                                        <td>{{ $item->total }}</td>
+                                        <td scope="row">{{ $item->product->product_name }}</td>
+                                        <td scope="row">{{ $item->product->product_code }}</td>
+                                        <td scope="row">{{ $item->quantity }}</td>
+                                        <td scope="row">{{ $item->unitcost }}</td>
+                                        <td scope="row">{{ $item->total }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>

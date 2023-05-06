@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-lg-6 col-sm-6">
                                 <div class="invoice">
-                                    <h1>Invoice # <span>123456</span></h1>
+                                    <h1>Invoice # <span>{{ $order->invoice_no }}</span></h1>
                                 </div>
                             </div>
                         </div>
@@ -95,7 +95,7 @@
                                     <td><strong>{{ $order->sub_total }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Vat (21%)</strong></td>
+                                    <td><strong>Tax</strong></td>
                                     <td></td>
                                     <td></td>
                                     <td><strong>{{ $order->vat }}</strong></td>

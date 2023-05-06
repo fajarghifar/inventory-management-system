@@ -82,7 +82,7 @@ class OrderController extends Controller
         $order = Order::where('id', $order_id)->first();
         $orderDetails = OrderDetails::with('product')
             ->where('order_id', $order_id)
-            ->orderBy('id', 'DESC')
+            ->orderBy('id')
             ->get();
 
         return view('orders.details-due-order', [
@@ -99,7 +99,7 @@ class OrderController extends Controller
         $order = Order::where('id', $order_id)->first();
         $orderDetails = OrderDetails::with('product')
             ->where('order_id', $order_id)
-            ->orderBy('id', 'DESC')
+            ->orderBy('id')
             ->get();
 
         return view('orders.details-order', [
@@ -149,7 +149,7 @@ class OrderController extends Controller
             $oDetails['product_id'] = $content->id;
             $oDetails['quantity'] = $content->qty;
             $oDetails['unitcost'] = $content->price;
-            $oDetails['total'] = $content->total;
+            $oDetails['total'] = $content->subtotal;
             $oDetails['created_at'] = Carbon::now();
 
             OrderDetails::insert($oDetails);

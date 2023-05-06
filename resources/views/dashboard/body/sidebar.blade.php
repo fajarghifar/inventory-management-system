@@ -13,8 +13,20 @@
                 POS
             </a>
 
-            <!-- Sidenav Heading (Pages)-->
-            <div class="sidenav-menu-heading">Pages</div>
+            <!-- Sidenav Heading (Orders)-->
+            <div class="sidenav-menu-heading">Orders</div>
+            <a class="nav-link {{ Request::is('orders/complete*') ? 'active' : '' }}" href="{{ route('order.completeOrders') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
+                Complete
+            </a>
+            <a class="nav-link {{ Request::is('orders/pending*') ? 'active' : '' }}" href="{{ route('order.pendingOrders') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-clock"></i></div>
+                Pending
+            </a>
+            <a class="nav-link {{ Request::is('orders/due*') ? 'active' : '' }}" href="{{ route('order.dueOrders') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-credit-card"></i></div>
+                Due
+            </a>
 
             <!-- Sidenav Accordion (Pages)-->
             {{-- <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
@@ -38,6 +50,9 @@
                     <a class="nav-link" href="#">Suppliers</a>
                 </nav>
             </div> --}}
+
+            <!-- Sidenav Heading (Pages)-->
+            <div class="sidenav-menu-heading">Pages</div>
             <a class="nav-link {{ Request::is('customers*') ? 'active' : '' }}" href="{{ route('customers.index') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
                 Customers
@@ -60,17 +75,6 @@
             <a class="nav-link {{ Request::is('units*') ? 'active' : '' }}" href="{{ route('units.index') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-folder"></i></div>
                 Units
-            </a>
-
-            <!-- Sidenav Heading (Orders)-->
-            <div class="sidenav-menu-heading">Orders</div>
-            <a class="nav-link {{ Request::is('orders/pending*') ? 'active' : '' }}" href="{{ route('order.pendingOrders') }}">
-                <div class="nav-link-icon"><i class="fa-solid fa-clock"></i></div>
-                Pending
-            </a>
-            <a class="nav-link {{ Request::is('orders/complete*') ? 'active' : '' }}" href="{{ route('order.completeOrders') }}">
-                <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
-                Complete
             </a>
         </div>
     </div>

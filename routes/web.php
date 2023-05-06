@@ -57,10 +57,14 @@ Route::middleware('auth')->group(function () {
 
     // Route Orders
     Route::get('/orders/pending', [OrderController::class, 'pendingOrders'])->name('order.pendingOrders');
+    Route::get('/orders/pending/{order_id}', [OrderController::class, 'orderDetails'])->name('order.orderPendingDetails');
     Route::get('/orders/complete', [OrderController::class, 'completeOrders'])->name('order.completeOrders');
-    Route::put('/orders/update', [OrderController::class, 'updateOrder'])->name('order.updateOrder');
-    Route::get('/orders/details/{order_id}', [OrderController::class, 'orderDetails'])->name('order.orderDetails');
+    Route::get('/orders/complete/{order_id}', [OrderController::class, 'orderDetails'])->name('order.orderCompleteDetails');
     Route::get('/orders/details/{order_id}/download', [OrderController::class, 'downloadInvoice'])->name('order.downloadInvoice');
+    Route::get('/orders/due', [OrderController::class, 'dueOrders'])->name('order.dueOrders');
+    Route::get('/orders/due/pay/{order_id}', [OrderController::class, 'dueOrderDetails'])->name('order.dueOrderDetails');
+    Route::put('/orders/due/pay/update', [OrderController::class, 'updateDueOrder'])->name('order.updateDueOrder');
+    Route::put('/orders/update', [OrderController::class, 'updateOrder'])->name('order.updateOrder');
 });
 
 require __DIR__.'/auth.php';

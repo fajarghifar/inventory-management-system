@@ -56,10 +56,45 @@ class OrderController extends Controller
         ]);
     }
 
+    public function dueOrders()
+    {
+        $row = (int) request('row', 10);
+
+        if ($row < 1 || $row > 100) {
+            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+        }
+
+        $orders = Order::where('due', '>', '0')
+            ->sortable()
+            ->paginate($row)
+            ->appends(request()->query());
+
+        return view('orders.due-orders', [
+            'orders' => $orders
+        ]);
+    }
+
     /**
      * Display an order details.
      */
-    public function orderDetails(Int $order_id)
+    public function dueOrderDetails(String $order_id)
+    {
+        $order = Order::where('id', $order_id)->first();
+        $orderDetails = OrderDetails::with('product')
+            ->where('order_id', $order_id)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return view('orders.details-due-order', [
+            'order' => $order,
+            'orderDetails' => $orderDetails,
+        ]);
+    }
+
+    /**
+     * Display an order details.
+     */
+    public function orderDetails(String $order_id)
     {
         $order = Order::where('id', $order_id)->first();
         $orderDetails = OrderDetails::with('product')
@@ -143,7 +178,34 @@ class OrderController extends Controller
 
         Order::findOrFail($order_id)->update(['order_status' => 'complete']);
 
-        return Redirect::route('order.pendingOrders')->with('success', 'Order has been completed!');
+        return Redirect::route('order.completeOrders')->with('success', 'Order has been completed!');
+    }
+
+    /**
+     * Handle update a due pay order
+     */
+    public function updateDueOrder(Request $request)
+    {
+        $rules = [
+            'id' => 'required|numeric',
+            'pay' => 'required|numeric'
+        ];
+
+        $validatedData = $request->validate($rules);
+        $order = Order::findOrFail($validatedData['id']);
+
+        $mainPay = $order->pay;
+        $mainDue = $order->due;
+
+        $paidDue = $mainDue - $validatedData['pay'];
+        $paidPay = $mainPay + $validatedData['pay'];
+
+        Order::findOrFail($validatedData['id'])->update([
+            'due' => $paidDue,
+            'pay' => $paidPay
+        ]);
+
+        return Redirect::route('order.dueOrders')->with('success', 'Due amount has been updated!');
     }
 
     /**

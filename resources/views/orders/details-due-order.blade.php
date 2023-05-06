@@ -9,7 +9,7 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div>
-                        Order Details
+                        Due Order Details
                     </h1>
                 </div>
             </div>
@@ -100,18 +100,9 @@
                         <div class="form-control form-control-solid">{{ $order->customer->address }}</div>
                     </div>
 
-                    @if ($order->order_status == 'pending')
-                    <form action="{{ route('order.updateOrder') }}" method="POST">
-                        @method('put')
-                        @csrf
-                        <input type="hidden" name="id" value="{{ $order->id }}">
-                        <!-- Submit button -->
-                        <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to complete this order?')">Complete Order</button>
-                        <a class="btn btn-primary" href="{{ URL::previous() }}">Back</a>
-                    </form>
-                    @else
+                    <!-- Submit button -->
+                    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modal">Pay Due</button>
                     <a class="btn btn-primary" href="{{ URL::previous() }}">Back</a>
-                    @endif
                 </div>
             </div>
         </div>
@@ -166,5 +157,56 @@
         <!-- END: Table Product -->
     </div>
 </div>
+
+<!-- BEGIN: Modal -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title text-center mx-auto" id="modalCenterTitle">Invoice of {{ $order->customer->name }}<br/>Total Amount <b>${{ $order->total }}</b></h3>
+            </div>
+
+            <form action="{{ route('order.updateDueOrder') }}" method="POST">
+                @csrf
+                @method('put')
+                <div class="modal-body">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" value="{{ $order->id }}">
+                        <!-- Form Row -->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (paid amount) -->
+                            <div class="col-md-6">
+                                <label class="small mb-1">Pay</label>
+                                <div class="form-control form-control-solid">{{ $order->pay }}</div>
+                            </div>
+                            <!-- Form Group (due amount) -->
+                            <div class="col-md-6">
+                                <label class="small mb-1">Due</label>
+                                <div class="form-control form-control-solid">{{ $order->due }}</div>
+                            </div>
+                        </div>
+                        <!-- Form Group (pay now) -->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="pay">Pay Now <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('pay') is-invalid @enderror" id="pay" name="pay" placeholder="" value="{{ old('pay') }}" autocomplete="off"/>
+                            @error('pay')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-lg btn-danger" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-lg btn-success" type="submit">Pay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- END: Modal -->
+
 <!-- END: Main Page Content -->
 @endsection

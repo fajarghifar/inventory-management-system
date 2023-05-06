@@ -9,19 +9,19 @@
                 <div class="col-auto my-4">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><i class="fa-solid fa-clock"></i></div>
-                        Pending Orders
+                        Due Order List
                     </h1>
                 </div>
                 <div class="col-auto my-4">
                     <a href="{{ route('pos.index') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                    <a href="{{ route('products.index') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+                    <a href="{{ route('order.dueOrders') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
                 </div>
             </div>
 
             <nav class="mt-4 rounded" aria-label="breadcrumb">
                 <ol class="breadcrumb px-3 py-2 rounded mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Pending Orders</li>
+                    <li class="breadcrumb-item active">Due Orders</li>
                 </ol>
             </nav>
         </div>
@@ -52,7 +52,7 @@
         <div class="card-body">
             <div class="row mx-n4">
                 <div class="col-lg-12 card-header mt-n4">
-                    <form action="#" method="GET">
+                    <form action="{{ route('order.dueOrders') }}" method="GET">
                         <div class="d-flex flex-wrap align-items-center justify-content-between">
                             <div class="form-group row align-items-center">
                                 <label for="row" class="col-auto">Row:</label>
@@ -89,12 +89,12 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col">No.</th>
-                                    <th scope="col">Invoice</th>
+                                    <th scope="col">Invoice No</th>
                                     <th scope="col">@sortablelink('customer.name', 'name')</th>
-                                    <th scope="col">@sortablelink('order_date', 'Date')</th>
+                                    <th scope="col">@sortablelink('order_date', 'date')</th>
                                     <th scope="col">Payment</th>
-                                    <th scope="col">@sortablelink('total')</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">@sortablelink('pay')</th>
+                                    <th scope="col">@sortablelink('due')</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -106,13 +106,15 @@
                                     <td>{{ $order->customer->name }}</td>
                                     <td>{{ $order->order_date }}</td>
                                     <td>{{ $order->payment_type }}</td>
-                                    <td>{{ $order->total }}</td>
                                     <td>
-                                        <span class="btn btn-warning btn-sm text-uppercase">{{ $order->order_status }}</span>
+                                        <span class="btn btn-warning btn-sm">{{ $order->pay }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="btn btn-danger btn-sm">{{ $order->due }}</span>
                                     </td>
                                     <td>
                                         <div class="d-flex">
-                                            <a href="{{ route('order.orderPendingDetails', $order->id) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
+                                            <a href="{{ route('order.dueOrderDetails', $order->id) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-money-bill"></i></a>
                                         </div>
                                     </td>
                                 </tr>

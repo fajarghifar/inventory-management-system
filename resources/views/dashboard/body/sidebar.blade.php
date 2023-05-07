@@ -27,6 +27,16 @@
                 <div class="nav-link-icon"><i class="fa-solid fa-credit-card"></i></div>
                 Due
             </a>
+            <!-- Sidenav Heading (Purchases)-->
+            <div class="sidenav-menu-heading">Purchases</div>
+            <a class="nav-link {{ Request::is('purchases', 'purchase/create*', 'purchases/details*') ? 'active' : '' }}" href="{{ route('purchases.allPurchases') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-cash-register"></i></div>
+                All
+            </a>
+            <a class="nav-link {{ Request::is('purchases/approved*') ? 'active' : '' }}" href="{{ route('purchases.approvedPurchases') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
+                Approved
+            </a>
 
             <!-- Sidenav Accordion (Pages)-->
             {{-- <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">

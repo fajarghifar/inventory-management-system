@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DefaultController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/due/pay/{order_id}', [OrderController::class, 'dueOrderDetails'])->name('order.dueOrderDetails');
     Route::put('/orders/due/pay/update', [OrderController::class, 'updateDueOrder'])->name('order.updateDueOrder');
     Route::put('/orders/update', [OrderController::class, 'updateOrder'])->name('order.updateOrder');
+
+    // Default Controller
+    Route::get('/get-all-product', [DefaultController::class, 'GetProducts'])->name('get-all-product');
+
+    // Route Purchases
+    Route::get('/purchases', [PurchaseController::class, 'allPurchases'])->name('purchases.allPurchases');
+    Route::get('/purchases/approved', [PurchaseController::class, 'approvedPurchases'])->name('purchases.approvedPurchases');
+    Route::get('/purchases/create', [PurchaseController::class, 'createPurchase'])->name('purchases.createPurchase');
+    Route::post('/purchases', [PurchaseController::class, 'storePurchase'])->name('purchases.storePurchase');
+    Route::put('/purchases/update', [PurchaseController::class, 'updatePurchase'])->name('purchases.updatePurchase');
+    Route::get('/purchases/details/{purchase_id}', [PurchaseController::class, 'purchaseDetails'])->name('purchases.purchaseDetails');
+    Route::delete('/purchases/delete/{purchase_id}', [PurchaseController::class, 'deletePurchase'])->name('purchases.deletePurchase');
 });
 
 require __DIR__.'/auth.php';

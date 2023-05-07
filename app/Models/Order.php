@@ -24,7 +24,6 @@ class Order extends Model
         'due',
     ];
 
-
     public $sortable = [
         'customer_id',
         'order_date',
@@ -35,6 +34,10 @@ class Order extends Model
 
     protected $guarded = [
         'id',
+    ];
+
+    protected $with = [
+        'customer',
     ];
 
     public function customer()

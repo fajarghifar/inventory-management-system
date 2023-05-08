@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Product;
 use App\Models\Category;
@@ -12,6 +13,8 @@ use App\Models\PurcaseDetail;
 use App\Models\PurchaseDetails;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class PurchaseController extends Controller
@@ -32,7 +35,7 @@ class PurchaseController extends Controller
             ->paginate($row)
             ->appends(request()->query());
 
-        return view('purchases.all-purchases', [
+        return view('purchases.purchases', [
             'purchases' => $purchases
         ]);
     }
@@ -163,13 +166,125 @@ class PurchaseController extends Controller
      */
     public function deletePurchase(String $purchase_id)
     {
-        Purchase::findOrFail([
+        Purchase::where([
             'id' => $purchase_id,
-            'purchase_status' => 0
+            'purchase_status' => '0'
         ])->delete();
 
-        PurchaseDetails::findOrFail('purchase_id', $purchase_id)->delete();
+        PurchaseDetails::where('purchase_id', $purchase_id)->delete();
 
         return Redirect::route('purchases.allPurchases')->with('success', 'Purchase has been deleted!');
+    }
+
+    /**
+     * Display an all purchases.
+     */
+    public function dailyPurchaseReport()
+    {
+        $row = (int) request('row', 10);
+
+        if ($row < 1 || $row > 100) {
+            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
+        }
+
+        $purchases = Purchase::with(['supplier'])
+            ->where('purchase_date', Carbon::now()->format('Y-m-d')) // 1 = approved
+            ->sortable()
+            ->paginate($row)
+            ->appends(request()->query());
+
+        return view('purchases.purchases', [
+            'purchases' => $purchases
+        ]);
+    }
+
+    /**
+     * Show the form input date for purchase report.
+     */
+    public function getPurchaseReport()
+    {
+        return view('purchases.report-purchase');
+    }
+
+    /**
+     * Handle request to get purchase report
+     */
+    public function exportPurchaseReport(Request $request)
+    {
+        $rules = [
+            'start_date' => 'required|string|date_format:Y-m-d',
+            'end_date' => 'required|string|date_format:Y-m-d',
+        ];
+
+        $validatedData = $request->validate($rules);
+
+        $sDate = $validatedData['start_date'];
+        $eDate = $validatedData['end_date'];
+
+        // $purchaseDetails = DB::table('purchases')
+        //     ->whereBetween('purchases.purchase_date',[$sDate,$eDate])
+        //     ->where('purchases.purchase_status','1')
+        //     ->join('purchase_details', 'purchases.id', '=', 'purchase_details.purchase_id')
+        //     ->get();
+
+        $purchases = DB::table('purchase_details')
+            ->join('products', 'purchase_details.product_id', '=', 'products.id')
+            ->join('purchases', 'purchase_details.purchase_id', '=', 'purchases.id')
+            ->whereBetween('purchases.purchase_date',[$sDate,$eDate])
+            ->where('purchases.purchase_status','1')
+            ->select( 'purchases.purchase_no', 'purchases.purchase_date', 'purchases.supplier_id','products.product_code', 'products.product_name', 'purchase_details.quantity', 'purchase_details.unitcost', 'purchase_details.total')
+            ->get();
+
+
+        $purchase_array [] = array(
+            'Date',
+            'No Purchase',
+            'Supplier',
+            'Product Code',
+            'Product',
+            'Quantity',
+            'Unitcost',
+            'Total',
+        );
+
+        foreach($purchases as $purchase)
+        {
+            $purchase_array[] = array(
+                'Date' => $purchase->purchase_date,
+                'No Purchase' => $purchase->purchase_no,
+                'Supplier' => $purchase->supplier_id,
+                'Product Code' => $purchase->product_code,
+                'Product' => $purchase->product_name,
+                'Quantity' => $purchase->quantity,
+                'Unitcost' => $purchase->unitcost,
+                'Total' => $purchase->total,
+            );
+        }
+
+        $this->exportExcel($purchase_array);
+    }
+
+    /**
+     *This function loads the customer data from the database then converts it
+     * into an Array that will be exported to Excel
+     */
+    public function exportExcel($products){
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '4000M');
+
+        try {
+            $spreadSheet = new Spreadsheet();
+            $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+            $spreadSheet->getActiveSheet()->fromArray($products);
+            $Excel_writer = new Xls($spreadSheet);
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="purchase-report.xls"');
+            header('Cache-Control: max-age=0');
+            ob_end_clean();
+            $Excel_writer->save('php://output');
+            exit();
+        } catch (Exception $e) {
+            return;
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Unit;
 use App\Models\Product;
 use App\Models\Category;

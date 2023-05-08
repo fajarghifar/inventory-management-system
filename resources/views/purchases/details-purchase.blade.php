@@ -121,6 +121,7 @@
                                         <th scope="col">Photo</th>
                                         <th scope="col">Product Name</th>
                                         <th scope="col">Product Code</th>
+                                        <th scope="col">Current Stock</th>
                                         <th scope="col">Quantity</th>
                                         <th scope="col">Price</th>
                                         <th scope="col">Total</th>
@@ -137,7 +138,8 @@
                                         </td>
                                         <td scope="row">{{ $item->product->product_name }}</td>
                                         <td scope="row">{{ $item->product->product_code }}</td>
-                                        <td scope="row">{{ $item->quantity }}</td>
+                                        <td scope="row"><span class="btn btn-warning">{{ $item->product->stock }}</span></td>
+                                        <td scope="row"><span class="btn btn-success">{{ $item->quantity }}</span></td>
                                         <td scope="row">{{ $item->unitcost }}</td>
                                         <td scope="row">
                                             <span  class="btn btn-primary">{{ $item->total }}</span>

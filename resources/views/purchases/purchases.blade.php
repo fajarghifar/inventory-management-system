@@ -13,6 +13,7 @@
                     </h1>
                 </div>
                 <div class="col-auto my-4">
+                    <a href="{{ route('purchases.getPurchaseReport') }}" class="btn btn-success add-list my-1"><i class="fa-solid fa-file-export me-3"></i>Export</a>
                     <a href="{{ route('purchases.createPurchase') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
                     <a href="{{ route('purchases.allPurchases') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
                 </div>

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('supplier_id');
             $table->string('purchase_date');
             $table->string('purchase_no');
-            $table->tinyInteger('purchase_status')->default(0)->comment('0=Pending, 1=Approved');
-            $table->string('total_amount');
+            $table->char('purchase_status', 1)->default(0)->comment('0=Pending, 1=Approved');
+            $table->integer('total_amount');
             $table->string('created_by');
             $table->string('updated_by')->nullable();
             $table->timestamps();

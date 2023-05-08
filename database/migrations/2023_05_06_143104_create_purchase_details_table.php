@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('product_id');
             $table->integer('quantity');
             $table->integer('unitcost');
-            $table->string('total');
+            $table->integer('total');
             $table->timestamps();
         });
     }

@@ -35,7 +35,11 @@
             </a>
             <a class="nav-link {{ Request::is('purchases/approved*') ? 'active' : '' }}" href="{{ route('purchases.approvedPurchases') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
-                Approved
+                Approval
+            </a>
+            <a class="nav-link {{ Request::is('purchases/report*') ? 'active' : '' }}" href="{{ route('purchases.dailyPurchaseReport') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-flag"></i></div>
+                Daily Purchase Report
             </a>
 
             <!-- Sidenav Accordion (Pages)-->

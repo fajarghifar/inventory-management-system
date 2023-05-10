@@ -43,7 +43,7 @@
                             <!-- Form Group (date) -->
                             <div class="col-md-6">
                                 <label class="small my-1" for="purchase_date">Date <span class="text-danger">*</span></label>
-                                <input class="form-control form-control-solid example-date-input @error('purchase_date') is-invalid @enderror" name="purchase_date" id="date" type="date" value="{{ old('purchase_date') }}">
+                                <input class="form-control form-control-solid example-date-input @error('purchase_date') is-invalid @enderror" name="purchase_date" id="date" type="date" value="{{ old('purchase_date') }}" required>
                                 @error('purchase_date')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -53,7 +53,7 @@
                             <!-- Form Group (supplier) -->
                             <div class="col-md-6">
                                 <label class="small my-1" for="supplier_id">Supplier <span class="text-danger">*</span></label>
-                                <select class="form-select form-control-solid @error('supplier_id') is-invalid @enderror" id="supplier_id" name="supplier_id">
+                                <select class="form-select form-control-solid @error('supplier_id') is-invalid @enderror" id="supplier_id" name="supplier_id" required>
                                     <option selected="" disabled="">Select a supplier:</option>
                                     @foreach ($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}" @if(old('supplier_id') == $supplier->id) selected="selected" @endif>{{ $supplier->name }}</option>

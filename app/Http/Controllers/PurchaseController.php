@@ -144,7 +144,7 @@ class PurchaseController extends Controller
     {
         $purchase_id = $request->id;
 
-        // Reduce the stock
+        // after purchase approved, add stock product
         $products = PurchaseDetails::where('purchase_id', $purchase_id)->get();
 
         foreach ($products as $product) {

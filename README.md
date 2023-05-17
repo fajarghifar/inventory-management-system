@@ -42,7 +42,7 @@ Inventory Management System with Laravel 10 and MySql.
     ```
 1. **.ENV**
 
-    Rename or copy `.env.example` file to `.env`
+    Rename or copy the `.env.example` file to `.env`
     ```bash
     # Generate app key
     $ php artisan key:generate
@@ -51,7 +51,7 @@ Inventory Management System with Laravel 10 and MySql.
 
     To set Faker Locale, add this line of code to the end `.env` file.
     ```bash
-    # In this case the locale set to Indonesian
+    # In this case, the locale is set to Indonesian
 
     FAKER_LOCALE="id_ID"
     ```
@@ -64,7 +64,7 @@ Inventory Management System with Laravel 10 and MySql.
     ```bash
     $ php artisan:migrate:fresh --seed
 
-    # Note: If showing an error, please try to run this command again.
+    # Note: If showing an error, please try to rerun this command.
     ```
 1. **Create Storage Link**
 
@@ -78,17 +78,17 @@ Inventory Management System with Laravel 10 and MySql.
     ```
 1. **Login**
 
-    Try login with username : `admin` and password : `password`
+    Try login with username: `admin` and password: `password`
 
 ## 🚀 Config
 1. **Config Chart**
 
     Open file `./config/cart.php`. You can set a tax, format number, etc.
-    > More details visit this link [hardevine/shoppingcart](https://packagist.org/packages/hardevine/shoppingcart).
+    > For More details, visit this link [hardevine/shoppingcart](https://packagist.org/packages/hardevine/shoppingcart).
 
 ## 📝 Contributing
 
-If you have any idea to make it more interesting, feel free to send a PR, or create an issue for a feature request.
+If you have any ideas to make it more interesting, please send a PR or create an issue for a feature request.
 
 # 🤝 License
 

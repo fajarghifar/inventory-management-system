@@ -75,7 +75,6 @@
                                     <th>Price</th>
                                     <th>Quantity</th>
                                     <th>Subtotal</th>
-                                    <th>Total</th>
                                 </tr>
                                 </thead>
 
@@ -90,21 +89,15 @@
                                 @endforeach
 
                                 <tr>
-                                    <td><strong>Subtotal</strong></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td colspan="3"><strong>Subtotal</strong></td>
                                     <td><strong>{{ Cart::subtotal() }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Tax</strong></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td colspan="3"><strong>Tax</strong></td>
                                     <td><strong>{{ Cart::tax() }}</strong></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Total</strong></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td colspan="3"><strong>Total</strong></td>
                                     <td><strong>{{ Cart::total() }}</strong></td>
                                 </tr>
                                 </tbody>

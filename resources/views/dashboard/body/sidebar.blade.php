@@ -90,6 +90,13 @@
                 <div class="nav-link-icon"><i class="fa-solid fa-folder"></i></div>
                 Units
             </a>
+
+            <!-- Sidenav Heading (Settings)-->
+            <div class="sidenav-menu-heading">Settings</div>
+            <a class="nav-link {{ Request::is('users*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-users"></i></div>
+                Users
+            </a>
         </div>
     </div>
 

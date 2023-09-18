@@ -62,7 +62,7 @@ Inventory Management System with Laravel 10 and MySql.
 
 1. **Seed Database**
     ```bash
-    $ php artisan:migrate:fresh --seed
+    $ php artisan migrate:fresh --seed
 
     # Note: If showing an error, please try to rerun this command.
     ```

@@ -17,12 +17,13 @@
                 </div>
             </div>
 
-            <nav class="mt-4 rounded" aria-label="breadcrumb">
-                <ol class="breadcrumb px-3 py-2 rounded mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Categories</li>
-                </ol>
-            </nav>
+{{--            <nav class="mt-4 rounded" aria-label="breadcrumb">--}}
+{{--                <ol class="breadcrumb px-3 py-2 rounded mb-0">--}}
+{{--                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>--}}
+{{--                    <li class="breadcrumb-item active">Categories</li>--}}
+{{--                </ol>--}}
+{{--            </nav>--}}
+            @include('partials._breadcrumbs', ['model' => $categories])
         </div>
     </div>
 

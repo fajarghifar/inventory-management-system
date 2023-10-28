@@ -14,13 +14,7 @@
                 </div>
             </div>
 
-            <nav class="mt-4 rounded" aria-label="breadcrumb">
-                <ol class="breadcrumb px-3 py-2 rounded mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('units.index') }}">Units</a></li>
-                    <li class="breadcrumb-item active">Create</li>
-                </ol>
-            </nav>
+            @include('partials._breadcrumbs')
         </div>
     </div>
 </header>

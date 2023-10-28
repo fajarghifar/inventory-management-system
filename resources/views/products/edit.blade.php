@@ -1,8 +1,8 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
 
-@section('specificpagescripts')
-<script src="{{ asset('assets/js/img-preview.js') }}"></script>
-@endsection
+@push('page-styles')
+
+@endpush
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -152,3 +152,7 @@
 </div>
 <!-- END: Main Page Content -->
 @endsection
+
+@push('page-scripts')
+    <script src="{{ asset('assets/js/img-preview.js') }}"></script>
+@endpush

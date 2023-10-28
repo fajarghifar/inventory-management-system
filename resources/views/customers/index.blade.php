@@ -1,4 +1,8 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
+
+@push('page-styles')
+    {{--- ---}}
+@endpush
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -128,3 +132,7 @@
 </div>
 <!-- END: Main Page Content -->
 @endsection
+
+@push('page-scripts')
+    {{--- ---}}
+@endpush

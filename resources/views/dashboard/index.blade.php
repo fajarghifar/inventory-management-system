@@ -1,17 +1,8 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
 
-
-@section('specificpagestyles')
-<link href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" rel="stylesheet" />
-@endsection
-
-@section('specificpagescripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" crossorigin="anonymous"></script>
-<script src="{{ asset('assets/demo/chart-area-demo.js') }}"></script>
-<script src="{{ asset('assets/demo/chart-bar-demo.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js" crossorigin="anonymous"></script>
-<script src="{{ asset('assets/js/litepicker.js') }}"></script>
-@endsection
+@push('page-styles')
+    <link href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" rel="stylesheet" />
+@endpush
 
 @section('content')
 <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
@@ -156,3 +147,11 @@
     </div>
 </div>
 @endsection
+
+@push('page-scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="{{ asset('assets/demo/chart-area-demo.js') }}"></script>
+    <script src="{{ asset('assets/demo/chart-bar-demo.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js" crossorigin="anonymous"></script>
+    <script src="{{ asset('assets/js/litepicker.js') }}"></script>
+@endpush

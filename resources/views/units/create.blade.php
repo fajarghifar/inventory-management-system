@@ -1,4 +1,4 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -71,7 +71,9 @@
     </form>
 </div>
 <!-- END: Main Page Content -->
+@endsection
 
+@push('page-scripts')
 <script>
     // Slug Generator
     const title = document.querySelector("#name");
@@ -82,4 +84,4 @@
         slug.value = preslug.toLowerCase();
     });
 </script>
-@endsection
+@endpush

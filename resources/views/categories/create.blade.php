@@ -1,4 +1,8 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
+
+@push('page-styles')
+    {{--- ---}}
+@endpush
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -71,15 +75,17 @@
     </form>
 </div>
 <!-- END: Main Page Content -->
-
-<script>
-    // Slug Generator
-    const title = document.querySelector("#name");
-    const slug = document.querySelector("#slug");
-    title.addEventListener("keyup", function() {
-        let preslug = title.value;
-        preslug = preslug.replace(/ /g,"-");
-        slug.value = preslug.toLowerCase();
-    });
-</script>
 @endsection
+
+@push('page-scripts')
+    <script>
+        // Slug Generator
+        const title = document.querySelector("#name");
+        const slug = document.querySelector("#slug");
+        title.addEventListener("keyup", function() {
+            let preslug = title.value;
+            preslug = preslug.replace(/ /g,"-");
+            slug.value = preslug.toLowerCase();
+        });
+    </script>
+@endpush

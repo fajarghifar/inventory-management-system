@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\Customer\StoreCustomerRequest;
+use App\Http\Requests\Customer\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -41,36 +40,26 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
-        $rules = [
-            'photo' => 'image|file|max:1024',
-            'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:customers,email',
-            'phone' => 'required|string|max:25|unique:customers,phone',
-            'account_holder' => 'max:50',
-            'account_number' => 'max:25',
-            'bank_name' => 'max:25',
-            'address' => 'required|string|max:100',
-        ];
-
-        $validatedData = $request->validate($rules);
+        $customer = Customer::create($request->all());
 
         /**
          * Handle upload an image
          */
-        if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/customers/';
+        if($request->hasFile('photo')){
+            $file = $request->file('photo');
+            $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
 
-            // Store an image to Storage
-            $file->storeAs($path, $fileName);
-            $validatedData['photo'] = $fileName;
+            $file->storeAs('customers/', $filename, 'public');
+            $customer->update([
+                'photo' => $filename
+            ]);
         }
 
-        Customer::create($validatedData);
-
-        return Redirect::route('customers.index')->with('success', 'New customer has been created!');
+        return redirect()
+            ->route('customers.index')
+            ->with('success', 'New customer has been created!');
     }
 
     /**
@@ -94,43 +83,37 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $rules = [
-            'photo' => 'image|file|max:1024',
-            'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:customers,email,'.$customer->id,
-            'phone' => 'required|string|max:25|unique:customers,phone,'.$customer->id,
-            'account_holder' => 'max:50',
-            'account_number' => 'max:25',
-            'bank_name' => 'max:25',
-            'address' => 'required|string|max:100',
-        ];
-
-        $validatedData = $request->validate($rules);
+        //
+        $customer->update($request->except('photo'));
 
         /**
          * Handle upload image with Storage.
          */
-        if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/customers/';
+        if($request->hasFile('photo')){
 
-            /**
-             * Delete an image if exists.
-             */
+            // Delete Old Photo
             if($customer->photo){
-                Storage::delete($path . $customer->photo);
+                unlink(public_path('storage/customers/') . $customer->photo);
             }
 
+            // Prepare New Photo
+            $file = $request->file('photo');
+            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+
             // Store an image to Storage
-            $file->storeAs($path, $fileName);
-            $validatedData['photo'] = $fileName;
+            $file->storeAs('customers/', $fileName, 'public');
+
+            // Save DB
+            $customer->update([
+                'photo' => $fileName
+            ]);
         }
 
-        Customer::where('id', $customer->id)->update($validatedData);
-
-        return Redirect::route('customers.index')->with('success', 'Customer has been updated!');
+        return redirect()
+            ->route('customers.index')
+            ->with('success', 'Customer has been updated!');
     }
 
     /**
@@ -142,11 +125,13 @@ class CustomerController extends Controller
          * Delete photo if exists.
          */
         if($customer->photo){
-            Storage::delete('public/customers/' . $customer->photo);
+            unlink(public_path('storage/customers/') . $customer->photo);
         }
 
-        Customer::destroy($customer->id);
+        $customer->delete();
 
-        return Redirect::route('customers.index')->with('success', 'Customer has been deleted!');
+        return redirect()
+            ->back()
+            ->with('success', 'Customer has been deleted!');
     }
 }

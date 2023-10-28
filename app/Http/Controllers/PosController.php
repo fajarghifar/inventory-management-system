@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
 
 class PosController extends Controller
@@ -58,7 +57,9 @@ class PosController extends Controller
             'price' => $validatedData['price']
         ]);
 
-        return Redirect::back()->with('success', 'Product has been added to cart!');
+        return redirect()
+            ->back()
+            ->with('success', 'Product has been added to cart!');
     }
 
     /**
@@ -74,7 +75,9 @@ class PosController extends Controller
 
         Cart::update($rowId, $validatedData['qty']);
 
-        return Redirect::back()->with('success', 'Product has been updated from cart!');
+        return redirect()
+            ->back()
+            ->with('success', 'Product has been updated from cart!');
     }
 
     /**
@@ -84,7 +87,9 @@ class PosController extends Controller
     {
         Cart::remove($rowId);
 
-        return Redirect::back()->with('success', 'Product has been deleted from cart!');
+        return redirect()
+            ->back()
+            ->with('success', 'Product has been deleted from cart!');
     }
 
     /**

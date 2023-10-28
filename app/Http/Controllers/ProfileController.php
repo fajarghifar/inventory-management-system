@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProfileUpdateRequest;
 
 class ProfileController extends Controller
@@ -63,7 +62,9 @@ class ProfileController extends Controller
 
         User::where('id', $user->id)->update($validatedData);
 
-        return Redirect::route('profile.edit')->with('success', 'Profile has been updated!');
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Profile has been updated!');
     }
 
     public function settings(Request $request): View
@@ -91,6 +92,8 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+
+        return redirect()
+            ->to('/');
     }
 }

@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\Unit\StoreUnitRequest;
+use App\Http\Requests\Unit\UpdateUnitRequest;
 
 class UnitController extends Controller
 {
@@ -41,18 +40,13 @@ class UnitController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUnitRequest $request)
     {
-        $rules = [
-            'name' => 'required|unique:units,name',
-            'slug' => 'required|unique:units,slug|alpha_dash',
-        ];
+        Unit::create($request->validated());
 
-        $validatedData = $request->validate($rules);
-
-        Unit::create($validatedData);
-
-        return Redirect::route('units.index')->with('success', 'Unit has been created!');
+        return redirect()
+            ->route('units.index')
+            ->with('success', 'Unit has been created!');
     }
 
     /**
@@ -60,7 +54,7 @@ class UnitController extends Controller
      */
     public function show(Unit $unit)
     {
-      abort(404);
+        abort(404);
     }
 
     /**
@@ -76,18 +70,13 @@ class UnitController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Unit $unit)
+    public function update(UpdateUnitRequest $request, Unit $unit)
     {
-        $rules = [
-            'name' => 'required|unique:units,name,'.$unit->id,
-            'slug' => 'required|alpha_dash|unique:units,slug,'.$unit->id,
-        ];
+        $unit->update($request->all());
 
-        $validatedData = $request->validate($rules);
-
-        Unit::where('slug', $unit->slug)->update($validatedData);
-
-        return Redirect::route('units.index')->with('success', 'Unit has been updated!');
+        return redirect()
+            ->route('units.index')
+            ->with('success', 'Unit has been updated!');
     }
 
     /**
@@ -95,8 +84,10 @@ class UnitController extends Controller
      */
     public function destroy(Unit $unit)
     {
-        Unit::destroy($unit->id);
+        $unit->delete();
 
-        return Redirect::route('units.index')->with('success', 'Unit has been deleted!');
+        return redirect()
+            ->route('units.index')
+            ->with('success', 'Unit has been deleted!');
     }
 }

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -42,37 +42,26 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $rules = [
-            'photo' => 'image|file|max:1024',
-            'name' => 'required|max:50',
-            'email' => 'required|email|max:50|unique:users,email',
-            'username' => 'required|min:4|max:25|alpha_dash:ascii|unique:users,username',
-            'password' => 'required_with:password_confirmation|min:6',
-            'password_confirmation' => 'same:password|min:6',
-        ];
-
-        $validatedData = $request->validate($rules);
-        $validatedData['password'] = Hash::make($request->password);
+        $user = User::create($request->all());
 
         /**
          * Handle upload an image
          */
-        if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/profile/';
+        if($request->hasFile('photo')){
+            $file = $request->file('photo');
+            $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
 
-            /**
-             * Store an image to Storage.
-             */
-            $file->storeAs($path, $fileName);
-            $validatedData['photo'] = $fileName;
+            $file->storeAs('profile/', $filename, 'public');
+            $user->update([
+                'photo' => $filename
+            ]);
         }
 
-        User::create($validatedData);
-
-        return Redirect::route('users.index')->with('success', 'New User has been created!');
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'New User has been created!');
     }
 
     /**
@@ -96,44 +85,41 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $rules = [
-            'name' => 'required|max:50',
-            'photo' => 'image|file|max:1024',
-            'email' => 'required|email|max:50|unique:users,email,'.$user->id,
-            'username' => 'required|min:4|max:25|alpha_dash:ascii|unique:users,username,'.$user->id,
-        ];
 
-        $validatedData = $request->validate($rules);
+//        if ($validatedData['email'] != $user->email) {
+//            $validatedData['email_verified_at'] = null;
+//        }
 
-        if ($validatedData['email'] != $user->email) {
-            $validatedData['email_verified_at'] = null;
-        }
+        $user->update($request->except('photo'));
 
         /**
          * Handle upload image with Storage.
          */
-        if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/profile/';
+        if($request->hasFile('photo')){
 
-            /**
-             * Delete an image if exists.
-             */
+            // Delete Old Photo
             if($user->photo){
-                Storage::delete($path . $user->photo);
+                unlink(public_path('storage/profile/') . $user->photo);
             }
 
-            // Store an image to Storage
-            $file->storeAs($path, $fileName);
+            // Prepare New Photo
+            $file = $request->file('photo');
+            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
 
-            $validatedData['photo'] = $fileName;
+            // Store an image to Storage
+            $file->storeAs('profile/', $fileName, 'public');
+
+            // Save DB
+            $user->update([
+                'photo' => $fileName
+            ]);
         }
 
-        User::where('id', $user->id)->update($validatedData);
-
-        return Redirect::route('users.index')->with('success', 'User has been updated!');
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User has been updated!');
     }
 
     public function updatePassword(Request $request, String $username)
@@ -149,7 +135,9 @@ class UserController extends Controller
             'password' => Hash::make($validated['password'])
         ]);
 
-        return Redirect::route('users.index')->with('success', 'User has been updated!');
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User has been updated!');
     }
 
     /**
@@ -161,11 +149,13 @@ class UserController extends Controller
          * Delete photo if exists.
          */
         if($user->photo){
-            Storage::delete('public/profile/' . $user->photo);
+            unlink(public_path('storage/profile/') . $user->photo);
         }
 
-        User::destroy($user->id);
+        $user->delete();
 
-        return Redirect::route('users.index')->with('success', 'User has been deleted!');
+        return redirect()
+            ->route('users.index')
+            ->with('success', 'User has been deleted!');
     }
 }

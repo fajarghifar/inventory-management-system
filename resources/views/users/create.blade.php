@@ -24,9 +24,7 @@
         </div>
     </div>
 </header>
-<!-- END: Header -->
 
-<!-- BEGIN: Main Page Content -->
 <div class="container-xl px-2 mt-n10">
     <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
         @csrf

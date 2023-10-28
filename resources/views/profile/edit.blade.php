@@ -26,19 +26,7 @@
 
     <hr class="mt-0 mb-4" />
 
-    <!-- BEGIN: Alert -->
-    @if (session()->has('success'))
-    <div class="alert alert-success alert-icon" role="alert">
-        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-        <div class="alert-icon-aside">
-            <i class="far fa-flag"></i>
-        </div>
-        <div class="alert-icon-content">
-            {{ session('success') }}
-        </div>
-    </div>
-    @endif
-    <!-- END: Alert -->
+    @include('partials.session')
 
     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf

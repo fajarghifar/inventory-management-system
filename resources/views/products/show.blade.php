@@ -28,9 +28,7 @@
         </div>
     </div>
 </header>
-<!-- END: Header -->
 
-<!-- BEGIN: Main Page Content -->
 <div class="container-xl px-2 mt-n10">
     <div class="row">
         <div class="col-xl-4">

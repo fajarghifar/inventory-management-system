@@ -7,13 +7,12 @@ use App\Models\Unit;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Illuminate\Support\Facades\Redirect;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 
 class ProductController extends Controller
 {
@@ -53,47 +52,26 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $product_code = IdGenerator::generate([
-            'table' => 'products',
-            'field' => 'product_code',
-            'length' => 4,
-            'prefix' => 'PC'
-        ]);
-
-        $rules = [
-            'product_image' => 'image|file|max:2048',
-            'product_name' => 'required|string',
-            'category_id' => 'required|integer',
-            'unit_id' => 'required|integer',
-            'stock' => 'required|integer',
-            'buying_price' => 'required|integer',
-            'selling_price' => 'required|integer',
-        ];
-
-        $validatedData = $request->validate($rules);
-
-        // Save product code value
-        $validatedData['product_code'] = $product_code;
+        $product = Product::create($request->all());
 
         /**
          * Handle upload image
          */
-        if ($file = $request->file('product_image')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/products/';
+        if($request->hasFile('product_image')){
+            $file = $request->file('product_image');
+            $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
 
-            /**
-             * Upload an image to Storage
-             */
-            $file->storeAs($path, $fileName);
-            $validatedData['product_image'] = $fileName;
+            $file->storeAs('products/', $filename, 'public');
+            $product->update([
+                'product_image' => $filename
+            ]);
         }
 
-        Product::create($validatedData);
-
-        return Redirect::route('products.index')->with('success', 'Product has been created!');
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product has been created!');
     }
 
     /**
@@ -127,44 +105,36 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $rules = [
-            'product_image' => 'image|file|max:2048',
-            'product_name' => 'required|string',
-            'category_id' => 'required|integer',
-            'unit_id' => 'required|integer',
-            'stock' => 'required|integer',
-            'buying_price' => 'required|integer',
-            'selling_price' => 'required|integer',
-        ];
-
-        $validatedData = $request->validate($rules);
+        $product->update($request->except('product_image'));
 
         /**
          * Handle upload an image
          */
-        if ($file = $request->file('product_image')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/products/';
+        if($request->hasFile('product_image')){
 
-            /**
-             * Delete photo if exists.
-             */
+            // Delete Old Photo
             if($product->product_image){
-                Storage::delete($path . $product->product_image);
+                unlink(public_path('storage/products/') . $product->product_image);
             }
 
-            /**
-             * Store an image to Storage
-             */
-            $file->storeAs($path, $fileName);
-            $validatedData['product_image'] = $fileName;
+            // Prepare New Photo
+            $file = $request->file('product_image');
+            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+
+            // Store an image to Storage
+            $file->storeAs('products/', $fileName, 'public');
+
+            // Save DB
+            $product->update([
+                'product_image' => $fileName
+            ]);
         }
 
-        Product::where('id', $product->id)->update($validatedData);
-
-        return Redirect::route('products.index')->with('success', 'Product has been updated!');
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product has been updated!');
     }
 
     /**
@@ -176,12 +146,14 @@ class ProductController extends Controller
          * Delete photo if exists.
          */
         if($product->product_image){
-            Storage::delete('public/products/' . $product->product_image);
+            unlink(public_path('storage/products/') . $product->product_image);
         }
 
-        Product::destroy($product->id);
+        $product->delete();
 
-        return Redirect::route('products.index')->with('success', 'Product has been deleted!');
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product has been deleted!');
     }
 
     /**
@@ -227,9 +199,14 @@ class ProductController extends Controller
 
         } catch (Exception $e) {
             // $error_code = $e->errorInfo[1];
-            return Redirect::route('products.index')->with('error', 'There was a problem uploading the data!');
+            return redirect()
+                ->route('products.index')
+                ->with('error', 'There was a problem uploading the data!');
         }
-        return Redirect::route('products.index')->with('success', 'Data product has been imported!');
+
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Data product has been imported!');
     }
 
     /**

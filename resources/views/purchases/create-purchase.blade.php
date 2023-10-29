@@ -1,4 +1,4 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -14,19 +14,11 @@
                 </div>
             </div>
 
-            <nav class="mt-4 rounded" aria-label="breadcrumb">
-                <ol class="breadcrumb px-3 py-2 rounded mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('products.index') }}">Purchases</a></li>
-                    <li class="breadcrumb-item active">Create</li>
-                </ol>
-            </nav>
+            @include('partials._breadcrumbs')
         </div>
     </div>
 </header>
-<!-- END: Header -->
 
-<!-- BEGIN: Main Page Content -->
 <div class="container-xl px-2 mt-n10">
     <form action="{{ route('purchases.storePurchase') }}" method="POST">
         @csrf

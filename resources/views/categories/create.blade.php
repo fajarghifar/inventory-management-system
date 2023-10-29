@@ -1,4 +1,8 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
+
+@push('page-styles')
+    {{--- ---}}
+@endpush
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -14,13 +18,7 @@
                 </div>
             </div>
 
-            <nav class="mt-4 rounded" aria-label="breadcrumb">
-                <ol class="breadcrumb px-3 py-2 rounded mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('categories.index') }}">Categories</a></li>
-                    <li class="breadcrumb-item active">Create</li>
-                </ol>
-            </nav>
+            @include('partials._breadcrumbs')
         </div>
     </div>
 </header>
@@ -71,15 +69,17 @@
     </form>
 </div>
 <!-- END: Main Page Content -->
-
-<script>
-    // Slug Generator
-    const title = document.querySelector("#name");
-    const slug = document.querySelector("#slug");
-    title.addEventListener("keyup", function() {
-        let preslug = title.value;
-        preslug = preslug.replace(/ /g,"-");
-        slug.value = preslug.toLowerCase();
-    });
-</script>
 @endsection
+
+@push('page-scripts')
+    <script>
+        // Slug Generator
+        const title = document.querySelector("#name");
+        const slug = document.querySelector("#slug");
+        title.addEventListener("keyup", function() {
+            let preslug = title.value;
+            preslug = preslug.replace(/ /g,"-");
+            slug.value = preslug.toLowerCase();
+        });
+    </script>
+@endpush

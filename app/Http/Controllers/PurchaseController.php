@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use App\Models\PurcaseDetail;
 use App\Models\PurchaseDetails;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
@@ -134,7 +133,9 @@ class PurchaseController extends Controller
             PurchaseDetails::insert($pDetails);
         }
 
-        return Redirect::route('purchases.allPurchases')->with('success', 'Purchase has been created!');
+        return redirect()
+            ->route('purchases.allPurchases')
+            ->with('success', 'Purchase has been created!');
     }
 
     /**
@@ -158,7 +159,9 @@ class PurchaseController extends Controller
                 'updated_by' => auth()->user()->id
             ]); // 1 = approved, 0 = pending
 
-        return Redirect::route('purchases.allPurchases')->with('success', 'Purchase has been approved!');
+        return redirect()
+            ->route('purchases.allPurchases')
+            ->with('success', 'Purchase has been approved!');
     }
 
     /**
@@ -173,7 +176,9 @@ class PurchaseController extends Controller
 
         PurchaseDetails::where('purchase_id', $purchase_id)->delete();
 
-        return Redirect::route('purchases.allPurchases')->with('success', 'Purchase has been deleted!');
+        return redirect()
+            ->route('purchases.allPurchases')
+            ->with('success', 'Purchase has been deleted!');
     }
 
     /**
@@ -284,7 +289,7 @@ class PurchaseController extends Controller
             $Excel_writer->save('php://output');
             exit();
         } catch (Exception $e) {
-            return;
+            return $e;
         }
     }
 }

@@ -1,4 +1,4 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -18,35 +18,15 @@
                 </div>
             </div>
 
-            <nav class="mt-4 rounded" aria-label="breadcrumb">
-                <ol class="breadcrumb px-3 py-2 rounded mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Units</li>
-                </ol>
-            </nav>
+            @include('partials._breadcrumbs')
         </div>
     </div>
 
-    <!-- BEGIN: Alert -->
-    <div class="container-xl px-4 mt-n4">
-        @if (session()->has('success'))
-        <div class="alert alert-success alert-icon" role="alert">
-            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-            <div class="alert-icon-aside">
-                <i class="far fa-flag"></i>
-            </div>
-            <div class="alert-icon-content">
-                {{ session('success') }}
-            </div>
-        </div>
-        @endif
-    </div>
-    <!-- END: Alert -->
+    @include('partials.session')
 </header>
-<!-- END: Header -->
 
 <!-- BEGIN: Main Page Content -->
-<div class="container px-2 mt-n10">
+<div class="container px-4 mt-n10">
     <div class="card mb-4">
         <div class="card-body">
             <div class="row mx-n4">
@@ -56,12 +36,14 @@
                             <div class="form-group row align-items-center">
                                 <label for="row" class="col-auto">Row:</label>
                                 <div class="col-auto">
-                                    <select class="form-control" name="row">
-                                        <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
-                                        <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
-                                        <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
-                                        <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
-                                    </select>
+                                    <label>
+                                        <select class="form-control" name="row">
+                                            <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
+                                            <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
+                                            <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
+                                            <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
+                                        </select>
+                                    </label>
                                 </div>
                             </div>
 

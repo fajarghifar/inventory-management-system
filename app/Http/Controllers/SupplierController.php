@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\Supplier\StoreSupplierRequest;
+use App\Http\Requests\Supplier\UpdateSupplierRequest;
 
 class SupplierController extends Controller
 {
@@ -41,40 +40,26 @@ class SupplierController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSupplierRequest $request)
     {
-        $rules = [
-            'photo' => 'image|file|max:1024',
-            'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:suppliers,email',
-            'phone' => 'required|string|max:25|unique:suppliers,phone',
-            'shopname' => 'required|string|max:50',
-            'type' => 'required|string|max:25',
-            'account_holder' => 'max:50',
-            'account_number' => 'max:25',
-            'bank_name' => 'max:25',
-            'address' => 'required|string|max:100',
-        ];
-
-        $validatedData = $request->validate($rules);
+        $supplier = Supplier::create($request->all());
 
         /**
          * Handle upload an image
          */
-        if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/suppliers/';
+        if($request->hasFile('photo')){
+            $file = $request->file('photo');
+            $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
 
-            /**
-             * Store an image to Storage.
-             */
-            $file->storeAs($path, $fileName);
-            $validatedData['photo'] = $fileName;
+            $file->storeAs('suppliers/', $filename, 'public');
+            $supplier->update([
+                'photo' => $filename
+            ]);
         }
 
-        Supplier::create($validatedData);
-
-        return Redirect::route('suppliers.index')->with('success', 'New supplier has been created!');
+        return redirect()
+            ->route('suppliers.index')
+            ->with('success', 'New supplier has been created!');
     }
 
     /**
@@ -98,45 +83,37 @@ class SupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(UpdateSupplierRequest $request, Supplier $supplier)
     {
-        $rules = [
-            'photo' => 'image|file|max:1024',
-            'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:suppliers,email,'.$supplier->id,
-            'phone' => 'required|string|max:25|unique:suppliers,phone,'.$supplier->id,
-            'shopname' => 'required|string|max:50',
-            'type' => 'required|string|max:25',
-            'account_holder' => 'max:50',
-            'account_number' => 'max:25',
-            'bank_name' => 'max:25',
-            'address' => 'required|string|max:100',
-        ];
-
-        $validatedData = $request->validate($rules);
+        //
+        $supplier->update($request->except('photo'));
 
         /**
          * Handle upload image with Storage.
          */
-        if ($file = $request->file('photo')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/suppliers/';
+        if($request->hasFile('photo')){
 
-            /**
-             * Delete an image if exists.
-             */
+            // Delete Old Photo
             if($supplier->photo){
-                Storage::delete($path . $supplier->photo);
+                unlink(public_path('storage/suppliers/') . $supplier->photo);
             }
 
+            // Prepare New Photo
+            $file = $request->file('photo');
+            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+
             // Store an image to Storage
-            $file->storeAs($path, $fileName);
-            $validatedData['photo'] = $fileName;
+            $file->storeAs('suppliers/', $fileName, 'public');
+
+            // Save DB
+            $supplier->update([
+                'photo' => $fileName
+            ]);
         }
 
-        Supplier::where('id', $supplier->id)->update($validatedData);
-
-        return Redirect::route('suppliers.index')->with('success', 'Supplier has been updated!');
+        return redirect()
+            ->route('suppliers.index')
+            ->with('success', 'Supplier has been updated!');
     }
 
     /**
@@ -148,11 +125,13 @@ class SupplierController extends Controller
          * Delete photo if exists.
          */
         if($supplier->photo){
-            Storage::delete('public/suppliers/' . $supplier->photo);
+            unlink(public_path('storage/suppliers/') . $supplier->photo);
         }
 
-        Supplier::destroy($supplier->id);
+        $supplier->delete();
 
-        return Redirect::route('suppliers.index')->with('success', 'Supplier has been deleted!');
+        return redirect()
+            ->route('suppliers.index')
+            ->with('success', 'Supplier has been deleted!');
     }
 }

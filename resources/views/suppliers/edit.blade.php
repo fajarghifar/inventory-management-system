@@ -1,8 +1,4 @@
-@extends('dashboard.body.main')
-
-@section('specificpagescripts')
-<script src="{{ asset('assets/js/img-preview.js') }}"></script>
-@endsection
+@extends('layouts.dashboard')
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -18,19 +14,11 @@
                 </div>
             </div>
 
-            <nav class="mt-4 rounded" aria-label="breadcrumb">
-                <ol class="breadcrumb px-3 py-2 rounded mb-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('suppliers.index') }}">Suppliers</a></li>
-                    <li class="breadcrumb-item active">Edit</li>
-                </ol>
-            </nav>
+            @include('partials._breadcrumbs')
         </div>
     </div>
 </header>
-<!-- END: Header -->
 
-<!-- BEGIN: Main Page Content -->
 <div class="container-xl px-2 mt-n10">
     <form action="{{ route('suppliers.update', $supplier->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -183,3 +171,7 @@
 </div>
 <!-- END: Main Page Content -->
 @endsection
+
+@push('page-scripts')
+    <script src="{{ asset('assets/js/img-preview.js') }}"></script>
+@endpush

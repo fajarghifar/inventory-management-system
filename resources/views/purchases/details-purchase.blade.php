@@ -1,4 +1,4 @@
-@extends('dashboard.body.main')
+@extends('layouts.dashboard')
 
 @section('content')
 <!-- BEGIN: Header -->
@@ -16,9 +16,7 @@
         </div>
     </div>
 </header>
-<!-- END: Header -->
 
-<!-- BEGIN: Main Page Content -->
 <div class="container-xl px-4">
     <div class="row">
 

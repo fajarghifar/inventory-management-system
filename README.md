@@ -24,31 +24,31 @@ Inventory Management System with Laravel 10 and MySql.
 
 ## 🚀 How to Use
 
-1.  **Clone Repository or Download**
-
+1. **Clone Repository or Download**
     ```bash
-    $ git clone https://github.com/fajarghifar/inventory-management-system
+    git clone https://github.com/fajarghifar/inventory-management-system
     ```
-1. **Setup**
+    
+2. **Setup**
     ```bash
     # Go into the repository
-    $ cd inventory-management-system
+    cd inventory-management-system
 
     # Install dependencies
-    $ composer install
+    composer install
 
     # Open with your text editor
-    $ code .
+    code .
     ```
-1. **.ENV**
-
+   
+3. **.ENV**
     Rename or copy the `.env.example` file to `.env`
     ```bash
     # Generate app key
-    $ php artisan key:generate
+    php artisan key:generate
     ```
-1. **Custom Faker Locale**
-
+   
+4. **Custom Faker Locale**
     To set Faker Locale, add this line of code to the end `.env` file.
     ```bash
     # In this case, the locale is set to Indonesian
@@ -56,31 +56,30 @@ Inventory Management System with Laravel 10 and MySql.
     FAKER_LOCALE="id_ID"
     ```
 
-1. **Setup Database**
-
+5. **Setup Database**
     Setup your database credentials in your `.env` file.
 
-1. **Seed Database**
+6. **Seed Database**
     ```bash
-    $ php artisan migrate:fresh --seed
-
-    # Note: If showing an error, please try to rerun this command.
+    php artisan migrate:fresh --seed
     ```
-1. **Create Storage Link**
+   *Note: If showing an error, please try to rerun this command.*
 
+7. **Create Storage Link**
     ```bash
-    $ php artisan storage:link
+    php artisan storage:link
     ```
-1. **Run Server**
 
+8. **Run Server**
     ```bash
-    $ php artisan serve
+    php artisan serve
     ```
-1. **Login**
 
+9. **Login**
     Try login with username: `admin` and password: `password`
 
 ## 🚀 Config
+
 1. **Config Chart**
 
     Open file `./config/cart.php`. You can set a tax, format number, etc.

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kyslik\ColumnSortable\Sortable;
 
 class Purchase extends Model
@@ -34,19 +36,22 @@ class Purchase extends Model
         'user_updated',
     ];
 
-    public function supplier(){
+    public function supplier(): BelongsTo
+    {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
 
-    public function user_created(){
+    public function user_created(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
 
-    public function user_updated(){
+    public function user_updated(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'updated_by', 'id');
     }
 
-    public function details()
+    public function details(): HasMany
     {
         return $this->hasMany(PurchaseDetails::class);
     }

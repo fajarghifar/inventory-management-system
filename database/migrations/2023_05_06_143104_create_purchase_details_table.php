@@ -13,8 +13,15 @@ return new class extends Migration
     {
         Schema::create('purchase_details', function (Blueprint $table) {
             $table->id();
-            $table->string('purchase_id');
-            $table->string('product_id');
+
+            $table->foreignIdFor(\App\Models\Purchase::class)
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignIdFor(\App\Models\Product::class)
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->integer('quantity');
             $table->integer('unitcost');
             $table->integer('total');

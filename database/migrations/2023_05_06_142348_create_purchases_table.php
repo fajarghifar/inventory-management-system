@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id');
+
+            //$table->string('supplier_id');
+            $table->foreignIdFor(\App\Models\Supplier::class)
+                ->constrained();
+
             $table->string('purchase_date');
             $table->string('purchase_no');
             $table->char('purchase_status', 1)->default(0)->comment('0=Pending, 1=Approved');

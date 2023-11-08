@@ -13,14 +13,29 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('product_name');
-            $table->string('category_id');
-            $table->string('unit_id');
-            $table->string('product_code')->nullable();
-            $table->integer('stock');
-            $table->integer('buying_price')->nullable();
-            $table->integer('selling_price')->nullable();
-            $table->string('product_image')->nullable();
+
+            $table->string('name');
+            $table->string('code')->unique()->nullable();
+            //$table->string('product_barcode_symbology')->nullable();
+            $table->integer('quantity');
+            $table->integer('buying_price')->comment('Buying Price');
+            $table->integer('selling_price')->comment('Selling Price');
+            $table->integer('quantity_alert');
+            $table->integer('tax')->nullable();
+            $table->tinyInteger('tax_type')->nullable();
+            $table->text('notes')->nullable();
+
+            //$table->string('product_image')->nullable();
+
+            $table->foreignIdFor(\App\Models\Category::class)
+                ->nullable()
+                ->constrained()
+//                ->restrictOnDelete();
+//                ->cascadeOnDelete();
+                ->nullOnDelete();
+
+            $table->foreignIdFor(\App\Models\Unit::class)->constrained()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -60,4 +60,28 @@ class CustomerTest extends TestCase
         $this->assertDatabaseCount('customers', 0);
 
     }
+
+    public function test_user_can_see_show_view()
+    {
+        $user = $this->createUser();
+        $customer = $this->createCustomer();
+
+        $response = $this->actingAs($user)->get('customers/'.$customer->id);
+
+        $response
+            ->assertStatus(200)
+            ->assertViewIs('customers.show');
+    }
+
+    public function test_user_can_see_edit_view()
+    {
+        $user = $this->createUser();
+        $customer = $this->createCustomer();
+
+        $response = $this->actingAs($user)->get('customers/'.$customer->id.'/edit');
+
+        $response
+            ->assertStatus(200)
+            ->assertViewIs('customers.edit');
+    }
 }

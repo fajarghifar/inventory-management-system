@@ -4,6 +4,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Gross price as base price
+    |--------------------------------------------------------------------------
+    |
+    | This default value is used to select the method to calculate prices and taxes
+    | If true the item price is managed as a gross price, so taxes will be calculated by separation/exclusion
+    |
+    */
+
+    'calculator' => \Gloudemans\Shoppingcart\Calculation\DefaultCalculator::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Default tax rate
     |--------------------------------------------------------------------------
     |
@@ -12,7 +24,7 @@ return [
     |
     */
 
-    'tax' => 21,
+    'tax' => 24,
 
     /*
     |--------------------------------------------------------------------------
@@ -49,22 +61,18 @@ return [
     | Default number format
     |--------------------------------------------------------------------------
     |
-    | This defaults will be used for the formated numbers if you don't
+    | This defaults will be used for the formatted numbers if you don't
     | set them in the method call.
     |
     */
 
     'format' => [
 
-        'decimals' => 0,
+        'decimals' => 2,
 
-        // 'decimal_point' => '.',
+        'decimal_point' => '.',
 
-        // 'thousand_seperator' => '.'
-
-        'decimal_point' => '',
-
-        'thousand_seperator' => ''
+        'thousand_separator' => '',
 
     ],
 

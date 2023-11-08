@@ -5,7 +5,7 @@
 @endpush
 
 @section('content')
-<!-- BEGIN: Header -->
+
 <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
     <div class="container-xl px-4">
         <div class="page-header-content">
@@ -13,7 +13,7 @@
                 <div class="col-auto mb-3">
                     <h1 class="page-header-title">
                         <div class="page-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div>
-                        Point of Sale
+                        Point of Sale  - PosController -> Index
                     </h1>
                 </div>
             </div>
@@ -109,17 +109,32 @@
                     </div>
                     <!-- Form Group (customer) -->
 
-                    <form action="{{ route('pos.createInvoice') }}" method="POST">
+                    <form action="{{ route('invoice.create') }}" method="POST">
                         @csrf
                         <div class="row mb-3">
                             <div class="col-md-12">
-                                <label class="small mb-1" for="customer_id">Customer <span class="text-danger">*</span></label>
+                                <label class="small mb-1" for="customer_id">
+                                    Customer
+                                    <span class="text-danger">*</span>
+                                </label>
+
                                 <select class="form-select form-control-solid @error('customer_id') is-invalid @enderror" id="customer_id" name="customer_id">
-                                    <option selected="" disabled="">Select a customer:</option>
+                                    <option selected="" disabled="">
+                                        Select a customer:
+                                    </option>
+{{--                                    @foreach ($customers as $customer)--}}
+{{--                                        <option value="{{ $customer->id }}" @if(old('customer_id') === $customer->id) selected="selected" @endif>--}}
+{{--                                            {{ $customer->name }}--}}
+{{--                                        </option>--}}
+{{--                                    @endforeach--}}
+
                                     @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}" @if(old('customer_id') == $customer->id) selected="selected" @endif>{{ $customer->name }}</option>
+                                        <option value="{{ $customer->id }}" @selected( old('customer_id') == $customer->id)>
+                                            {{ $customer->name }}
+                                        </option>
                                     @endforeach
                                 </select>
+
                                 @error('customer_id')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -129,8 +144,13 @@
                                 <!-- Submit button -->
                             <div class="col-md-12 mt-4">
                                 <div class="d-flex flex-wrap align-items-center justify-content-center">
-                                    <a href="{{ route('customers.create') }}" class="btn btn-primary add-list mx-1">Add Customer</a>
-                                    <button type="submit" class="btn btn-success add-list mx-1">Create Invoice</button>
+                                    <a href="{{ route('customers.create') }}" class="btn btn-primary add-list mx-1">
+                                        Add Customer
+                                    </a>
+
+                                    <button type="submit" class="btn btn-success add-list mx-1">
+                                        Create Invoice
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -196,7 +216,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+
                                     @forelse ($products as $product)
+                                    <form action="{{ route('pos.addCartItem', $product->id) }}" method="POST">
+
                                     <tr>
                                         <th scope="row">{{ (($products->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>
                                         {{-- <td>
@@ -210,19 +233,24 @@
                                         <td>{{ $product->selling_price }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <form action="{{ route('pos.addCartItem', $product->id) }}" method="POST">
+
                                                     @csrf
                                                     <input type="hidden" name="id" value="{{ $product->id }}">
                                                     <input type="hidden" name="name" value="{{ $product->product_name }}">
                                                     <input type="hidden" name="price" value="{{ $product->selling_price }}">
 
+
                                                     <button type="submit" class="btn btn-outline-primary btn-sm">
                                                         <i class="fa-solid fa-plus"></i>
                                                     </button>
-                                                </form>
+
                                             </div>
                                         </td>
                                     </tr>
+
+                                    </form>
+
+
                                     @empty
                                     <tr>
                                         <th colspan="6" class="text-center" >

@@ -70,8 +70,9 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col">No.</th>
-                                    <th scope="col">@sortablelink('name', 'Unit Name')</th>
-                                    <th scope="col">@sortablelink('slug', 'Unit Slug')</th>
+                                    <th scope="col">@sortablelink('name', 'Name')</th>
+                                    <th scope="col">@sortablelink('slug', 'Code')</th>
+                                    {{---<th scope="col">@sortablelink('slug', 'Unit Slug')</th>---}}
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -80,7 +81,8 @@
                                 <tr>
                                     <th scope="row">{{ (($units->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>
                                     <td>{{ $unit->name }}</td>
-                                    <td>{{ $unit->slug }}</td>
+                                    <td>{{ $unit->short_code }}</td>
+                                    {{--<td>{{ $unit->slug }}</td>--}}
                                     <td>
                                         <div class="d-flex">
                                             <a href="{{ route('units.edit', $unit->slug) }}" class="btn btn-outline-primary btn-sm mx-1"><i class="fas fa-edit"></i></a>

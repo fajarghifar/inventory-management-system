@@ -1,7 +1,6 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<!-- BEGIN: Header -->
 <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
     <div class="container-xl px-4">
         <div class="page-header-content pt-4">
@@ -13,8 +12,8 @@
                     </h1>
                 </div>
                 <div class="col-auto my-4">
-                    <a href="{{ route('purchases.createPurchase') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                    <a href="{{ route('purchases.allPurchases') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+                    <a href="{{ route('purchases.create') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
+                    <a href="{{ route('purchases.index') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
                 </div>
             </div>
 
@@ -88,7 +87,7 @@
                                     </td>
                                     <td>
                                         <div class="d-flex">
-                                            <a href="{{ route('purchases.purchaseDetails', $purchase->id) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
+                                            <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -103,5 +102,4 @@
         </div>
     </div>
 </div>
-<!-- END: Main Page Content -->
 @endsection

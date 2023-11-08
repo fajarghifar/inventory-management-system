@@ -119,6 +119,7 @@
                     <a class="btn btn-lg btn-primary" href="{{ route('pos.index') }}">
                         Back
                     </a>
+
                     <button class="btn btn-lg btn-download" type="button" data-bs-toggle="modal" data-bs-target="#modal">
                         Pay Now
                     </button>
@@ -138,7 +139,7 @@
                 <h3 class="modal-title text-center mx-auto" id="modalCenterTitle">Invoice of {{ $customer->name }}<br/>Total Amount ${{ Cart::total() }}</h3>
             </div>
 
-            <form action="{{ route('pos.createOrder') }}" method="POST">
+            <form action="{{ route('orders.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="modal-body">

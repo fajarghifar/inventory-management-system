@@ -21,6 +21,7 @@
 
         <!-- Custom CSS for specific page.  -->
         @stack('page-styles')
+        @livewireStyles
     </head>
 
     <body class="nav-fixed">
@@ -53,5 +54,6 @@
 
         <!-- Custom JS for specific page.  -->
         @stack('page-scripts')
+        @livewireScripts
     </body>
 </html>

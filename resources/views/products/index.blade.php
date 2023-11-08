@@ -74,7 +74,7 @@
                                 <tr>
                                     <th scope="col">No.</th>
                                     <th scope="col">Image</th>
-                                    <th scope="col">@sortablelink('product_name', 'Product Name')</th>
+                                    <th scope="col">@sortablelink('name', 'Product Name')</th>
                                     <th scope="col">@sortablelink('category.name', 'category')</th>
                                     <th scope="col">@sortablelink('stock')</th>
                                     <th scope="col">@sortablelink('unit.name', 'unit')</th>
@@ -91,9 +91,9 @@
                                             <img class="img-fluid"  src="{{ $product->product_image ? asset('storage/products/'.$product->product_image) : asset('assets/img/products/default.webp') }}">
                                         </div>
                                     </td>
-                                    <td>{{ $product->product_name }}</td>
+                                    <td>{{ $product->name }}</td>
                                     <td>{{ $product->category->name }}</td>
-                                    <td>{{ $product->stock }}</td>
+                                    <td>{{ $product->quantity }}</td>
                                     <td>{{ $product->unit->name }}</td>
                                     <td>{{ $product->selling_price }}</td>
                                     <td>

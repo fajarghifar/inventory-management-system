@@ -1,20 +1,27 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<!-- BEGIN: Header -->
 <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
     <div class="container-xl px-4">
         <div class="page-header-content pt-4">
             <div class="row align-items-center justify-content-between">
                 <div class="col-auto mt-4">
                     <h1 class="page-header-title">
-                        <div class="page-header-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="page-header-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
                         Supplier List
                     </h1>
                 </div>
                 <div class="col-auto my-4">
-                    <a href="{{ route('suppliers.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                    <a href="{{ route('suppliers.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+                    <a href="{{ route('suppliers.create') }}" class="btn btn-primary add-list">
+                        <i class="fa-solid fa-plus me-3"></i>
+                        Add
+                    </a>
+                    <a href="{{ route('suppliers.index') }}" class="btn btn-danger add-list">
+                        <i class="fa-solid fa-trash me-3"></i>
+                        Clear Search
+                    </a>
                 </div>
             </div>
 
@@ -25,7 +32,7 @@
     @include('partials.session')
 </header>
 
-<div class="container px-2 mt-n10">
+<div class="container px-4 mt-n10">
     <div class="card mb-4">
         <div class="card-body">
             <div class="row mx-n4">
@@ -106,5 +113,4 @@
         </div>
     </div>
 </div>
-<!-- END: Main Page Content -->
 @endsection

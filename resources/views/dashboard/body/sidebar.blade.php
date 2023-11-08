@@ -12,23 +12,37 @@
                 POS
             </a>
 
+            {{--- Quotations ---}}
+            <div class="sidenav-menu-heading">
+                Quotations
+            </div>
+            <a class="nav-link {{ Request::routeIs('quotations.index') ? 'active' : '' }}" href="{{ route('quotations.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
+                All
+            </a>
+
             <!-- Sidenav Heading (Orders)-->
             <div class="sidenav-menu-heading">Orders</div>
-            <a class="nav-link {{ Request::is('orders/complete*') ? 'active' : '' }}" href="{{ route('order.completeOrders') }}">
+            <a class="nav-link {{ Request::is('orders') ? 'active' : '' }}" href="{{ route('orders.index') }}">
+                <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
+                All
+            </a>
+            <a class="nav-link {{ Request::is('orders/complete*') ? 'active' : '' }}" href="{{ route('orders.complete') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-circle-check"></i></div>
                 Complete
             </a>
-            <a class="nav-link {{ Request::is('orders/pending*') ? 'active' : '' }}" href="{{ route('order.pendingOrders') }}">
+            <a class="nav-link {{ Request::is('orders/pending*') ? 'active' : '' }}" href="{{ route('orders.pending') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-clock"></i></div>
                 Pending
             </a>
-            <a class="nav-link {{ Request::is('orders/due*') ? 'active' : '' }}" href="{{ route('order.dueOrders') }}">
+            <a class="nav-link {{ Request::is('orders/due*') ? 'active' : '' }}" href="{{ route('due.index') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-credit-card"></i></div>
                 Due
             </a>
+
             <!-- Sidenav Heading (Purchases)-->
             <div class="sidenav-menu-heading">Purchases</div>
-            <a class="nav-link {{ Request::is('purchases', 'purchase/create*', 'purchases/details*') ? 'active' : '' }}" href="{{ route('purchases.allPurchases') }}">
+            <a class="nav-link {{ Request::is('purchases', 'purchase/create*', 'purchases/details*') ? 'active' : '' }}" href="{{ route('purchases.index') }}">
                 <div class="nav-link-icon"><i class="fa-solid fa-cash-register"></i></div>
                 All
             </a>

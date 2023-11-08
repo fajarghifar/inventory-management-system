@@ -90,7 +90,7 @@
                                     </td>
                                     <td>
                                         <div class="d-flex">
-                                            <a href="{{ route('order.orderPendingDetails', $order->id) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
+                                            <a href="{{ route('orders.show', $order) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
                                         </div>
                                     </td>
                                 </tr>

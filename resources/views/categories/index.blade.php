@@ -106,7 +106,12 @@
                                         <td>{{ $category->slug }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ route('categories.edit', $category->slug) }}" class="btn btn-outline-primary btn-sm mx-1"><i class="fas fa-edit"></i></a>
+                                                <a href="{{ route('categories.show', $category->slug) }}" class="btn btn-outline-primary btn-sm mx-1">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+
+                                                <a href="{{ route('categories.edit', $category->slug) }}" class="btn btn-outline-warning btn-sm mx-1"><i class="fas fa-edit"></i></a>
+
                                                 <form action="{{ route('categories.destroy', $category->slug) }}" method="POST">
                                                     @csrf
                                                     @method('delete')

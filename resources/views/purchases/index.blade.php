@@ -1,7 +1,6 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<!-- BEGIN: Header -->
 <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
     <div class="container-xl px-4">
         <div class="page-header-content pt-4">
@@ -14,8 +13,8 @@
                 </div>
                 <div class="col-auto my-4">
                     <a href="{{ route('purchases.getPurchaseReport') }}" class="btn btn-success add-list my-1"><i class="fa-solid fa-file-export me-3"></i>Export</a>
-                    <a href="{{ route('purchases.createPurchase') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                    <a href="{{ route('purchases.allPurchases') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+                    <a href="{{ route('purchases.create') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
+                    <a href="{{ route('purchases.index') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
                 </div>
             </div>
 
@@ -26,7 +25,7 @@
     @include('partials.session')
 </header>
 
-<div class="container px-2 mt-n10">
+<div class="container px-4 mt-n10">
     <div class="card mb-4">
         <div class="card-body">
             <div class="row mx-n4">
@@ -36,7 +35,7 @@
                             <div class="form-group row align-items-center">
                                 <label for="row" class="col-auto">Row:</label>
                                 <div class="col-auto">
-                                    <select class="form-control" name="row">
+                                    <select class="form-control" id="row" name="row">
                                         <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
                                         <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
                                         <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
@@ -90,7 +89,14 @@
                                         </td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ route('purchases.purchaseDetails', $purchase->id) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
+                                                <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-outline-success btn-sm mx-1">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                            </div>
+                                            <div class="d-flex">
+                                                <a href="{{ route('purchases.edit', $purchase) }}" class="btn btn-outline-success btn-sm mx-1">
+                                                    <i class="fa-solid fa-pencil"></i>
+                                                </a>
                                             </div>
                                         </td>
                                     @else
@@ -99,8 +105,14 @@
                                         </td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ route('purchases.purchaseDetails', $purchase->id) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
-                                                <form action="{{ route('purchases.deletePurchase', $purchase->id) }}" method="POST">
+                                                <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-outline-success btn-sm mx-1">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('purchases.edit', $purchase) }}" class="btn btn-outline-warning btn-sm mx-1">
+                                                    <i class="fa-solid fa-pencil"></i>
+                                                </a>
+
+                                                <form action="{{ route('purchases.delete', $purchase) }}" method="POST">
                                                     @csrf
                                                     @method('delete')
                                                     <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this record?')">
@@ -122,5 +134,4 @@
         </div>
     </div>
 </div>
-<!-- END: Main Page Content -->
 @endsection

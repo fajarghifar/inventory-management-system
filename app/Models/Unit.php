@@ -13,25 +13,27 @@ class Unit extends Model
     protected $fillable = [
         'name',
         'slug',
+        'short_code'
     ];
 
-    protected $sortable = [
+    protected array $sortable = [
         'name',
         'slug',
+        'short_code'
     ];
 
     protected $guarded = [
         'id',
     ];
 
-    public function scopeFilter($query, array $filters)
+    public function scopeFilter($query, array $filters): void
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {
             return $query->where('name', 'like', '%' . $search . '%');
         });
     }
 
-    public function getRouteKeyName()
+    public function getRouteKeyName(): string
     {
         return 'slug';
     }

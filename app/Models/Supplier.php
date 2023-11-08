@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kyslik\ColumnSortable\Sortable;
 
 class Supplier extends Model
 {
     use HasFactory, Sortable;
+
     protected $fillable = [
         'name',
         'email',
@@ -37,5 +39,10 @@ class Supplier extends Model
         $query->when($filters['search'] ?? false, function ($query, $search) {
             return $query->where('name', 'like', '%' . $search . '%')->orWhere('shopname', 'like', '%' . $search . '%');
         });
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class);
     }
 }

@@ -2,31 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Kyslik\ColumnSortable\Sortable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
     use HasFactory, Sortable;
 
-    protected $fillable = [
-        'product_name',
-        'category_id',
-        'unit_id',
-        'product_code',
-        'stock',
-        'buying_price',
-        'selling_price',
-        'product_image',
-    ];
-
     public $sortable = [
-        'product_name',
+        'name',
         'category_id',
         'unit_id',
         'product_code',
-        'stock',
+        'quantity',
         'buying_price',
         'selling_price',
     ];
@@ -36,15 +27,17 @@ class Product extends Model
     ];
 
     protected $with = [
-        'category',
-        'unit'
+        //'category',
+        //'unit'
     ];
 
-    public function category(){
-        return $this->belongsTo(Category::class, 'category_id');
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
+
     public function unit(){
-        return $this->belongsTo(Unit::class, 'unit_id');
+        return $this->belongsTo(Unit::class);
     }
 
     public function scopeFilter($query, array $filters)
@@ -52,5 +45,22 @@ class Product extends Model
         $query->when($filters['search'] ?? false, function ($query, $search) {
             return $query->where('product_name', 'like', '%' . $search . '%');
         });
+    }
+
+
+    protected function buyingPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value / 100,
+            set: fn ($value) => $value * 100,
+        );
+    }
+
+    protected function sellingPrice(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value / 100,
+            set: fn ($value) => $value * 100,
+        );
     }
 }

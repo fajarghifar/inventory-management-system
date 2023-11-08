@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    use HasFactory, Sortable;
+    use Sortable;
 
     protected $fillable = [
         'customer_id',
@@ -27,6 +29,7 @@ class Order extends Model
     public $sortable = [
         'customer_id',
         'order_date',
+        'order_status',
         'pay',
         'due',
         'total',
@@ -40,8 +43,13 @@ class Order extends Model
         'customer',
     ];
 
-    public function customer()
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'id');
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function details(): HasMany
+    {
+        return $this->hasMany(OrderDetails::class);
     }
 }

@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchaseDetails extends Model
 {
-    use HasFactory;
     protected $fillable = [
         'purchase_id',
         'product_id',
@@ -22,13 +22,13 @@ class PurchaseDetails extends Model
 
     protected $with = ['product'];
 
-    public function product()
+    public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(Product::class);
     }
 
-    public function purchase()
+    public function purchase(): BelongsTo
     {
-        return $this->belongsTo(Purchase::class, 'purchase_id', 'id');
+        return $this->belongsTo(Purchase::class);
     }
 }

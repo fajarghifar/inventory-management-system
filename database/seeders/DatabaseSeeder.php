@@ -20,19 +20,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            UserSeeder::class,
 
-        User::factory()->create([
-            'name' => 'Admin',
-            'username' => 'admin',
-            'email' => 'admin@gmail.com',
+            CategorySeeder::class,
+            UnitSeeder::class,
+            ProductSeeder::class
         ]);
 
         Customer::factory(15)->create();
         Supplier::factory(15)->create();
 
-        Category::factory(5)->create();
-        Unit::factory(5)->create();
-
+        /*
         for ($i=0; $i < 10; $i++) {
             Product::factory()->create([
                 'product_code' => IdGenerator::generate([
@@ -43,6 +42,7 @@ class DatabaseSeeder extends Seeder
                 ]),
             ]);
         }
+        */
 
     }
 }

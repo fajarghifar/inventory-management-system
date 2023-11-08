@@ -9,7 +9,6 @@ use App\Models\Category;
 use App\Models\Purchase;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use App\Models\PurcaseDetail;
 use App\Models\PurchaseDetails;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
@@ -21,7 +20,7 @@ class PurchaseController extends Controller
     /**
      * Display an all purchases.
      */
-    public function allPurchases()
+    public function index()
     {
         $row = (int) request('row', 10);
 
@@ -34,7 +33,7 @@ class PurchaseController extends Controller
             ->paginate($row)
             ->appends(request()->query());
 
-        return view('purchases.purchases', [
+        return view('purchases.index', [
             'purchases' => $purchases
         ]);
     }
@@ -64,18 +63,27 @@ class PurchaseController extends Controller
     /**
      * Display a purchase details.
      */
-    public function purchaseDetails(String $purchase_id)
+    public function show(Purchase $purchase)
     {
-        $purchase = Purchase::with(['supplier','user_created','user_updated'])
-            ->where('id', $purchase_id)
-            ->first();
-
         $purchaseDetails = PurchaseDetails::with('product')
-            ->where('purchase_id', $purchase_id)
+            ->where('purchase_id', $purchase)
             ->orderBy('id')
             ->get();
 
-        return view('purchases.details-purchase', [
+        return view('purchases.show', [
+            'purchase' => $purchase,
+            'purchaseDetails' => $purchaseDetails,
+        ]);
+    }
+
+    public function edit(Purchase $purchase)
+    {
+        $purchaseDetails = PurchaseDetails::with('product')
+            ->where('purchase_id', $purchase)
+            ->orderBy('id')
+            ->get();
+
+        return view('purchases.edit', [
             'purchase' => $purchase,
             'purchaseDetails' => $purchaseDetails,
         ]);
@@ -84,21 +92,21 @@ class PurchaseController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function createPurchase()
+    public function create()
     {
-        return view('purchases.create-purchase', [
-            'categories' => Category::all(),
-            'suppliers' => Supplier::all(),
+        return view('purchases.create', [
+            'categories' => Category::select(['id', 'name'])->get(),
+            'suppliers' => Supplier::select(['id', 'name'])->get(),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function storePurchase(Request $request)
+    public function store(Request $request)
     {
         $rules = [
-            'supplier_id' => 'required|string',
+            'supplier_id' => 'required',
             'purchase_date' => 'required|string',
             'total_amount' => 'required|numeric'
         ];
@@ -134,14 +142,14 @@ class PurchaseController extends Controller
         }
 
         return redirect()
-            ->route('purchases.allPurchases')
+            ->route('purchases.index')
             ->with('success', 'Purchase has been created!');
     }
 
     /**
      * Handle update a status purchase
      */
-    public function updatePurchase(Request $request)
+    public function update(Request $request)
     {
         $purchase_id = $request->id;
 
@@ -160,24 +168,19 @@ class PurchaseController extends Controller
             ]); // 1 = approved, 0 = pending
 
         return redirect()
-            ->route('purchases.allPurchases')
+            ->route('purchases.index')
             ->with('success', 'Purchase has been approved!');
     }
 
     /**
      * Handle delete a purchase
      */
-    public function deletePurchase(String $purchase_id)
+    public function destroy(Purchase $purchase)
     {
-        Purchase::where([
-            'id' => $purchase_id,
-            'purchase_status' => '0'
-        ])->delete();
-
-        PurchaseDetails::where('purchase_id', $purchase_id)->delete();
+        $purchase->delete();
 
         return redirect()
-            ->route('purchases.allPurchases')
+            ->route('purchases.index')
             ->with('success', 'Purchase has been deleted!');
     }
 
@@ -198,7 +201,7 @@ class PurchaseController extends Controller
             ->paginate($row)
             ->appends(request()->query());
 
-        return view('purchases.purchases', [
+        return view('purchases.index', [
             'purchases' => $purchases
         ]);
     }

@@ -12,7 +12,7 @@ class PosController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $row = (int) request('row', 10);
 
@@ -40,8 +40,11 @@ class PosController extends Controller
     /**
      * Handle add product to cart.
      */
-    public function addCartItem(Request $request)
+    public function addCartItem (Request $request)
     {
+        $request->all();
+        //dd($request);
+
         $rules = [
             'id' => 'required|numeric',
             'name' => 'required|string',
@@ -90,24 +93,5 @@ class PosController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Product has been deleted from cart!');
-    }
-
-    /**
-     * Handle create an invoice.
-     */
-    public function createInvoice(Request $request)
-    {
-        $rules = [
-            'customer_id' => 'required|string'
-        ];
-
-        $validatedData = $request->validate($rules);
-        $customer = Customer::where('id', $validatedData['customer_id'])->first();
-        $carts = Cart::content();
-
-        return view('pos.create', [
-            'customer' => $customer,
-            'carts' => $carts
-        ]);
     }
 }

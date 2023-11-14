@@ -6,15 +6,18 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "guzzlehttp/guzzle": "^7.2",
         "anayarojo/shoppingcart": "^4.2",
+        "guzzlehttp/guzzle": "^7.2",
         "haruncpi/laravel-id-generator": "^1.1",
         "laravel/framework": "^10.8",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.1",
+        "mimisk13/laravel-tabler": "^0.0.5",
         "phpoffice/phpspreadsheet": "^1.28",
-        "picqer/php-barcode-generator": "^2.2"
+        "picqer/php-barcode-generator": "^2.2",
+        "power-components/livewire-powergrid": "^5.1",
+        "yajra/laravel-datatables": "^10.1"
     },
     "require-dev": {
         "beyondcode/laravel-query-detector": "^1.7",

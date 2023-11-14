@@ -1,49 +1,39 @@
 @props([
-    'label',
-    'model',
-    'placeholder' => null
+    'label' => null ?? ucfirst($name),
+    'type' => null ?? 'text',
+    'name',
+    'id'    => null ?? $name,
+    'placeholder' => null,
+    'autocomplete' => null ?? 'off',
+    'readonly' => false,
+    'disabled' => false,
+    'required' => false,
+    'value' => null ?? old($name)
 ])
 
 <div class="mb-3">
-    <label class="small mb-1" for="{{ $model }}">
+    <label for="{{ $id }}"
+           class="form-label @error($name) text-danger @enderror {{ $required ? 'required' : '' }}"
+    >
         {{ __($label) }}
-        <span class="text-danger">*</span>
     </label>
 
-    <input type="text"
-           id="{{ $model }}"
-           name="{{ $model }}"
+    <input type="{{ $type }}"
+           name="{{ $name }}"
+           id="{{ $id }}"
+           class="form-control rounded-0 @error($name) is-invalid @enderror"
            placeholder="{{ $placeholder }}"
-           class="form-control form-control-solid @error($model) is-invalid @enderror"
-    />
+           autocomplete="{{ $autocomplete }}"
+           {{ $readonly ? 'readonly' : '' }}
+           {{ $disabled ? 'disabled' : '' }}
+           {{ $required ? 'required' : '' }}
+{{--           value="{{ old($name, $model->name ) }}"--}}
+        value="{{ $value }}"
+    >
 
-    @error($model)
+    @error($name)
         <div class="invalid-feedback">
             {{ $message }}
         </div>
     @enderror
 </div>
-
-{{---
-<div class="mb-3">
-    <label class="small mb-1" for="name">
-        {{ __('Name') }}
-        <span class="text-danger">*</span>
-    </label>
-
-    <input type="text"
-           id="name"
-           name="name"
-           wire:model.blur="name"
-           wire:keyup="selectedName"
-           placeholder="Enter name"
-           class="form-control form-control-solid @error('name') is-invalid @enderror"
-    />
-
-    @error('name')
-    <div class="invalid-feedback">
-        {{ $message }}
-    </div>
-    @enderror
-</div>
----}}

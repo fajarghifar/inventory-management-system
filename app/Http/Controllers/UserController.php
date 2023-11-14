@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\UsersDataTable;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,16 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
-        $users = User::filter(request(['search']))
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query());
+        // TODO: Select columns
+        $users = User::all();
 
         return view('users.index', [
             'users' => $users
@@ -69,7 +62,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return $user;
     }
 
     /**

@@ -16,19 +16,16 @@ class UserSeeder extends Seeder
         $users = collect([
             [
                 'name' => 'Admin',
-                'username' => 'admin',
-                'email' => 'admin@gmail.com',
+                'email' => 'admin@admin.com',
                 'password' => bcrypt('password')
             ],
             [
                 'name' => 'quest',
-                'username' => 'quest',
                 'email' => 'quest@quest.com',
                 'password' => bcrypt('password')
             ],
             [
                 'name' => 'user',
-                'username' => 'user',
                 'email' => 'user@user.com',
                 'password' => bcrypt('password')
             ]

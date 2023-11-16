@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
-    protected $inputType;
+    //protected $inputType;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -29,8 +29,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required_without:username', 'string', 'email', 'exists:users,email'],
-            'username' => ['required_without:email', 'string', 'alpha_dash:ascii', 'exists:users,username'],
+            'email' => ['required', 'string', 'email', 'exists:users,email'],
             'password' => ['required', 'string'],
         ];
     }
@@ -44,15 +43,15 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only($this->inputType, 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                $this->inputType  => trans('auth.failed'),
-            ]);
+//            throw ValidationException::withMessages([
+//                $this->email  => trans('auth.failed'),
+//            ]);
         }
 
-        RateLimiter::clear($this->throttleKey());
+        //RateLimiter::clear($this->throttleKey());
     }
 
     /**
@@ -86,11 +85,11 @@ class LoginRequest extends FormRequest
         return Str::transliterate(Str::lower($this->input('username')).'|'.$this->ip());
     }
 
-    protected function prepareForValidation()
-    {
-        $this->inputType = filter_var($this->input('input_type'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        $this->merge([
-            $this->inputType => $this->input('input_type')
-        ]);
-    }
+//    protected function prepareForValidation()
+//    {
+//        $this->inputType = filter_var($this->input('input_type'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+//        $this->merge([
+//            $this->inputType => $this->input('input_type')
+//        ]);
+//    }
 }

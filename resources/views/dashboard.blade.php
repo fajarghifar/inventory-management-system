@@ -164,7 +164,6 @@
                     </div>
                 </div>
 
-                {{---
                 <div class="col-12">
                     <div class="row row-cards">
                         <div class="col-sm-6 col-lg-3">
@@ -178,7 +177,7 @@
                                         </div>
                                         <div class="col">
                                             <div class="font-weight-medium">
-                                                132 Sales
+                                                {{ $products }} Products
                                             </div>
                                             <div class="text-muted">
                                                 12 waiting payments
@@ -199,7 +198,7 @@
                                         </div>
                                         <div class="col">
                                             <div class="font-weight-medium">
-                                                78 Orders
+                                                {{ $orders }} Orders
                                             </div>
                                             <div class="text-muted">
                                                 32 shipped
@@ -253,7 +252,6 @@
                         </div>
                     </div>
                 </div>
-                ---}}
 
                 {{---
                 <div class="col-lg-6">

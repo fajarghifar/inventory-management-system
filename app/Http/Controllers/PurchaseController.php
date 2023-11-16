@@ -17,30 +17,15 @@ use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class PurchaseController extends Controller
 {
-    /**
-     * Display an all purchases.
-     */
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
-        $purchases = Purchase::with(['supplier'])
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query());
+        $purchases = Purchase::with('supplier')->get();
 
         return view('purchases.index', [
             'purchases' => $purchases
         ]);
     }
 
-    /**
-     * Display an all approved purchases.
-     */
     public function approvedPurchases()
     {
         $row = (int) request('row', 10);

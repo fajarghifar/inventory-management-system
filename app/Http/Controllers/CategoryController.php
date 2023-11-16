@@ -10,17 +10,8 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per_page parameter must be an integer between 1 and 100.');
-        }
-
-        $categories = Category::filter(request(['search']))
-          ->sortable()
-          ->paginate($row)
-          ->appends(request()->query());
-
+        $categories = Category::all();
+        
         return view('categories.index', [
             'categories' => $categories,
         ]);

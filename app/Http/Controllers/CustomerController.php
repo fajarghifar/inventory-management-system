@@ -10,16 +10,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
-        $customers = Customer::filter(request(['search']))
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query());
+        $customers = Customer::all();
 
         return view('customers.index', [
             'customers' => $customers
@@ -76,9 +67,6 @@ class CustomerController extends Controller
         //
         $customer->update($request->except('photo'));
 
-        /**
-         * Handle upload image with Storage.
-         */
         if($request->hasFile('photo')){
 
             // Delete Old Photo

@@ -13,16 +13,9 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
-        $units = Unit::filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query());
+        $units = Unit::query()
+            ->select(['id', 'name', 'slug', 'short_code'])
+            ->get();
 
         return view('units.index', [
             'units' => $units,
@@ -54,7 +47,11 @@ class UnitController extends Controller
      */
     public function show(Unit $unit)
     {
-        abort(404);
+        $unit->loadMissing('products');
+
+        return view('units.show', [
+            'unit' => $unit
+        ]);
     }
 
     /**

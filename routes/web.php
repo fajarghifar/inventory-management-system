@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\DefaultController;
+use App\Http\Controllers\Dashboards\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Order\DueOrderController;
 use App\Http\Controllers\Order\OrderCompleteController;
@@ -37,11 +37,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::middleware('auth')->group(function () {
+    Route::get('dashboard/', [DashboardController::class, 'index'])->name('dashboard');
 
     // User Management
     Route::resource('/users', UserController::class);
@@ -130,5 +128,5 @@ require __DIR__.'/auth.php';
 
 Route::get('empty/', function () {
     return view('empty');
-})->name('empty');
+})->name('empty')->middleware('password.confirm');
 

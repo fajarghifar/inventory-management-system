@@ -1,50 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon.png') }}" />
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+        <head>
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+            <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+            <meta name="csrf-token" content="{{ csrf_token() }}">
+            <title>{{ config('app.name') }}</title>
+            {{--- <script defer data-api="/stats/api/event" data-domain="preview.tabler.io" src="{{ asset('stats/js/script.js') }}"></script> ---}}
+            <meta name="msapplication-TileColor" content="#0054a6"/>
+            <meta name="theme-color" content="#0054a6"/>
+            <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+            <meta name="apple-mobile-web-app-capable" content="yes"/>
+            <meta name="mobile-web-app-capable" content="yes"/>
+            <meta name="HandheldFriendly" content="True"/>
+            <meta name="MobileOptimized" content="320"/>
+            <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon"/>
+            <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon"/>
+            <meta name="description" content="Tabler comes with tons of well-designed components and features. Start your adventure with Tabler and make your dashboard great again. For free!"/>
+            <meta name="canonical" content="https://tabler.io/demo/sign-in.html">
+            <meta name="twitter:image:src" content="https://tabler.io/demo/static/og.png">
+            <meta name="twitter:site" content="@tabler_ui">
+            <meta name="twitter:card" content="summary">
+            <meta name="twitter:title" content="Tabler: Premium and Open Source dashboard template with responsive and high quality UI.">
+            <meta name="twitter:description" content="Tabler comes with tons of well-designed components and features. Start your adventure with Tabler and make your dashboard great again. For free!">
+            <meta property="og:image" content="https://tabler.io/demo/static/og.png">
+            <meta property="og:image:width" content="1280">
+            <meta property="og:image:height" content="640">
+            <meta property="og:site_name" content="Tabler">
+            <meta property="og:type" content="object">
+            <meta property="og:title" content="Tabler: Premium and Open Source dashboard template with responsive and high quality UI.">
+            <meta property="og:url" content="https://tabler.io/demo/static/og.png">
+            <meta property="og:description" content="Tabler comes with tons of well-designed components and features. Start your adventure with Tabler and make your dashboard great again. For free!">
+            <!-- CSS files -->
+            <link href="{{ asset('dist/css/tabler.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('dist/css/tabler-flags.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('dist/css/tabler-payments.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('dist/css/tabler-vendors.min.css') }}" rel="stylesheet"/>
+            <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet"/>
+            <style>
+                @import url('https://rsms.me/inter/inter.css');
+                :root {
+                    --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+                }
+                body {
+                    font-feature-settings: "cv03", "cv04", "cv11";
+                }
+            </style>
+            @stack('page-styles')
+        </head>
+        <body class="d-flex flex-column">
+            <script src="{{ asset('dist/js/demo-theme.min.js') }}"></script>
 
-        <title>{{ config('app.name') }}</title>
-
-        <!-- Style CSS -->
-        <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet" />
-
-        <script data-search-pseudo-elements="" defer="" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js" crossorigin="anonymous"></script>
-    </head>
-
-    <body class="bg-primary">
-        <div id="layoutAuthentication">
-            <div id="layoutAuthentication_content">
-                <main>
-                <!-- BEGIN: Content -->
-                @yield('content')
-                <!-- END: Content -->
-                </main>
-            </div>
-
-            <!-- BEGIN: Footer -->
-            <div id="layoutAuthentication_footer">
-                <footer class="footer-admin mt-auto footer-dark">
-                    <div class="container-xl px-4">
-                        <div class="row">
-                            <div class="col-md-6 small">Copyright © Inventory <script>document.write(new Date().getFullYear())</script></div>
-                            <div class="col-md-6 text-md-end small">
-                                <a href="#">Privacy Policy</a>
-                                ·
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
+            <div class="page page-center">
+                <div class="container container-tight py-4">
+                    <div class="text-center mb-4">
+                        <a href="{{ url('/') }}" class="navbar-brand navbar-brand-autodark">
+                            <img src="{{ asset('static/logo.svg') }}" width="110" height="32" alt="Tabler" class="navbar-brand-image">
+                        </a>
                     </div>
-                </footer>
-            </div>
-            <!-- END: Footer -->
-        </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+                    @include('components.alert')
+
+                    @if (session('status'))
+                        <div class="alert alert-info alert-dismissible" role="alert">
+                            <h3 class="mb-1">Success</h3>
+                            <p>{{ session('status') }}</p>
+
+                            <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                        </div>
+                    @endif
+
+                    @yield('content')
+                </div>
+            </div>
+
+        <!-- Libs JS -->
+        <!-- Tabler Core -->
+        <script src="{{ asset('dist/js/tabler.min.js') }}" defer></script>
+        <script src="{{ asset('dist/js/demo.min.js') }}" defer></script>
+        @stack('page-scripts')
     </body>
 </html>

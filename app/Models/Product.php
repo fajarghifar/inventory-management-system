@@ -2,51 +2,46 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Kyslik\ColumnSortable\Sortable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
-    use HasFactory, Sortable;
+    use HasFactory;
 
-    public $sortable = [
+    protected $guarded = ['id'];
+
+    public array $sortable = [
         'name',
-        'category_id',
-        'unit_id',
-        'product_code',
-        'quantity',
+        'slug',
+        'code',
         'buying_price',
         'selling_price',
+        'quantity',
+        'quantity_alert',
+        'tax',
+        'tax_type',
+        'notes',
+        'category_id',
+        'unit_id',
     ];
 
-    protected $guarded = [
-        'id',
-    ];
-
-    protected $with = [
-        //'category',
-        //'unit'
-    ];
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function unit(){
+    public function unit(): BelongsTo
+    {
         return $this->belongsTo(Unit::class);
     }
-
-    public function scopeFilter($query, array $filters)
-    {
-        $query->when($filters['search'] ?? false, function ($query, $search) {
-            return $query->where('product_name', 'like', '%' . $search . '%');
-        });
-    }
-
 
     protected function buyingPrice(): Attribute
     {

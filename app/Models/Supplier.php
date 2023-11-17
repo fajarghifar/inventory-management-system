@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Supplier extends Model
 {
-    use HasFactory, Sortable;
+    use HasFactory;
+
+    protected $guarded = [
+        'id',
+    ];
 
     protected $fillable = [
         'name',
@@ -23,23 +26,6 @@ class Supplier extends Model
         'account_number',
         'bank_name',
     ];
-
-    protected $guarded = [
-        'id',
-    ];
-
-    public $sortable = [
-        'name',
-        'email',
-        'shopname',
-    ];
-
-    public function scopeFilter($query, array $filters)
-    {
-        $query->when($filters['search'] ?? false, function ($query, $search) {
-            return $query->where('name', 'like', '%' . $search . '%')->orWhere('shopname', 'like', '%' . $search . '%');
-        });
-    }
 
     public function purchases(): HasMany
     {

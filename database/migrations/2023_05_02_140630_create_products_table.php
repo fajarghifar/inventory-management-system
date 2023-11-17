@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('name');
+            $table->string('slug');
             $table->string('code')->unique()->nullable();
             //$table->string('product_barcode_symbology')->nullable();
             $table->integer('quantity');
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->tinyInteger('tax_type')->nullable();
             $table->text('notes')->nullable();
 
-            //$table->string('product_image')->nullable();
+            $table->string('product_image')->nullable();
 
             $table->foreignIdFor(\App\Models\Category::class)
                 ->nullable()

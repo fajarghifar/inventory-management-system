@@ -17,6 +17,7 @@ class ProductSeeder extends Seeder
         $products = collect([
             [
                 'name' => 'iPhone 14 Pro',
+                'slug' => 'iphone-14-pro',
                 'code' => 001,
                 'quantity' => 10,
                 'buying_price' => 900,
@@ -30,6 +31,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'ASUS Laptop',
+                'slug' => 'asus-laptop',
                 'code' => 002,
                 'quantity' => 10,
                 'buying_price' => 900,
@@ -43,6 +45,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Logitech Keyboard',
+                'slug' => 'logitech-keyboard',
                 'code' => 003,
                 'quantity' => 10,
                 'buying_price' => 900,
@@ -56,6 +59,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Logitech Speakers',
+                'slug' => 'logitech-speakers',
                 'code' => 004,
                 'quantity' => 10,
                 'buying_price' => 900,
@@ -69,6 +73,7 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'AutoCAD v7.0',
+                'slug' => 'autocad-v7.0',
                 'code' => 005,
                 'quantity' => 10,
                 'buying_price' => 900,

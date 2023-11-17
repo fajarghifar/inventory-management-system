@@ -34,17 +34,29 @@ final class ProductsTable extends PowerGridComponent
 
     public function datasource(): Builder
     {
-        return Product::query();
+        return Product::query()
+            ->with(['category', 'unit']);
     }
 
     public function addColumns(): PowerGridColumns
     {
         return PowerGrid::columns()
             ->addColumn('id')
+            ->addColumn('image')
             ->addColumn('name')
-            ->addColumn('name_lower', fn (Product $model) => strtolower(e($model->name)))
-            ->addColumn('created_at')
-            ->addColumn('created_at_formatted', fn (Product $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('category_id', function (Product $product){
+                return $product->category_id;
+            })
+            ->addColumn('category_name', function (Product $product){
+                return $product->category->name;
+            })
+            ->addColumn('quantity')
+            ->addColumn('unit_id')
+            ->addColumn('unit_name', function (Product $product){
+                return $product->unit->short_code;
+            })
+
+            ->addColumn('selling_price');
     }
 
     public function columns(): array
@@ -54,14 +66,23 @@ final class ProductsTable extends PowerGridComponent
                 ->searchable()
                 ->sortable(),
 
+            Column::make('Image', 'image'),
+
             Column::make('Name', 'name')
                 ->searchable()
                 ->sortable(),
 
-            Column::make('Created at', 'created_at')
-                ->hidden(),
+            Column::add()
+                ->title('Category')
+                ->field('category_name'),
 
-            Column::make('Created at', 'created_at_formatted', 'created_at')
+            Column::make('Quantity', 'quantity')
+                ->sortable(),
+
+            Column::make('Unit', 'unit_name'),
+
+            Column::make('Selling Price', 'selling_price')
+                ->sortable()
                 ->searchable(),
 
             Column::action('Action')

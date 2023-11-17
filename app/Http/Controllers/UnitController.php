@@ -47,7 +47,7 @@ class UnitController extends Controller
      */
     public function show(Unit $unit)
     {
-        $unit->loadMissing('products');
+        $unit->loadMissing('products')->get();
 
         return view('units.show', [
             'unit' => $unit

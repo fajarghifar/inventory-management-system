@@ -18,7 +18,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['category', 'unit'])->get();
+        $products = Product::all();
 
         return view('products.index', [
             'products' => $products,
@@ -69,7 +69,7 @@ class ProductController extends Controller
         // Generate a barcode
         $generator = new BarcodeGeneratorHTML();
 
-        $barcode = $generator->getBarcode($product->product_code, $generator::TYPE_CODE_128);
+        $barcode = $generator->getBarcode($product->code, $generator::TYPE_CODE_128);
 
         return view('products.show', [
             'product' => $product,
@@ -96,9 +96,6 @@ class ProductController extends Controller
     {
         $product->update($request->except('product_image'));
 
-        /**
-         * Handle upload an image
-         */
         if($request->hasFile('product_image')){
 
             // Delete Old Photo

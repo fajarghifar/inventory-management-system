@@ -31,6 +31,10 @@ class UpdateUnitRequest extends FormRequest
                 'required',
                 'alpha_dash',
                 Rule::unique('units')->ignore($this->unit)
+            ],
+            'short_code' => [
+                'required',
+                Rule::unique('units')->ignore($this->unit)
             ]
         ];
     }

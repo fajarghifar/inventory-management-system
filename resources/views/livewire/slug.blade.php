@@ -1,5 +1,5 @@
 <div class="mb-3">
-    <label class="small mb-1" for="slug">
+    <label for="slug" class="form-label">
         {{ __('Slug') }}
     </label>
 
@@ -8,7 +8,7 @@
            name="slug"
            wire:model.blur="slug"
            placeholder="Enter slug"
-           class="form-control form-control-solid @error('slug') is-invalid @enderror"
+           class="form-control @error('slug') is-invalid @enderror"
     />
 
     @error('slug')

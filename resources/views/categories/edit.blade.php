@@ -1,72 +1,103 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
+
+@pushonce('page-styles')
+    {{--- ---}}
+@endpushonce
 
 @section('content')
-<!-- BEGIN: Header -->
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-    <div class="container-xl px-4">
-        <div class="page-header-content pt-4">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto mt-4">
-                    <h1 class="page-header-title">
-                        <div class="page-header-icon"><i class="fa-solid fa-folder"></i></div>
-                        Edit Category
-                    </h1>
-                </div>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col">
+                <h2 class="page-title">
+                    {{ __('Edit Category') }}
+                </h2>
             </div>
+        </div>
 
-            @include('partials._breadcrumbs')
+        @include('partials._breadcrumbs', ['model' => $category])
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <form action="{{ route('categories.update', $category->slug) }}" method="POST">
+                @csrf
+                @method('put')
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="card-title">
+                                    {{ __('Category Details') }}
+                                </h3>
+
+                                <div class="row row-cards">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">
+                                                {{ __('Name') }}
+                                                <span class="text-danger">*</span>
+                                            </label>
+
+                                            <input type="text"
+                                                   id="name"
+                                                   name="name"
+                                                   class="form-control form-control-solid @error('name') is-invalid @enderror"
+                                                   value="{{ old('name', $category->name) }}"
+                                            >
+
+                                            @error('name')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+
+
+                                        <div class="mb-3">
+                                            <label for="slug" class="form-label">
+                                                {{ __('Slug') }}
+                                            </label>
+
+                                            <input type="text"
+                                                id="slug"
+                                                name="slug"
+                                                class="form-control form-control-solid @error('slug') is-invalid @enderror"
+                                                value="{{ old('slug', $category->slug) }}"
+                                            >
+
+                                            @error('slug')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer text-end">
+                                    <button class="btn btn-primary" type="submit">
+                                        {{ __('Update') }}
+                                    </button>
+
+                                    <a class="btn btn-outline-warning" href="{{ route('categories.index') }}">
+                                        {{ __('Cancel') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-</header>
-<!-- END: Header -->
-
-<!-- BEGIN: Main Page Content -->
-<div class="container-xl px-2 mt-n10">
-    <form action="{{ route('categories.update', $category->slug) }}" method="POST">
-        @csrf
-        @method('put')
-        <div class="row">
-
-            <div class="col-xl-12">
-                <!-- BEGIN: Category Details -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        Category Details
-                    </div>
-                    <div class="card-body">
-                        <!-- Form Group (name) -->
-                        <div class="mb-3">
-                            <label class="small mb-1" for="name">Category Name <span class="text-danger">*</span></label>
-                            <input class="form-control form-control-solid @error('name') is-invalid @enderror" id="name" name="name" type="text" placeholder="" value="{{ old('name', $category->name) }}" autocomplete="off" />
-                            @error('name')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <!-- Form Group (slug) -->
-                        <div class="mb-3">
-                            <label class="small mb-1" for="slug">Category Slug (non editable).</label>
-                            <input class="form-control form-control-solid @error('slug') is-invalid @enderror" id="slug" name="slug" type="text" placeholder="" value="{{ old('slug', $category->slug) }}" readonly />
-                            @error('slug')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-
-                        <!-- Submit button -->
-                        <button class="btn btn-primary" type="submit">Update</button>
-                        <a class="btn btn-danger" href="{{ route('categories.index') }}">Cancel</a>
-                    </div>
-                </div>
-                <!-- END: Category Details -->
-            </div>
-        </div>
-    </form>
 </div>
-<!-- END: Main Page Content -->
+@endsection
 
+@pushonce('page-scripts')
 <script>
     // Slug Generator
     const title = document.querySelector("#name");
@@ -77,4 +108,4 @@
         slug.value = preslug.toLowerCase();
     });
 </script>
-@endsection
+@endpushonce

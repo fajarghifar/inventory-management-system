@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
 
 @section('content')
     <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
@@ -12,8 +12,9 @@
                         </h1>
                     </div>
                     <div class="col-auto my-4">
-                        <a href="{{ route('categories.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                        <a href="{{ route('categories.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+                        <a href="{{ route('categories.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus me-3"></i>
+                            Add
+                        </a>
                     </div>
                 </div>
 

@@ -1,58 +1,65 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
 
-@push('page-styles')
+@pushonce('page-styles')
     {{--- ---}}
-@endpush
+@endpushonce
 
 @section('content')
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-    <div class="container-xl px-4">
-        <div class="page-header-content pt-4">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto mt-4">
-                    <h1 class="page-header-title">
-                        <div class="page-header-icon">
-                            <i class="fa-solid fa-folder"></i>
-                        </div>
-                        {{ __('Add Category') }}
-                    </h1>
-                </div>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col">
+                <h2 class="page-title">
+                    {{ __('Create Category') }}
+                </h2>
             </div>
+        </div>
 
-            @include('partials._breadcrumbs')
+        @include('partials._breadcrumbs')
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+
+            <form action="{{ route('categories.store') }}" method="POST">
+                @csrf
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="card-title">
+                                    {{ __('Category Details') }}
+                                </h3>
+
+                                <div class="row row-cards">
+                                    <div class="col-md-12">
+                                        <livewire:name />
+
+                                        <livewire:slug />
+                                    </div>
+                                </div>
+
+                                <div class="card-footer text-end">
+                                    <button class="btn btn-primary" type="submit">
+                                        {{ __('Create') }}
+                                    </button>
+
+                                    <a class="btn btn-outline-warning" href="{{ route('categories.index') }}">
+                                        {{ __('Cancel') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-</header>
-
-<div class="container-xl px-2 mt-n10">
-    <form action="{{ route('categories.store') }}" method="POST">
-        @csrf
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        {{ __('Category Details') }}
-                    </div>
-                    <div class="card-body">
-                        <livewire:name />
-
-                        <livewire:slug />
-
-                        <button class="btn btn-primary" type="submit">
-                            {{ __('Create') }}
-                        </button>
-
-                        <a class="btn btn-danger" href="{{ route('categories.index') }}">
-                            {{ __('Cancel') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
 </div>
 @endsection
 
-@push('page-scripts')
+@pushonce('page-scripts')
     {{--- ---}}
-@endpush
+@endpushonce

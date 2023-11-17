@@ -1,5 +1,5 @@
 <div class="mb-3">
-    <label class="small mb-1" for="name">
+    <label for="name" class="form-label">
         {{ __('Name') }}
         <span class="text-danger">*</span>
     </label>
@@ -10,7 +10,7 @@
            wire:model.blur="name"
            wire:keyup="selectedName"
            placeholder="Enter name"
-           class="form-control form-control-solid @error('name') is-invalid @enderror"
+           class="form-control @error('name') is-invalid @enderror"
     />
 
     @error('name')

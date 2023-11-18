@@ -13,7 +13,7 @@
         <tbody>
             @foreach ($invoiceProducts as $index => $invoiceProduct)
             <tr>
-                <td class="align-middle text-center">
+                <td class="align-middle">
                     @if($invoiceProduct['is_saved'])
                         <input type="hidden"
                                name="invoiceProducts[{{$index}}][product_id]"

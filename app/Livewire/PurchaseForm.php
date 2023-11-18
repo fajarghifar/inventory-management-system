@@ -87,8 +87,10 @@ class PurchaseForm extends Component
 
     public function editProduct($index): void
     {
-        foreach ($this->invoiceProducts as $key => $invoiceProduct) {
-            if (! $invoiceProduct['is_saved']) {
+        foreach ($this->invoiceProducts as $key => $invoiceProduct)
+        {
+            if (! $invoiceProduct['is_saved'])
+            {
                 $this->addError('invoiceProducts.' . $key, 'This line must be saved before editing another.');
                 return;
             }
@@ -112,6 +114,7 @@ class PurchaseForm extends Component
         $this->invoiceProducts = array_values($this->invoiceProducts);
     }
 
+    /*
     public function saveInvoice(): Redirector|RedirectResponse
     {
         $this->validate();
@@ -139,12 +142,13 @@ class PurchaseForm extends Component
             return redirect()->route('invoices.index', ['design' => 'bootstrap']);
         }
     }
+    */
 
     protected function rules(): array
     {
         return [
-            'customer_name'  => 'required|string',
-            'customer_email' => 'required|email',
+//            'customer_name'  => 'required|string',
+//            'customer_email' => 'required|email',
             'taxes'          => 'required',
         ];
     }

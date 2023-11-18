@@ -259,7 +259,7 @@ class ProductCart extends Component
             $unit_price = $product_price - ($product_price * ($product['tax'] / 100));
             $product_tax = $product_price * ($product['tax'] / 100);
             $sub_total = $product_price;
-            
+
         } else {
             $price = $product_price;
             $unit_price = $product_price;

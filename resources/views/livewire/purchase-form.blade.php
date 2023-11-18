@@ -84,25 +84,30 @@
             </tr>
             @endforeach
             <tr>
-                <td colspan="5" class="text-end">
-                    <button type="button" wire:click="addProduct" class="btn btn-outline-success">
+                <td colspan="4"></td>
+                <td class="text-center">
+                    <button type="button" wire:click="addProduct" class="btn btn-success">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                         {{ __('Add') }}
                     </button>
                 </td>
             </tr>
             <tr>
-                <th colspan="4" class="align-middle text-end">Subtotal</th>
-                <td>${{ number_format($subtotal, 2) }}</td>
+                <th colspan="4" class="align-middle text-end">
+                    Subtotal
+                </th>
+                <td class="text-center">
+                    ${{ number_format($subtotal, 2) }}
+                </td>
             </tr>
             <tr>
                 <th colspan="4" class="align-middle text-end">
                     Taxes
                 </th>
-                <td width="150" class="align-middle">
+                <td width="150" class="align-middle text-center">
                     <input wire:model.live="taxes" type="number" id="taxes" class="form-control w-75 d-inline" min="0" max="100">
                     %
-                    
+
                     @error('taxes')
                     <em class="invalid-feedback">
                         {{ $message }}
@@ -114,7 +119,9 @@
                 <th colspan="4" class="align-middle text-end">
                     Total
                 </th>
-                <td>${{ number_format($total, 2) }}</td>
+                <td class="text-center">
+                    ${{ number_format($total, 2) }}
+                </td>
             </tr>
 
         </tbody>

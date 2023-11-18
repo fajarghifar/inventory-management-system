@@ -19,6 +19,8 @@
     </div>
 </div>
 
+<x-alert/>
+
 <div class="page-body">
     <div class="container-xl">
         <div class="row row-cards">
@@ -131,8 +133,9 @@
 
 
 
-                                <div class="table-responsive position-relative">
+{{--                                <div class="table-responsive position-relative">--}}
 
+                                    {{---
                                     <table class="table table-bordered">
                                         <thead class="thead-dark">
                                             <tr>
@@ -144,6 +147,11 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                        ---}}
+
+                                            @livewire('purchase-form')
+
+                                            {{---
                                             <tr>
                                                 <td colspan="8" class="text-center">
                                                     <span class="text-danger">
@@ -151,14 +159,20 @@
                                                     </span>
                                                 </td>
                                             </tr>
-                                        </tbody>
+                                            ---}}
 
+                                        {{---
+                                        </tbody>
                                     </table>
-                                </div>
-                                
+                                    ---}}
+
+
+{{--                                </div>--}}
+
                             </div>
                             <div class="card-footer text-end">
-                                <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to purchase?')">
+                                {{--- onclick="return confirm('Are you sure you want to purchase?')" ---}}
+                                <button type="submit" class="btn btn-primary">
                                     {{ __('Purchase') }}
                                 </button>
                             </div>

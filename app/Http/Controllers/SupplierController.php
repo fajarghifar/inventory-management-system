@@ -8,9 +8,6 @@ use App\Http\Requests\Supplier\UpdateSupplierRequest;
 
 class SupplierController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $suppliers = Supplier::all();
@@ -20,17 +17,11 @@ class SupplierController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('suppliers.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreSupplierRequest $request)
     {
         $supplier = Supplier::create($request->all());
@@ -53,9 +44,6 @@ class SupplierController extends Controller
             ->with('success', 'New supplier has been created!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Supplier $supplier)
     {
         $supplier->loadMissing('purchases')->get();
@@ -65,9 +53,6 @@ class SupplierController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Supplier $supplier)
     {
         return view('suppliers.edit', [
@@ -75,9 +60,6 @@ class SupplierController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateSupplierRequest $request, Supplier $supplier)
     {
         //
@@ -111,9 +93,6 @@ class SupplierController extends Controller
             ->with('success', 'Supplier has been updated!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Supplier $supplier)
     {
         /**

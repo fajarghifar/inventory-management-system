@@ -94,9 +94,6 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
-        /**
-         * Delete photo if exists.
-         */
         if($customer->photo){
             unlink(public_path('storage/customers/') . $customer->photo);
         }

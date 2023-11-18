@@ -20,16 +20,20 @@ final class CustomersTable extends PowerGridComponent
 {
     use WithExport;
 
+    public int $perPage = 5;
+    public array $perPageValues = [0, 5, 10, 20, 50];
+
     public function setUp(): array
     {
-
         return [
             Exportable::make('export')
                 ->striped()
                 ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
+
             Header::make()->showSearchInput(),
+
             Footer::make()
-                ->showPerPage()
+                ->showPerPage($this->perPage, $this->perPageValues)
                 ->showRecordCount(),
         ];
     }
@@ -122,11 +126,24 @@ final class CustomersTable extends PowerGridComponent
     public function actions(\App\Models\Customer $row): array
     {
         return [
-            Button::add('edit')
-                ->slot('Edit: '.$row->id)
-                ->id()
-                ->class('pg-btn-white dark:ring-pg-primary-600 dark:border-pg-primary-600 dark:hover:bg-pg-primary-700 dark:ring-offset-pg-primary-800 dark:text-pg-primary-300 dark:bg-pg-primary-700')
-                ->dispatch('edit', ['rowId' => $row->id])
+            Button::make('show', file_get_contents('assets/svg/eye.svg'))
+                ->class('btn btn-outline-info btn-icon w-100')
+                ->tooltip('Show Customer Details')
+                ->route('customers.show', ['customer' => $row])
+                ->method('get'),
+
+            Button::make('edit', file_get_contents('assets/svg/edit.svg'))
+                ->class('btn btn-outline-warning btn-icon w-100')
+                ->route('customers.edit', ['customer' => $row])
+                ->method('get')
+                ->tooltip('Edit Customer'),
+
+            Button::add('delete')
+                ->slot(file_get_contents('assets/svg/trash.svg'))
+                ->class('btn btn-outline-danger btn-icon w-100')
+                ->tooltip('Delete Customer')
+                ->route('customers.destroy', ['customer' => $row])
+                ->method('delete'),
         ];
     }
 

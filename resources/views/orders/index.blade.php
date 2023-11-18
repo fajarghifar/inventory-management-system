@@ -1,30 +1,56 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
+
+@pushonce('page-styles')
+    {{--- ---}}
+@endpushonce
 
 @section('content')
-    <header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-        <div class="container-xl px-4">
-            <div class="page-header-content pt-4">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-auto my-4">
-                        <h1 class="page-header-title">
-                            <div class="page-header-icon"><i class="fa-solid fa-clock"></i></div>
-                            {{ __('Orders') }}
-                        </h1>
-                    </div>
-                    <div class="col-auto my-4">
-                        <a href="{{ route('orders.create') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                        <a href="{{ route('products.index') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
-                    </div>
-                </div>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col">
+                <h2 class="page-title">
+                    {{ __('Orders') }}
+                </h2>
+            </div>
 
-                @include('partials._breadcrumbs')
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a href="{{ route('orders.create') }}" class="btn btn-outline-success d-none d-sm-inline-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+                        {{ __('Create') }}
+                    </a>
+                </div>
             </div>
         </div>
 
-        @include('partials.session')
-    </header>
+        @include('partials._breadcrumbs', ['model' => $orders])
+    </div>
 
-    <div class="container px-4 mt-n10">
+    @include('partials.session')
+</div>
+
+<div class="page-body">
+
+    @if($orders->isEmpty())
+        <div class="container-xl d-flex flex-column justify-content-center">
+            <div class="empty">
+                <div class="empty-img">
+                    <img src="{{ asset('static/illustrations/undraw_bug_fixing_oc7a.svg') }}" height="128" alt="">
+                </div>
+                <p class="empty-title">No results found</p>
+                <p class="empty-subtitle text-secondary">
+                    Try adjusting your search or filter to find what you're looking for.
+                </p>
+                <div class="empty-action">
+                    <a href="{{ route('orders.create') }}" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
+                        Add your first Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    @else
         <div class="card mb-4">
             <div class="card-body">
                 <div class="row mx-n4">
@@ -66,16 +92,16 @@
                         <div class="table-responsive">
                             <table class="table table-striped align-middle">
                                 <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">No.</th>
-                                        <th scope="col">Invoice</th>
-                                        <th scope="col">@sortablelink('customer.name', 'name')</th>
-                                        <th scope="col">@sortablelink('order_date', 'Date')</th>
-                                        <th scope="col">Payment</th>
-                                        <th scope="col">@sortablelink('total')</th>
-                                        <th scope="col">@sortablelink('order_status', 'status')</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
+                                <tr>
+                                    <th scope="col">No.</th>
+                                    <th scope="col">Invoice</th>
+                                    <th scope="col">@sortablelink('customer.name', 'name')</th>
+                                    <th scope="col">@sortablelink('order_date', 'Date')</th>
+                                    <th scope="col">Payment</th>
+                                    <th scope="col">@sortablelink('total')</th>
+                                    <th scope="col">@sortablelink('order_status', 'status')</th>
+                                    <th scope="col">Action</th>
+                                </tr>
                                 </thead>
 
                                 <tbody>
@@ -102,11 +128,16 @@
                             </table>
                         </div>
                     </div>
-
-                    {{ $orders->links() }}
                 </div>
             </div>
         </div>
-    </div>
-    <!-- END: Main Page Content -->
+    @endif
+
+
+
+</div>
 @endsection
+
+@pushonce('page-scripts')
+    {{--    --}}
+@endpushonce

@@ -17,8 +17,7 @@
         "mimisk13/laravel-tabler": "^0.0.5",
         "phpoffice/phpspreadsheet": "^1.28",
         "picqer/php-barcode-generator": "^2.2",
-        "power-components/livewire-powergrid": "^5.1",
-        "yajra/laravel-datatables": "^10.1"
+        "power-components/livewire-powergrid": "^5.1"
     },
     "require-dev": {
         "beyondcode/laravel-query-detector": "^1.7",

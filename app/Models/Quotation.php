@@ -2,16 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Quotation extends Model
 {
-    use Sortable;
-
     protected $fillable = [
         'date',
         'reference',

@@ -1,12 +1,11 @@
 @extends('layouts.tabler')
 
-
 @pushonce('page-styles')
     {{--- ---}}
 @endpushonce
 
-
 @section('content')
+    {{---
     <div class="page-header d-print-none">
         <div class="container-xl">
             <div class="row g-2 align-items-center mb-3">
@@ -29,7 +28,7 @@
             @include('partials._breadcrumbs', ['model' => $quotations])
         </div>
     </div>
-
+---}}
     @include('partials.session')
 
     <div class="page-body">
@@ -56,8 +55,21 @@
                 <x-alert/>
 
                 <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title">
+                                {{ __('Quotations') }}
+                            </h3>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="{{ route('quotations.create') }}" class="btn btn-icon btn-outline-success">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                            </a>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <livewire:power-grid.quotation-table/>
+                        <livewire:power-grid.quotations-table/>
                     </div>
                 </div>
             </div>

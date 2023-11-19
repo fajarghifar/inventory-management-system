@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
 
 @section('content')
     <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">

@@ -57,7 +57,7 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <livewire:power-grid.categories-table/>
+                        <livewire:power-grid.quotation-table/>
                     </div>
                 </div>
             </div>

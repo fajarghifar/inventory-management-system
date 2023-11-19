@@ -28,17 +28,9 @@ class PurchaseController extends Controller
 
     public function approvedPurchases()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
         $purchases = Purchase::with(['supplier'])
-            ->where('purchase_status', 1) // 1 = approved
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query());
+            ->where('purchase_status', 1)->get(); // 1 = approved
+
 
         return view('purchases.approved-purchases', [
             'purchases' => $purchases
@@ -50,33 +42,24 @@ class PurchaseController extends Controller
      */
     public function show(Purchase $purchase)
     {
-        $purchaseDetails = PurchaseDetails::with('product')
-            ->where('purchase_id', $purchase)
-            ->orderBy('id')
-            ->get();
+        // N+1 Problem if load 'createdBy', 'updatedBy',
+        $purchase->loadMissing(['supplier', 'details'])->get();
 
         return view('purchases.show', [
-            'purchase' => $purchase,
-            'purchaseDetails' => $purchaseDetails,
+            'purchase' => $purchase
         ]);
     }
 
     public function edit(Purchase $purchase)
     {
-        $purchaseDetails = PurchaseDetails::with('product')
-            ->where('purchase_id', $purchase)
-            ->orderBy('id')
-            ->get();
+        // N+1 Problem if load 'createdBy', 'updatedBy',
+        $purchase->with(['supplier', 'details'])->get();
 
         return view('purchases.edit', [
             'purchase' => $purchase,
-            'purchaseDetails' => $purchaseDetails,
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('purchases.create', [
@@ -85,9 +68,6 @@ class PurchaseController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $rules = [
@@ -112,28 +92,28 @@ class PurchaseController extends Controller
 
         $purchase_id = Purchase::insertGetId($validatedData);
 
-        // Create Purchase Details
-        $pDetails = array();
-        $products = count($request->product_id);
-        for ($i=0; $i < $products; $i++) {
+        //dd($request->all());
+
+        $pDetails = [];
+
+        foreach ($request->invoiceProducts as $product)
+        {
             $pDetails['purchase_id'] = $purchase_id;
-            $pDetails['product_id'] = $request->product_id[$i];
-            $pDetails['quantity'] = $request->quantity[$i];
-            $pDetails['unitcost'] = $request->unitcost[$i];
-            $pDetails['total'] = $request->total[$i];
+            $pDetails['product_id'] = $product['product_id'];
+            $pDetails['quantity'] = $product['quantity'];
+            $pDetails['unitcost'] = $product['unitcost'];
+            $pDetails['total'] = $product['total'];
             $pDetails['created_at'] = Carbon::now();
 
             PurchaseDetails::insert($pDetails);
         }
+
 
         return redirect()
             ->route('purchases.index')
             ->with('success', 'Purchase has been created!');
     }
 
-    /**
-     * Handle update a status purchase
-     */
     public function update(Request $request)
     {
         $purchase_id = $request->id;
@@ -143,7 +123,7 @@ class PurchaseController extends Controller
 
         foreach ($products as $product) {
             Product::where('id', $product->product_id)
-                    ->update(['stock' => DB::raw('stock+'.$product->quantity)]);
+                    ->update(['quantity' => DB::raw('quantity+'.$product->quantity)]);
         }
 
         Purchase::findOrFail($purchase_id)
@@ -157,9 +137,6 @@ class PurchaseController extends Controller
             ->with('success', 'Purchase has been approved!');
     }
 
-    /**
-     * Handle delete a purchase
-     */
     public function destroy(Purchase $purchase)
     {
         $purchase->delete();
@@ -169,9 +146,9 @@ class PurchaseController extends Controller
             ->with('success', 'Purchase has been deleted!');
     }
 
-    /**
-     * Display an all purchases.
-     */
+
+
+
     public function dailyPurchaseReport()
     {
         $row = (int) request('row', 10);
@@ -191,17 +168,11 @@ class PurchaseController extends Controller
         ]);
     }
 
-    /**
-     * Show the form input date for purchase report.
-     */
     public function getPurchaseReport()
     {
         return view('purchases.report-purchase');
     }
 
-    /**
-     * Handle request to get purchase report
-     */
     public function exportPurchaseReport(Request $request)
     {
         $rules = [
@@ -257,10 +228,6 @@ class PurchaseController extends Controller
         $this->exportExcel($purchase_array);
     }
 
-    /**
-     *This function loads the customer data from the database then converts it
-     * into an Array that will be exported to Excel
-     */
     public function exportExcel($products){
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');

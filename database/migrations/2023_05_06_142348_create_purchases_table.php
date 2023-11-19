@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-
-            //$table->string('supplier_id');
             $table->foreignIdFor(\App\Models\Supplier::class)
                 ->constrained();
-
             $table->string('purchase_date');
             $table->string('purchase_no');
-            $table->char('purchase_status', 1)->default(0)->comment('0=Pending, 1=Approved');
+            $table->char('purchase_status', 1)
+                ->default(0)
+                ->comment('0=Pending, 1=Approved');
             $table->integer('total_amount');
-            $table->string('created_by');
-            $table->string('updated_by')->nullable();
+            $table->foreignIdFor(\App\Models\User::class, 'created_by');
+            $table->foreignIdFor(\App\Models\User::class, 'updated_by')
+                ->nullable();
             $table->timestamps();
         });
     }

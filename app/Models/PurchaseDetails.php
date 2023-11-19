@@ -2,22 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchaseDetails extends Model
 {
+    protected $guarded = [
+        'id',
+    ];
+
     protected $fillable = [
         'purchase_id',
         'product_id',
         'quantity',
         'unitcost',
         'total',
-    ];
-
-    protected $guarded = [
-        'id',
     ];
 
     protected $with = ['product'];

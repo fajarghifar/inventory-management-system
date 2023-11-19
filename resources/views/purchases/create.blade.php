@@ -74,11 +74,15 @@
 
                                     <div class="col-md-4">
                                         <label class="small mb-1" for="reference">
-                                            Reference
+                                            {{ __('Reference') }}
                                         </label>
 
                                         <input type="text" class="form-control"
-                                               id="reference" name="reference" value="QT" readonly>
+                                               id="reference"
+                                               name="reference"
+                                               value="PRS"
+                                               readonly
+                                        >
 
                                         @error('reference')
                                         <div class="invalid-feedback">
@@ -88,88 +92,9 @@
                                     </div>
                                 </div>
 
-                                {{---
-                                <div class="row gx-3 mb-3">
-                                    <div class="col-md-5">
-                                        <label for="category_id" class="form-label required">
-                                            {{ __('Category') }}
-                                        </label>
-
-                                        <select class="form-select form-control-solid @error('category_id') is-invalid @enderror" id="category_id" name="category_id">
-                                            <option selected="" disabled="">
-                                                Select a category:
-                                            </option>
-
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" @if(old('category_id') == $category->id) selected="selected" @endif>
-                                                    {{ $category->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-5">
-                                        <label for="product_id" class="form-label required">
-                                            {{ __('Product') }}
-                                        </label>
-
-                                        <select class="form-select" id="product_id" name="product_id">
-                                            <option disabled>Select a product:</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label class="form-label"></label>
-
-                                        <button class="btn btn-primary form-control addEventMore" type="button">
-
-                                            Add Product
-                                        </button>
-                                    </div>
-                                </div>
-                                ---}}
-
-
-
-
-
-{{--                                <div class="table-responsive position-relative">--}}
-
-                                    {{---
-                                    <table class="table table-bordered">
-                                        <thead class="thead-dark">
-                                            <tr>
-                                                <th class="align-middle">Product</th>
-                                                <th class="align-middle text-center">Quantity</th>
-                                                <th class="align-middle text-center">Price</th>
-                                                <th class="align-middle text-center">Total</th>
-                                                <th class="align-middle text-center">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        ---}}
-
-                                            @livewire('purchase-form')
-
-                                            {{---
-                                            <tr>
-                                                <td colspan="8" class="text-center">
-                                                    <span class="text-danger">
-                                                        Please search & select products!
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            ---}}
-
-                                        {{---
-                                        </tbody>
-                                    </table>
-                                    ---}}
-
-
-{{--                                </div>--}}
-
+                                @livewire('purchase-form')
                             </div>
+
                             <div class="card-footer text-end">
                                 {{--- onclick="return confirm('Are you sure you want to purchase?')" ---}}
                                 <button type="submit" class="btn btn-primary">

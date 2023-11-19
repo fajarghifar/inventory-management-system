@@ -17,51 +17,69 @@
                     @if($invoiceProduct['is_saved'])
                         <input type="hidden"
                                name="invoiceProducts[{{$index}}][product_id]"
-                               wire:model.live="invoiceProducts.{{$index}}.product_id"
+{{--                               wire:model.live="invoiceProducts.{{$index}}.product_id"--}}
+                            value="{{ $invoiceProduct['product_id'] }}"
                         >
 
-                        {{---
-                        @if($invoiceProduct['product_name'] && $invoiceProduct['product_price'])
-                            {{ $invoiceProduct['product_name'] }}
-                            (${{ number_format($invoiceProduct['product_price'], 2) }})
-                        @endif
-                        ---}}
-
                         {{ $invoiceProduct['product_name'] }}
-                    @else
-                        <select wire:model.live="invoiceProducts.{{$index}}.product_id" id="invoiceProducts[{{$index}}][product_id]"
-                                class="form-control @error('invoiceProducts.' . $index . '.product_id') is-invalid @enderror">
 
-                            <option value="">-- choose product --</option>
+                    @else
+
+                        <select wire:model.live="invoiceProducts.{{$index}}.product_id"
+                                id="invoiceProducts[{{$index}}][product_id]"
+                                class="form-control text-center @error('invoiceProducts.' . $index . '.product_id') is-invalid @enderror"
+                        >
+
+                            <option value="" class="text-center">-- choose product --</option>
 
                             @foreach ($allProducts as $product)
-                                <option value="{{ $product->id }}">
+                                <option value="{{ $product->id }}" class="text-center">
                                     {{ $product->name }} (${{ number_format($product->buying_price, 2) }})
                                 </option>
                             @endforeach
                         </select>
 
                         @error('invoiceProducts.' . $index)
-                        <em class="text-danger">
-                            {{ $message }}
-                        </em>
+                            <em class="text-danger">
+                                {{ $message }}
+                            </em>
                         @enderror
                     @endif
                 </td>
+
                 <td class="align-middle text-center">
                     @if($invoiceProduct['is_saved'])
                         {{ $invoiceProduct['quantity'] }}
+
+                        <input type="hidden"
+                               name="invoiceProducts[{{$index}}][quantity]"
+                               value="{{ $invoiceProduct['quantity'] }}"
+                        >
                     @else
-                        <input wire:model="invoiceProducts.{{$index}}.quantity" type="number" id="invoiceProducts[{{$index}}][quantity]" class="form-control" />
+                        <input type="number" wire:model="invoiceProducts.{{$index}}.quantity" id="invoiceProducts[{{$index}}][quantity]" class="form-control" />
                     @endif
                 </td>
+
+                {{--- Unit Price ---}}
                 <td class="align-middle text-center">
                     @if($invoiceProduct['is_saved'])
-                        {{ number_format($invoiceProduct['product_price'], 2) }}
+                        {{ $unit_cost = number_format($invoiceProduct['product_price'], 2) }}
+
+                        <input type="hidden"
+                               name="invoiceProducts[{{$index}}][unitcost]"
+                               value="{{ $unit_cost }}"
+                        >
                     @endif
                 </td>
+
+                {{--- Total ---}}
                 <td class="align-middle text-center">
-                    {{ $invoiceProduct['product_price'] * $invoiceProduct['quantity'] }}
+                    {{ $product_total = $invoiceProduct['product_price'] * $invoiceProduct['quantity'] }}
+
+                    <input type="hidden"
+                           name="invoiceProducts[{{$index}}][total]"
+                           value="{{ $product_total }}"
+                    >
                 </td>
 
                 <td class="align-middle text-center">
@@ -86,9 +104,8 @@
             <tr>
                 <td colspan="4"></td>
                 <td class="text-center">
-                    <button type="button" wire:click="addProduct" class="btn btn-success">
+                    <button type="button" wire:click="addProduct" class="btn btn-icon btn-success">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                        {{ __('Add') }}
                     </button>
                 </td>
             </tr>
@@ -105,7 +122,7 @@
                     Taxes
                 </th>
                 <td width="150" class="align-middle text-center">
-                    <input wire:model.live="taxes" type="number" id="taxes" class="form-control w-75 d-inline" min="0" max="100">
+                    <input wire:model.blur="taxes" type="number" id="taxes" class="form-control w-75 d-inline" min="0" max="100">
                     %
 
                     @error('taxes')
@@ -121,6 +138,7 @@
                 </th>
                 <td class="text-center">
                     ${{ number_format($total, 2) }}
+                    <input type="hidden" name="total_amount" value="{{ $total }}">
                 </td>
             </tr>
 

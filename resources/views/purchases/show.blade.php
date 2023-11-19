@@ -5,6 +5,7 @@
 @endpushonce
 
 @section('content')
+{{---
 <div class="page-header d-print-none">
     <div class="container-xl">
         <div class="row g-2 align-items-center mb-3">
@@ -15,146 +16,190 @@
             </div>
         </div>
 
-        @include('partials._breadcrumbs')
+        @include('partials._breadcrumbs', ['model' => $purchase])
     </div>
 </div>
+---}}
 
 <x-alert/>
 
 <div class="page-body">
     <div class="container-xl">
-        <div class="row row-cards">
-
-            <div class="col-xl-12">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        Information Supplier
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">
+                            {{ __('Purchase Details') }}
+                        </h3>
+                        {{---
+                        <p class="card-subtitle">
+                            Created: {{ $purchase->createdBy->name ?? null }}
+                        </p>
+                        ---}}
                     </div>
-                    <div class="card-body">
-                        <!-- Form Row -->
-                        <div class="row gx-3 mb-3">
-                            <!-- Form Group (supplier name) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">Name</label>
-                                <div class="form-control form-control-solid">{{ $purchase->supplier->name }}</div>
+
+                    <div class="card-actions btn-actions">
+                        <div class="dropdown">
+                            <a href="#" class="btn-action dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><!-- Download SVG icon from http://tabler-icons.io/i/dots-vertical -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path></svg>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" style="">
+                                <a href="{{ route('purchases.edit', $purchase) }}" class="dropdown-item text-warning">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+                                    {{ __('Edit Purchase') }}
+                                </a>
+
+                                @if ($purchase->purchase_status == 0)
+                                    <form action="{{ route('purchases.update', $purchase) }}" method="POST">
+                                        @csrf
+                                        @method('put')
+
+                                        <button type="submit" class="dropdown-item text-success"
+                                                onclick="return confirm('Are you sure you want to approve this purchase?')"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+
+                                            {{ __('Approve Purchase') }}
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
-                            <!-- Form Group (supplier email) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">Email</label>
-                                <div class="form-control form-control-solid">{{ $purchase->supplier->email }}</div>
-                            </div>
-                        </div>
-                        <!-- Form Row -->
-                        <div class="row gx-3 mb-3">
-                            <!-- Form Group (supplier phone number) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">Phone</label>
-                                <div class="form-control form-control-solid">{{ $purchase->supplier->phone }}</div>
-                            </div>
-                            <!-- Form Group (order date) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">Order Date</label>
-                                <div class="form-control form-control-solid">{{ $purchase->purchase_date }}</div>
-                            </div>
-                        </div>
-                        <!-- Form Row -->
-                        <div class="row gx-3 mb-3">
-                            <!-- Form Group (no invoice) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">No Purchase</label>
-                                <div class="form-control form-control-solid">{{ $purchase->purchase_no }}</div>
-                            </div>
-                            <!-- Form Group (paid amount) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">Total</label>
-                                <div class="form-control form-control-solid">{{ $purchase->total_amount }}</div>
-                            </div>
-                        </div>
-                        <!-- Form Row -->
-                        <div class="row gx-3 mb-3">
-                            <!-- Form Group (due amount) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">Created By</label>
-                                <div class="form-control form-control-solid">{{ $purchase->createdBy->name ?? '-' }}</div>
-                            </div>
-                            <!-- Form Group (paid amount) -->
-                            <div class="col-md-6">
-                                <label class="small mb-1">Updated By</label>
-                                <div class="form-control form-control-solid">{{ $purchase->updatedBy->name ?? '-' }}</div>
-                            </div>
-                        </div>
-                        <!-- Form Group (address) -->
-                        <div class="mb-3">
-                            <label  class="small mb-1">Address</label>
-                            <div class="form-control form-control-solid">{{ $purchase->supplier->address }}</div>
                         </div>
 
-                        @if ($purchase->purchase_status == 0)
-                            <form action="{{ route('purchases.update', $purchase) }}" method="POST">
-                                @csrf
-                                @method('put')
-                                <input type="hidden" name="id" value="{{ $purchase->id }}">
-                                <!-- Submit button -->
-                                <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to approve this purchase?')">Approve Purchase</button>
-                                <a class="btn btn-primary" href="{{ URL::previous() }}">Back</a>
-                            </form>
-                        @else
-                            <a class="btn btn-primary" href="{{ URL::previous() }}">Back</a>
-                        @endif
+                        <a href="{{ URL::previous() }}" class="btn-action">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                        </a>
                     </div>
                 </div>
-            </div>
+                <div class="card-body">
+                    <div class="row row-cards mb-3">
+                        <div class="col">
+                            <label for="purchase_date" class="small mb-1">
+                                {{ __('Order Date') }}
+                            </label>
+                            <input type="text" id="purchase_date"
+                                   class="form-control"
+                                   value="{{ $purchase->purchase_date }}"
+                                   disabled
+                            >
+                        </div>
 
-            <div class="col-xl-12">
-                <div class="card mb-4 mb-xl-0">
-                    <div class="card-header">
-                        List Product
+                        <div class="col">
+                            <label for="purchase_no" class="small mb-1">
+                                {{ __('Purchase No.') }}
+                            </label>
+                            <input type="text" id="purchase_no"
+                                   class="form-control"
+                                   value="{{ $purchase->purchase_no }}"
+                                   disabled
+                            >
+                        </div>
+
+                        <div class="col">
+                            <label for="supplier" class="small mb-1">
+                                {{ __('Supplier') }}
+                            </label>
+                            <input type="text" id="supplier"
+                                   class="form-control"
+                                   value="{{ $purchase->supplier->name }}"
+                                   disabled
+                            >
+                        </div>
+
+                        <div class="col">
+{{--                                    <label class="small mb-1">--}}
+{{--                                        {{ __('Created') }}--}}
+{{--                                    </label>--}}
+{{--                                    <div class="form-control">--}}
+{{--                                        {{ $purchase->createdBy->name ?? null }}--}}
+{{--                                    </div>--}}
+
+
+                            <label for="create_by" class="small mb-1">
+                                {{ __('Created By') }}
+                            </label>
+                            <input type="text" id="create_by"
+                                   class="form-control"
+                                   value="{{ $purchase->createdBy->name ?? null }}"
+                                   disabled
+                            >
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="col-lg-12">
-                            <div class="table-responsive">
-                                <table class="table table-striped align-middle">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th scope="col">No.</th>
-                                            <th scope="col">Photo</th>
-                                            <th scope="col">Product Name</th>
-                                            <th scope="col">Product Code</th>
-                                            <th scope="col">Current Stock</th>
-                                            <th scope="col">Quantity</th>
-                                            <th scope="col">Price</th>
-                                            <th scope="col">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($purchase->details as $item)
-                                        <tr>
-                                            <td scope="row">{{ $loop->iteration  }}</td>
-                                            <td scope="row">
-                                                <div style="max-height: 80px; max-width: 80px;">
-                                                    <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
-                                                </div>
-                                            </td>
-                                            <td scope="row">{{ $item->product->product_name }}</td>
-                                            <td scope="row">{{ $item->product->product_code }}</td>
-                                            <td scope="row">
-                                                <span class="btn btn-warning">{{ $item->product->quantity }}</span>
-                                            </td>
-                                            <td scope="row">
-                                                <span class="btn btn-success">{{ $item->quantity }}</span>
-                                            </td>
-                                            <td scope="row">{{ $item->unitcost }}</td>
-                                            <td scope="row">
-                                                <span  class="btn btn-primary">{{ $item->total }}</span>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+
+
+                    <div class="col-lg-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="align-middle text-center">No.</th>
+                                        <th scope="col" class="align-middle text-center">Photo</th>
+                                        <th scope="col" class="align-middle text-center">Product Name</th>
+                                        <th scope="col" class="align-middle text-center">Product Code</th>
+                                        <th scope="col" class="align-middle text-center">Current Stock</th>
+                                        <th scope="col" class="align-middle text-center">Quantity</th>
+                                        <th scope="col" class="align-middle text-center">Price</th>
+                                        <th scope="col" class="align-middle text-center">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($purchase->details as $item)
+                                    <tr>
+                                        <td class="align-middle text-center">{{ $loop->iteration  }}</td>
+                                        <td class="align-middle justify-content-center text-center">
+                                            <div style="max-height: 80px; max-width: 80px;">
+                                                <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ $item->product->name }}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge bg-indigo-lt">
+                                                {{ $item->product->code }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge bg-primary-lt">
+                                                {{ $item->product->quantity }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge bg-primary-lt">
+                                                {{ $item->quantity }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ number_format($item->unitcost, 2) }}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ number_format($item->total, 2) }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                    <tr>
+                                        <td class="align-middle text-end" colspan="7">
+                                            Total
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ number_format($purchase->total_amount, 2) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
+                {{---
+                <div class="card-footer">
+                    <div class="text-start">
+                        <p class="text-secondary">
+                            Update by {{ $purchase->updatedBy->name ?? null }}
+                        </p>
+                    </div>
+                </div>
+                ---}}
             </div>
         </div>
     </div>

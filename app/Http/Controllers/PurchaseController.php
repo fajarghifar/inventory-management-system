@@ -19,7 +19,9 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchases = Purchase::with('supplier')->get();
+        $purchases = Purchase::latest()
+            ->with('supplier')
+            ->paginate(10);
 
         return view('purchases.index', [
             'purchases' => $purchases
@@ -104,29 +106,26 @@ class PurchaseController extends Controller
             PurchaseDetails::insert($pDetails);
         }
 
-
         return redirect()
             ->route('purchases.index')
             ->with('success', 'Purchase has been created!');
     }
 
-    public function update(Request $request)
+    public function update(Purchase $purchase, Request $request)
     {
-        $purchase_id = $request->id;
+        $products = PurchaseDetails::where('purchase_id', $purchase->id)->get();
 
-        // after purchase approved, add stock product
-        $products = PurchaseDetails::where('purchase_id', $purchase_id)->get();
-
-        foreach ($products as $product) {
+        foreach ($products as $product)
+        {
             Product::where('id', $product->product_id)
                     ->update(['quantity' => DB::raw('quantity+'.$product->quantity)]);
         }
 
-        Purchase::findOrFail($purchase_id)
+        Purchase::findOrFail($purchase->id)
             ->update([
-                'purchase_status' => 1,
+                'purchase_status' => 1, // 1 = approved, 0 = pending
                 'updated_by' => auth()->user()->id
-            ]); // 1 = approved, 0 = pending
+            ]);
 
         return redirect()
             ->route('purchases.index')
@@ -149,7 +148,7 @@ class PurchaseController extends Controller
             //->where('purchase_status', 1)
             ->where('purchase_date', today()->format('Y-m-d'))->get();
 
-        return view('purchases.index', [
+        return view('purchases.details-purchase', [
             'purchases' => $purchases
         ]);
     }

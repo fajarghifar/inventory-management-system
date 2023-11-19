@@ -31,15 +31,11 @@ class PurchaseController extends Controller
         $purchases = Purchase::with(['supplier'])
             ->where('purchase_status', 1)->get(); // 1 = approved
 
-
         return view('purchases.approved-purchases', [
             'purchases' => $purchases
         ]);
     }
 
-    /**
-     * Display a purchase details.
-     */
     public function show(Purchase $purchase)
     {
         // N+1 Problem if load 'createdBy', 'updatedBy',
@@ -147,21 +143,11 @@ class PurchaseController extends Controller
     }
 
 
-
-
     public function dailyPurchaseReport()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
         $purchases = Purchase::with(['supplier'])
-            ->where('purchase_date', Carbon::now()->format('Y-m-d')) // 1 = approved
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query());
+            //->where('purchase_status', 1)
+            ->where('purchase_date', today()->format('Y-m-d'))->get();
 
         return view('purchases.index', [
             'purchases' => $purchases
@@ -185,20 +171,13 @@ class PurchaseController extends Controller
         $sDate = $validatedData['start_date'];
         $eDate = $validatedData['end_date'];
 
-        // $purchaseDetails = DB::table('purchases')
-        //     ->whereBetween('purchases.purchase_date',[$sDate,$eDate])
-        //     ->where('purchases.purchase_status','1')
-        //     ->join('purchase_details', 'purchases.id', '=', 'purchase_details.purchase_id')
-        //     ->get();
-
         $purchases = DB::table('purchase_details')
             ->join('products', 'purchase_details.product_id', '=', 'products.id')
             ->join('purchases', 'purchase_details.purchase_id', '=', 'purchases.id')
             ->whereBetween('purchases.purchase_date',[$sDate,$eDate])
             ->where('purchases.purchase_status','1')
-            ->select( 'purchases.purchase_no', 'purchases.purchase_date', 'purchases.supplier_id','products.product_code', 'products.product_name', 'purchase_details.quantity', 'purchase_details.unitcost', 'purchase_details.total')
+            ->select( 'purchases.purchase_no', 'purchases.purchase_date', 'purchases.supplier_id','products.code', 'products.name', 'purchase_details.quantity', 'purchase_details.unitcost', 'purchase_details.total')
             ->get();
-
 
         $purchase_array [] = array(
             'Date',
@@ -228,7 +207,8 @@ class PurchaseController extends Controller
         $this->exportExcel($purchase_array);
     }
 
-    public function exportExcel($products){
+    public function exportExcel($products)
+    {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
 

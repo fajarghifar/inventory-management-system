@@ -368,16 +368,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.7.1",
+            "version": "3.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "5b7bd66c9ff58c04c5474ab85edce442f8081cb2"
+                "reference": "0ac3c270590e54910715e9a1a044cc368df282b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/5b7bd66c9ff58c04c5474ab85edce442f8081cb2",
-                "reference": "5b7bd66c9ff58c04c5474ab85edce442f8081cb2",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/0ac3c270590e54910715e9a1a044cc368df282b2",
+                "reference": "0ac3c270590e54910715e9a1a044cc368df282b2",
                 "shasum": ""
             },
             "require": {
@@ -393,7 +393,7 @@
                 "doctrine/coding-standard": "12.0.0",
                 "fig/log-test": "^1",
                 "jetbrains/phpstorm-stubs": "2023.1",
-                "phpstan/phpstan": "1.10.35",
+                "phpstan/phpstan": "1.10.42",
                 "phpstan/phpstan-strict-rules": "^1.5",
                 "phpunit/phpunit": "9.6.13",
                 "psalm/plugin-phpunit": "0.18.4",
@@ -461,7 +461,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.7.1"
+                "source": "https://github.com/doctrine/dbal/tree/3.7.2"
             },
             "funding": [
                 {
@@ -477,7 +477,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-06T05:06:20+00:00"
+            "time": "2023-11-19T08:06:58+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -2439,16 +2439,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.19.0",
+            "version": "3.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "1b2aa10f2326e0351399b8ce68e287d8e9209a83"
+                "reference": "a326d8a2d007e4ca327a57470846e34363789258"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/1b2aa10f2326e0351399b8ce68e287d8e9209a83",
-                "reference": "1b2aa10f2326e0351399b8ce68e287d8e9209a83",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/a326d8a2d007e4ca327a57470846e34363789258",
+                "reference": "a326d8a2d007e4ca327a57470846e34363789258",
                 "shasum": ""
             },
             "require": {
@@ -2513,7 +2513,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.19.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.21.0"
             },
             "funding": [
                 {
@@ -2525,20 +2525,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-11-07T09:04:28+00:00"
+            "time": "2023-11-18T13:59:15+00:00"
         },
         {
             "name": "league/flysystem-local",
-            "version": "3.19.0",
+            "version": "3.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-local.git",
-                "reference": "8d868217f9eeb4e9a7320db5ccad825e9a7a4076"
+                "reference": "470eb1c09eaabd49ebd908ae06f23983ba3ecfe7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/8d868217f9eeb4e9a7320db5ccad825e9a7a4076",
-                "reference": "8d868217f9eeb4e9a7320db5ccad825e9a7a4076",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/470eb1c09eaabd49ebd908ae06f23983ba3ecfe7",
+                "reference": "470eb1c09eaabd49ebd908ae06f23983ba3ecfe7",
                 "shasum": ""
             },
             "require": {
@@ -2573,7 +2573,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem-local/issues",
-                "source": "https://github.com/thephpleague/flysystem-local/tree/3.19.0"
+                "source": "https://github.com/thephpleague/flysystem-local/tree/3.21.0"
             },
             "funding": [
                 {
@@ -2585,7 +2585,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-11-06T20:35:28+00:00"
+            "time": "2023-11-18T13:41:42+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -2645,16 +2645,16 @@
         },
         {
             "name": "livewire/livewire",
-            "version": "v3.1.0",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/livewire.git",
-                "reference": "db1e02c645ae12a7cdee9b1ea0d65bf3aafc0f08"
+                "reference": "36fefba41947fa8b0cf0161330f5edb4ec7c23ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/livewire/zipball/db1e02c645ae12a7cdee9b1ea0d65bf3aafc0f08",
-                "reference": "db1e02c645ae12a7cdee9b1ea0d65bf3aafc0f08",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/36fefba41947fa8b0cf0161330f5edb4ec7c23ca",
+                "reference": "36fefba41947fa8b0cf0161330f5edb4ec7c23ca",
                 "shasum": ""
             },
             "require": {
@@ -2707,7 +2707,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
-                "source": "https://github.com/livewire/livewire/tree/v3.1.0"
+                "source": "https://github.com/livewire/livewire/tree/v3.2.0"
             },
             "funding": [
                 {
@@ -2715,7 +2715,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-11-03T15:05:18+00:00"
+            "time": "2023-11-19T13:30:45+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -9596,16 +9596,16 @@
         },
         {
             "name": "theseer/tokenizer",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/theseer/tokenizer.git",
-                "reference": "34a41e998c2183e22995f158c581e7b5e755ab9e"
+                "reference": "b2ad5003ca10d4ee50a12da31de12a5774ba6b96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theseer/tokenizer/zipball/34a41e998c2183e22995f158c581e7b5e755ab9e",
-                "reference": "34a41e998c2183e22995f158c581e7b5e755ab9e",
+                "url": "https://api.github.com/repos/theseer/tokenizer/zipball/b2ad5003ca10d4ee50a12da31de12a5774ba6b96",
+                "reference": "b2ad5003ca10d4ee50a12da31de12a5774ba6b96",
                 "shasum": ""
             },
             "require": {
@@ -9634,7 +9634,7 @@
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
             "support": {
                 "issues": "https://github.com/theseer/tokenizer/issues",
-                "source": "https://github.com/theseer/tokenizer/tree/1.2.1"
+                "source": "https://github.com/theseer/tokenizer/tree/1.2.2"
             },
             "funding": [
                 {
@@ -9642,7 +9642,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-07-28T10:34:58+00:00"
+            "time": "2023-11-20T00:12:19+00:00"
         }
     ],
     "aliases": [],

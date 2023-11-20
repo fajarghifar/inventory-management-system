@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Order;
 
 use App\Models\Order;
-use App\Models\OrderDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -11,16 +10,7 @@ class DueOrderController extends Controller
 {
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
-        $orders = Order::where('due', '>', '0')
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query());
+        $orders = Order::where('due', '>', '0')->get();
 
         return view('due.index', [
             'orders' => $orders
@@ -29,25 +19,19 @@ class DueOrderController extends Controller
 
     public function show(Order $order)
     {
-//        $details = OrderDetails::with(['product'])
-//            ->where('order_id', $order)
-//            ->orderBy('id')
-//            ->get();
-//
-//        return view('due.show', [
-//            'order' => $order,
-//            'details' => $details,
-//        ]);
+        $order->loadMissing(['customer', 'details'])->get();
 
         return view('due.show', [
-           'order' => $order->load('details')
+           'order' => $order
         ]);
     }
 
     public function edit(Order $order)
     {
+        $order->loadMissing(['customer', 'details'])->get();
+
         return view('due.edit', [
-            'order' => $order->load(['customer', 'details'])
+            'order' => $order
         ]);
     }
 

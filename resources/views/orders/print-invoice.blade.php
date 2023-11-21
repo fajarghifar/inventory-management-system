@@ -30,7 +30,9 @@
                                     </div>
                                     <div class="col-lg-6 col-sm-6">
                                         <div class="invoice">
-                                            <h1>Invoice # <span>{{ $order->invoice_no }}</span></h1>
+                                            <h1>
+                                                Invoice # <span>{{ $order->invoice_no }}</span>
+                                            </h1>
                                         </div>
                                     </div>
                                 </div>
@@ -39,7 +41,9 @@
                                 <div class="row">
                                     <div class="col-sm-6 mb-50">
                                         <div class="invoice-number">
-                                            <h4 class="inv-title-1">Invoice date:</h4>
+                                            <h4 class="inv-title-1">
+                                                Invoice date:
+                                            </h4>
                                             <p class="invo-addr-1">
                                                 {{ $order->order_date }}
                                             </p>
@@ -68,40 +72,62 @@
                                     <table class="default-table invoice-table">
                                         <thead>
                                             <tr>
-                                                <th>Item</th>
-                                                <th>Price</th>
-                                                <th>Quantity</th>
-                                                <th>Subtotal</th>
+                                                <th class="align-middle">Item</th>
+                                                <th class="align-middle text-center">Price</th>
+                                                <th class="align-middle text-center">Quantity</th>
+                                                <th class="align-middle text-center">Subtotal</th>
                                             </tr>
                                         </thead>
 
                                         <tbody>
                                             @foreach ($orderDetails as $item)
                                             <tr>
-                                                <td>{{ $item->product->name }}</td>
-                                                <td>{{ $item->unitcost }}</td>
-                                                <td>{{ $item->quantity }}</td>
-                                                <td>{{ $item->total }}</td>
+                                                <td class="align-middle">
+                                                    {{ $item->product->name }}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    {{ \Illuminate\Support\Number::currency($item->unitcost, 'EUR') }}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    {{ $item->quantity }}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    {{ \Illuminate\Support\Number::currency($item->total, 'EUR') }}
+                                                </td>
                                             </tr>
                                             @endforeach
 
                                             <tr>
-                                                <td><strong>Subtotal</strong></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td><strong>{{ $order->sub_total }}</strong></td>
+                                                <td colspan="3" class="text-end">
+                                                    <strong>
+                                                        Subtotal
+                                                    </strong>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <strong>
+                                                        {{ Illuminate\Support\Number::currency($order->sub_total, 'EUR') }}
+                                                    </strong>
+                                                </td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Tax</strong></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td><strong>{{ $order->vat }}</strong></td>
+                                                <td colspan="3" class="text-end">
+                                                    <strong>Tax</strong>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <strong>
+                                                        {{ \Illuminate\Support\Number::currency($order->vat, 'EUR') }}
+                                                    </strong>
+                                                </td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Total</strong></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td><strong>{{ $order->total }}</strong></td>
+                                                <td colspan="3" class="text-end">
+                                                    <strong>Total</strong>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <strong>
+                                                        {{ \Illuminate\Support\Number::currency($order->total, 'EUR') }}
+                                                    </strong>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>

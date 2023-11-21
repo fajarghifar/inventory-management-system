@@ -37,14 +37,21 @@ class PosController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        Cart::add([
-            'id'        => $validatedData['id'],
-            'name'      => $validatedData['name'],
-            'qty'       => 1,
-            'price'     => $validatedData['selling_price'],
-            'weight'    => 1,
-            //'options' => []
-        ]);
+//        Cart::add([
+//            'id'        => $validatedData['id'],
+//            'name'      => $validatedData['name'],
+//            'qty'       => 1,
+//            'price'     => $validatedData['selling_price'],
+//            'weight'    => 1,
+//            //'options' => []
+//        ]);
+
+        Cart::add($validatedData['id'],
+            $validatedData['name'],
+            1,
+            $validatedData['selling_price'],
+            1,
+            (array)$options = null);
 
         return redirect()
             ->back()

@@ -29,7 +29,8 @@ class CustomerController extends Controller
         /**
          * Handle upload an image
          */
-        if($request->hasFile('photo')){
+        if($request->hasFile('photo'))
+        {
             $file = $request->file('photo');
             $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
 
@@ -46,9 +47,7 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
-        $customer->loadMissing([
-            'quotations', 'orders'
-        ])->get();
+        $customer->loadMissing(['quotations', 'orders'])->get();
 
         return view('customers.show', [
             'customer' => $customer
@@ -94,7 +93,8 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
-        if($customer->photo){
+        if($customer->photo)
+        {
             unlink(public_path('storage/customers/') . $customer->photo);
         }
 

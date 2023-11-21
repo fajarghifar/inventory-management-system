@@ -9,7 +9,7 @@ class CartController extends Controller
 {
     public function add(Request $request)
     {
-        Cart::add([
+        Cart::add('', '', '', '', '',[
 
         ]);
     }

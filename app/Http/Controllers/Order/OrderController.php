@@ -18,17 +18,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
-        $orders = Order::query()
-            //->filter(request(['search']))
-            ->sortable()
-            ->paginate($row)
-            ->appends(request()->query());
+        $orders = Order::latest()->get();
 
         return view('orders.index', [
             'orders' => $orders
@@ -42,6 +32,8 @@ class OrderController extends Controller
         $customers = Customer::all(['id', 'name']);
 
         $carts = Cart::content();
+
+        //dd($carts);
 
         return view('orders.create', [
             'products' => $products,
@@ -81,8 +73,10 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        $order->loadMissing('details')->get();
+
         return view('orders.show', [
-           'order' => $order->load('details')
+           'order' => $order
         ]);
     }
 

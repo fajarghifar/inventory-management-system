@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
 
 @push('page-styles')
     {{--- ---}}
@@ -166,42 +166,10 @@
         <div class="col-xl-6">
             <!-- Product image card-->
             <div class="card mb-4 mb-xl-0">
-                <div class="card-header">List Product</div>
-
+                <div class="card-header">
+                    List Product
+                </div>
                 <div class="card-body">
-                    <!-- BEGIN: Search products -->
-                    <div class="col-lg-12">
-                        <form action="{{ route('pos.index') }}" method="GET">
-                            <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                <div class="form-group row align-items-center">
-                                    <label for="row" class="col-auto">Row:</label>
-                                    <div class="col-auto">
-                                        <select class="form-control" name="row">
-                                            <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
-                                            <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
-                                            <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
-                                            <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group row align-items-center justify-content-between">
-                                    <label class="control-label col-sm-3" for="search">Search:</label>
-                                    <div class="col-sm-8">
-                                        <div class="input-group">
-                                            <input type="text" id="search" class="form-control me-1" name="search" placeholder="Search product" value="{{ request('search') }}">
-                                            <div class="input-group-append d-flex">
-                                                <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20 text-white"></i></button>
-                                                <a href="{{ route('pos.index') }}" class="input-group-text bg-danger"><i class="fa-solid fa-trash font-size-20 text-white"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- END: Search products -->
-
-                    <!-- BEGIN: Products List -->
                     <div class="col-lg-12">
                         <div class="table-responsive">
                             <table class="table table-striped align-middle">
@@ -221,35 +189,31 @@
                                     <form action="{{ route('pos.addCartItem', $product->id) }}" method="POST">
 
                                     <tr>
-                                        <th scope="row">{{ (($products->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>
                                         {{-- <td>
                                         <div style="max-height: 80px; max-width: 80px;">
                                             <img class="img-fluid"  src="{{ $product->product_image ? asset('storage/products/'.$product->product_image) : asset('assets/img/products/default.webp') }}">
                                         </div>
                                         </td> --}}
-                                        <td>{{ $product->product_name }}</td>
-                                        <td>{{ $product->stock }}</td>
+                                        <td>{{ $product->code }}</td>
+                                        <td>{{ $product->name }}</td>
+                                        <td>{{ $product->quantity }}</td>
                                         <td>{{ $product->unit->name }}</td>
                                         <td>{{ $product->selling_price }}</td>
                                         <td>
                                             <div class="d-flex">
+                                                @csrf
+                                                <input type="hidden" name="id" value="{{ $product->id }}">
+                                                <input type="hidden" name="name" value="{{ $product->name }}">
+                                                <input type="hidden" name="price" value="{{ $product->selling_price }}">
 
-                                                    @csrf
-                                                    <input type="hidden" name="id" value="{{ $product->id }}">
-                                                    <input type="hidden" name="name" value="{{ $product->product_name }}">
-                                                    <input type="hidden" name="price" value="{{ $product->selling_price }}">
-
-
-                                                    <button type="submit" class="btn btn-outline-primary btn-sm">
-                                                        <i class="fa-solid fa-plus"></i>
-                                                    </button>
-
+                                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
 
                                     </form>
-
 
                                     @empty
                                     <tr>
@@ -262,21 +226,14 @@
                             </table>
                         </div>
                     </div>
-                    <!-- END: Products List -->
 
-                    <!-- BEGIN: Pagination -->
-                    <div class="col-lg-12">
-                        {{ $products->links() }}
-                    </div>
-                    <!-- END: Pagination -->
                 </div>
             </div>
         </div>
-        <!-- END: Section Right -->
     </div>
 </div>
 @endsection
 
-@push('page-scripts')
+@pushonce('page-scripts')
     <script src="{{ asset('assets/js/img-preview.js') }}"></script>
-@endpush
+@endpushonce

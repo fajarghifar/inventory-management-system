@@ -10,7 +10,9 @@ class DueOrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::where('due', '>', '0')->get();
+        $orders = Order::where('due', '>', '0')
+            ->latest()
+            ->get();
 
         return view('due.index', [
             'orders' => $orders

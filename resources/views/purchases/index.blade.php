@@ -112,19 +112,11 @@
                     ---}}
 
                 </div>
-                {{---
-                <div class="card-body">
-                    <div class="row mx-n4">
-                        <div class="col-lg-12">
-
-                        </div>
-                    </div>
-                </div>
-                ---}}
                 <div class="table-responsive">
                     <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
                     <thead class="thead-light">
                         <tr>
+                            <th scope="col" class="align-middle">{{ __('No.') }}</th>
                             <th scope="col" class="align-middle">{{ __('Purchase No.') }}</th>
                             <th scope="col" class="align-middle">{{ __('Supplier') }}</th>
                             <th scope="col" class="align-middle text-center">{{ __('Date') }}</th>
@@ -136,6 +128,9 @@
                     <tbody>
                     @foreach ($purchases as $purchase)
                         <tr>
+                            <td>
+                                {{ $loop->iteration }}
+                            </td>
                             <td>
                                 {{ $purchase->purchase_no }}
                             </td>

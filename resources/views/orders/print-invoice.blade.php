@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Inventory</title>
+        <title>
+            {{ config('app.name') }}
+        </title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="UTF-8">
-
         <!-- External CSS libraries -->
         <link type="text/css" rel="stylesheet" href="{{ asset('assets/invoice/css/bootstrap.min.css') }}">
         <link type="text/css" rel="stylesheet" href="{{ asset('assets/invoice/fonts/font-awesome/css/font-awesome.min.css') }}">
-
         <!-- Google fonts -->
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
         <!-- Custom Stylesheet -->
         <link type="text/css" rel="stylesheet" href="{{ asset('assets/invoice/css/style.css') }}">
     </head>
@@ -68,42 +67,42 @@
                                 <div class="table-outer">
                                     <table class="default-table invoice-table">
                                         <thead>
-                                        <tr>
-                                            <th>Item</th>
-                                            <th>Price</th>
-                                            <th>Quantity</th>
-                                            <th>Subtotal</th>
-                                        </tr>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Subtotal</th>
+                                            </tr>
                                         </thead>
 
                                         <tbody>
-                                        @foreach ($orderDetails as $item)
-                                        <tr>
-                                            <td>{{ $item->product->product_name }}</td>
-                                            <td>{{ $item->unitcost }}</td>
-                                            <td>{{ $item->quantity }}</td>
-                                            <td>{{ $item->total }}</td>
-                                        </tr>
-                                        @endforeach
+                                            @foreach ($orderDetails as $item)
+                                            <tr>
+                                                <td>{{ $item->product->name }}</td>
+                                                <td>{{ $item->unitcost }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>{{ $item->total }}</td>
+                                            </tr>
+                                            @endforeach
 
-                                        <tr>
-                                            <td><strong>Subtotal</strong></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><strong>{{ $order->sub_total }}</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Tax</strong></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><strong>{{ $order->vat }}</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Total</strong></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><strong>{{ $order->total }}</strong></td>
-                                        </tr>
+                                            <tr>
+                                                <td><strong>Subtotal</strong></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><strong>{{ $order->sub_total }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Tax</strong></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><strong>{{ $order->vat }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total</strong></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><strong>{{ $order->total }}</strong></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>

@@ -9,22 +9,9 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 
 class PosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $row = (int) request('row', 10);
-
-        if ($row < 1 || $row > 100) {
-            abort(400, 'The per-page parameter must be an integer between 1 and 100.');
-        }
-
-        $products = Product::with(['category', 'unit'])
-                ->filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query());
+        $products = Product::with(['category', 'unit'])->get();
 
         $customers = Customer::all()->sortBy('name');
 
@@ -37,9 +24,6 @@ class PosController extends Controller
         ]);
     }
 
-    /**
-     * Handle add product to cart.
-     */
     public function addCartItem (Request $request)
     {
         $request->all();
@@ -48,16 +32,18 @@ class PosController extends Controller
         $rules = [
             'id' => 'required|numeric',
             'name' => 'required|string',
-            'price' => 'required|numeric',
+            'selling_price' => 'required|numeric',
         ];
 
         $validatedData = $request->validate($rules);
 
         Cart::add([
-            'id' => $validatedData['id'],
-            'name' => $validatedData['name'],
-            'qty' => 1,
-            'price' => $validatedData['price']
+            'id'        => $validatedData['id'],
+            'name'      => $validatedData['name'],
+            'qty'       => 1,
+            'price'     => $validatedData['selling_price'],
+            'weight'    => 1,
+            //'options' => []
         ]);
 
         return redirect()
@@ -65,27 +51,21 @@ class PosController extends Controller
             ->with('success', 'Product has been added to cart!');
     }
 
-    /**
-     * Handle update product in cart.
-     */
     public function updateCartItem(Request $request, $rowId)
     {
         $rules = [
-            'qty' => 'required|numeric',
+            'quantity' => 'required|numeric',
         ];
 
         $validatedData = $request->validate($rules);
 
-        Cart::update($rowId, $validatedData['qty']);
+        Cart::update($rowId, $validatedData['quantity']);
 
         return redirect()
             ->back()
             ->with('success', 'Product has been updated from cart!');
     }
 
-    /**
-     * Handle delete product from cart.
-     */
     public function deleteCartItem(String $rowId)
     {
         Cart::remove($rowId);

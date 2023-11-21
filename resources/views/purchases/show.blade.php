@@ -5,24 +5,6 @@
 @endpushonce
 
 @section('content')
-{{---
-<div class="page-header d-print-none">
-    <div class="container-xl">
-        <div class="row g-2 align-items-center mb-3">
-            <div class="col">
-                <h2 class="page-title">
-                    {{ __('Purchase Details') }}
-                </h2>
-            </div>
-        </div>
-
-        @include('partials._breadcrumbs', ['model' => $purchase])
-    </div>
-</div>
----}}
-
-<x-alert/>
-
 <div class="page-body">
     <div class="container-xl">
         <div class="col-lg-12">

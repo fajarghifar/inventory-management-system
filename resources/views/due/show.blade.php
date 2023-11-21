@@ -1,23 +1,6 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
 
 @section('content')
-    <!-- BEGIN: Header -->
-    <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-        <div class="container-xl px-4">
-            <div class="page-header-content">
-                <div class="row align-items-center justify-content-between pt-3">
-                    <div class="col-auto mb-3">
-                        <h1 class="page-header-title">
-                            <div class="page-header-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div>
-                            Due Order Details
-                        </h1>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    <!-- END: Header -->
-
     <!-- BEGIN: Main Page Content -->
     <div class="container-xl px-4">
         <div class="row">
@@ -132,7 +115,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach ($details as $item)
+                                    @foreach ($order->details as $item)
                                         <tr>
                                             <td>{{ $loop->iteration  }}</td>
                                             <td>
@@ -140,26 +123,28 @@
                                                     <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
                                                 </div>
                                             </td>
-                                            <td>{{ $item->product->product_name }}</td>
-                                            <td>{{ $item->product->product_code }}</td>
+                                            <td>{{ $item->product->name }}</td>
+                                            <td>{{ $item->product->code }}</td>
                                             <td>{{ $item->quantity }}</td>
-                                            <td>{{ $item->unitcost }}</td>
-                                            <td>{{ $item->total }}</td>
+                                            <td>
+                                                {{ Illuminate\Support\Number::currency($item->unitcost, 'EUR') }}
+                                            </td>
+                                            <td>
+                                                {{ Illuminate\Support\Number::currency($item->total, 'EUR') }}
+                                            </td>
                                         </tr>
                                     @endforeach
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <!-- END: Products List -->
                     </div>
                 </div>
             </div>
-            <!-- END: Table Product -->
         </div>
     </div>
 
-    <!-- BEGIN: Modal -->
+
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">

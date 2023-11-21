@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Kyslik\ColumnSortable\Sortable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
 {
-    use Sortable;
+    protected $guarded = [
+        'id',
+    ];
 
     protected $fillable = [
         'customer_id',
@@ -33,10 +33,6 @@ class Order extends Model
         'pay',
         'due',
         'total',
-    ];
-
-    protected $guarded = [
-        'id',
     ];
 
     protected $with = [

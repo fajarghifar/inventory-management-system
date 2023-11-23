@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderDetails extends Model
 {
+    protected $guarded = [
+        'id',
+    ];
+
     protected $fillable = [
         'order_id',
         'product_id',
@@ -15,8 +19,9 @@ class OrderDetails extends Model
         'total',
     ];
 
-    protected $guarded = [
-        'id',
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     protected $with = ['product'];

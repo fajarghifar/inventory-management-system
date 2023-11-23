@@ -20,6 +20,11 @@ class Unit extends Model
         'short_code'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function getRouteKeyName(): string
     {
         return 'slug';

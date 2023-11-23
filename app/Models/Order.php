@@ -26,17 +26,14 @@ class Order extends Model
         'due',
     ];
 
-    public $sortable = [
-        'customer_id',
-        'order_date',
-        'order_status',
-        'pay',
-        'due',
-        'total',
-    ];
-
     protected $with = [
         'customer',
+    ];
+
+    protected $casts = [
+        'order_date'    => 'date',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime'
     ];
 
     public function customer(): BelongsTo

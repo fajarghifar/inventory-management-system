@@ -13,19 +13,27 @@ class Product extends Model
 
     protected $guarded = ['id'];
 
-    public array $sortable = [
+    public $fillable = [
         'name',
         'slug',
         'code',
-        'buying_price',
-        'selling_price',
         'quantity',
         'quantity_alert',
+        'buying_price',
+        'selling_price',
         'tax',
         'tax_type',
         'notes',
+        'product_image',
         'category_id',
         'unit_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function getRouteKeyName(): string

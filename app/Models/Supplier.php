@@ -27,6 +27,11 @@ class Supplier extends Model
         'bank_name',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function purchases(): HasMany
     {
         return $this->hasMany(Purchase::class);

@@ -19,6 +19,11 @@ class PurchaseDetails extends Model
         'total',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
     protected $with = ['product'];
 
     public function product(): BelongsTo

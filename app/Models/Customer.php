@@ -25,6 +25,11 @@ class Customer extends Model
         'bank_name',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);

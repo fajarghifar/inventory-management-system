@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Awobaz\Compoships\Compoships;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,8 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Purchase extends Model
 {
-    use HasFactory, Compoships;
-
     protected $guarded = [
         'id',
     ];
@@ -26,16 +23,16 @@ class Purchase extends Model
         'updated_by',
     ];
 
+    protected $casts = [
+        'purchase_date' => 'date',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime'
+    ];
+
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
-
-//    public function user(): BelongsTo
-//    {
-//        // with package
-//        //return $this->belongsTo(User::class, ['created_by', 'updated_by'], ['id', 'id']);
-//    }
 
     public function createdBy(): BelongsTo
     {

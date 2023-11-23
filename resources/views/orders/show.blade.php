@@ -48,28 +48,50 @@
                         </a>
                     </div>
                 </div>
+
                 <div class="card-body">
                     <div class="row row-cards mb-3">
                         <div class="col">
-                            <label class="small mb-1">Order Date</label>
-                            <div class="form-control form-control-solid">{{ $order->order_date }}</div>
+                            <label for="order_date" class="form-label required">
+                                {{ __('Order Date') }}
+                            </label>
+                            <input type="text"
+                                   id="order_date"
+                                   class="form-control"
+                                   value="{{ $order->order_date->format('d-m-Y') }}"
+                                   disabled
+                            >
                         </div>
 
                         <div class="col">
-                            <label class="small mb-1">No Invoice</label>
-                            <div class="form-control form-control-solid">{{ $order->invoice_no }}</div>
+                            <label for="invoice_no" class="form-label required">
+                                {{ __('Invoice No.') }}
+                            </label>
+                            <input type="text"
+                                   id="invoice_no"
+                                   class="form-control"
+                                   value="{{ $order->invoice_no }}"
+                                   disabled
+                            >
                         </div>
 
                         <div class="col">
-                            <label class="small mb-1">Name</label>
-                            <div class="form-control form-control-solid">
-                                {{ $order->customer->name }}
-                            </div>
+                            <label for="customer" class="form-label required">
+                                {{ __('Customer') }}
+                            </label>
+                            <input type="text"
+                                   id="customer"
+                                   class="form-control"
+                                   value="{{ $order->customer->name }}"
+                                   disabled
+                            >
                         </div>
 
                         <div class="col">
-                            <label class="small mb-1">Payment Type</label>
-                            <div class="form-control form-control-solid">{{ $order->payment_type }}</div>
+                            <label for="payment_type" class="form-label required">
+                                {{ __('Payment Type') }}
+                            </label>
+                            <input type="text" id="payment_type" class="form-control" value="{{ $order->payment_type }}" disabled>
                         </div>
                     </div>
 

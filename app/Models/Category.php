@@ -20,6 +20,11 @@ class Category extends Model
         'short_code'
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'category_id', 'id');

@@ -33,8 +33,6 @@ class OrderController extends Controller
 
         $carts = Cart::content();
 
-        //dd($carts);
-
         return view('orders.create', [
             'products' => $products,
             'customers' => $customers,
@@ -49,7 +47,7 @@ class OrderController extends Controller
 
         // Create Order Details
         $contents = Cart::content();
-        $oDetails = array();
+        $oDetails = [];
 
         foreach ($contents as $content) {
             $oDetails['order_id'] = $order['id'];

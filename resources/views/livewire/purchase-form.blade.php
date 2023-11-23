@@ -15,11 +15,7 @@
             <tr>
                 <td class="align-middle">
                     @if($invoiceProduct['is_saved'])
-                        <input type="hidden"
-                               name="invoiceProducts[{{$index}}][product_id]"
-{{--                               wire:model.live="invoiceProducts.{{$index}}.product_id"--}}
-                            value="{{ $invoiceProduct['product_id'] }}"
-                        >
+                        <input type="hidden" name="invoiceProducts[{{$index}}][product_id]" value="{{ $invoiceProduct['product_id'] }}">
 
                         {{ $invoiceProduct['product_name'] }}
 
@@ -34,7 +30,8 @@
 
                             @foreach ($allProducts as $product)
                                 <option value="{{ $product->id }}" class="text-center">
-                                    {{ $product->name }} (${{ number_format($product->buying_price, 2) }})
+                                    {{ $product->name }}
+{{--                                    (${{ number_format($product->buying_price, 2) }})--}}
                                 </option>
                             @endforeach
                         </select>
@@ -56,7 +53,11 @@
                                value="{{ $invoiceProduct['quantity'] }}"
                         >
                     @else
-                        <input type="number" wire:model="invoiceProducts.{{$index}}.quantity" id="invoiceProducts[{{$index}}][quantity]" class="form-control" />
+                        <input type="number"
+                               wire:model="invoiceProducts.{{$index}}.quantity"
+                               id="invoiceProducts[{{$index}}][quantity]"
+                               class="form-control"
+                        />
                     @endif
                 </td>
 
@@ -114,7 +115,8 @@
                     Subtotal
                 </th>
                 <td class="text-center">
-                    ${{ number_format($subtotal, 2) }}
+{{--                    ${{ number_format($subtotal, 2) }}--}}
+                    {{ Illuminate\Support\Number::currency($subtotal, 'EUR') }}
                 </td>
             </tr>
             <tr>
@@ -137,52 +139,17 @@
                     Total
                 </th>
                 <td class="text-center">
+                    {{---
                     ${{ number_format($total, 2) }}
+                    <input type="hidden" name="total_amount" value="{{ $total }}">
+                    ---}}
+
+                    {{ Illuminate\Support\Number::currency($total, 'EUR') }}
+
                     <input type="hidden" name="total_amount" value="{{ $total }}">
                 </td>
             </tr>
 
         </tbody>
     </table>
-
-    {{---
-    <div class="row">
-        <div class="col-md-12">
-            <button type="button" wire:click="addProduct" class="btn btn-outline-success">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                {{ __('Add') }}
-            </button>
-        </div>
-    </div>
-    ---}}
-
-    {{---
-    <div class="col-lg-5 ml-auto text-right mt-4">
-        <table class="table pull-right">
-            <tr>
-                <th>Subtotal</th>
-                <td>${{ number_format($subtotal, 2) }}</td>
-            </tr>
-            <tr>
-                <th>Taxes</th>
-                <td width="125">
-                    <input wire:model.live="taxes" type="number" id="taxes" class="form-control w-75 d-inline" min="0" max="100">
-                    %
-                    @error('taxes')
-                    <em class="invalid-feedback">
-                        {{ $message }}
-                    </em>
-                    @enderror
-                </td>
-            </tr>
-            <tr>
-                <th>Total</th>
-                <td>${{ number_format($total, 2) }}</td>
-                <td>
-                    <input type="text" wire:model="{{ $total }}" id="total" name="total">
-                </td>
-            </tr>
-        </table>
-    </div>
-    ---}}
 </div>

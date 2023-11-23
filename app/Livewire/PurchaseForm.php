@@ -4,15 +4,18 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use Livewire\Component;
+use Livewire\Attributes\Validate;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\View\View;
 
 class PurchaseForm extends Component
 {
+    #[Validate('Required')]
     public int $taxes = 0;
 
     public array $invoiceProducts = [];
 
+    #[Validate('required', message: 'Please select products')]
     public Collection $allProducts;
 
     public function mount(): void
@@ -89,12 +92,4 @@ class PurchaseForm extends Component
 
         $this->invoiceProducts = array_values($this->invoiceProducts);
     }
-
-    protected function rules(): array
-    {
-        return [
-            'taxes' => 'required',
-        ];
-    }
-
 }

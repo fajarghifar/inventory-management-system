@@ -60,11 +60,21 @@
 
                     <div class="col-lg-8">
                         <div class="card">
-                            <div class="card-body">
-                                <h3 class="card-title">
-                                    {{ __('Product Details') }}
-                                </h3>
+                            <div class="card-header">
+                                <div>
+                                    <h3 class="card-title">
+                                        {{ __('Purchases') }}
+                                    </h3>
+                                </div>
 
+                                <div class="card-actions">
+
+                                    <a href="{{ route('products.index') }}" class="btn-action">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
                                 <div class="row row-cards">
                                     <div class="col-md-12">
                                         <div class="mb-3">
@@ -307,7 +317,7 @@
                                     {{ __('Save') }}
                                 </button>
 
-                                <a class="btn btn-danger" href="{{ route('products.index') }}">
+                                <a class="btn btn-warning" href="{{ route('products.index') }}">
                                     {{ __('Cancel') }}
                                 </a>
                             </div>

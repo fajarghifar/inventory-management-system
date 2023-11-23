@@ -44,27 +44,27 @@
                 <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col">No.</th>
-                            <th scope="col">Invoice</th>
-                            <th scope="col">@sortablelink('customer.name', 'name')</th>
-                            <th scope="col">@sortablelink('order_date', 'Date')</th>
-                            <th scope="col">Payment</th>
-                            <th scope="col">@sortablelink('total')</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Action</th>
+                            <th scope="col" class="text-center">{{ __('No.') }}</th>
+                            <th scope="col" class="text-center">{{ __('Invoice No.') }}</th>
+                            <th scope="col" class="text-center">{{ __('Customer') }}</th>
+                            <th scope="col" class="text-center">{{ __('Date') }}</th>
+                            <th scope="col" class="text-center">{{ __('Payment') }}</th>
+                            <th scope="col" class="text-center">{{ __('Total') }}</th>
+                            <th scope="col" class="text-center">{{ __('Status') }}</th>
+                            <th scope="col" class="text-center">{{ __('Action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($orders as $order)
                         <tr>
-                            <td>{{ $loop->iteration  }}</td>
-                            <td>{{ $order->invoice_no }}</td>
-                            <td>{{ $order->customer->name }}</td>
-                            <td>{{ $order->order_date }}</td>
-                            <td>{{ $order->payment_type }}</td>
-                            <td>{{ $order->total }}</td>
+                            <td class="text-center">{{ $loop->iteration  }}</td>
+                            <td class="text-center">{{ $order->invoice_no }}</td>
+                            <td class="text-center">{{ $order->customer->name }}</td>
+                            <td class="text-center">{{ $order->order_date->format('d-m-Y') }}</td>
+                            <td class="text-center">{{ $order->payment_type }}</td>
+                            <td class="text-center">{{ Illuminate\Support\Number::currency($order->total, 'EUR') }}</td>
                             <td class="text-center">
-                                <span class="btn btn-success btn-sm text-uppercase">
+                                <span class="badge bg-green text-white text-uppercase">
                                     {{ $order->order_status }}
                                 </span>
                             </td>

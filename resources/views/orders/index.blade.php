@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="page-body">
-    @if($orders->isEmpty())
+@if($orders->isEmpty())
     <div class="container-xl d-flex flex-column justify-content-center">
         <div class="empty">
             <div class="empty-img">
@@ -24,7 +24,7 @@
             </div>
         </div>
     </div>
-    @else
+@else
     <div class="container-xl">
         <div class="card">
             <div class="card-header">
@@ -45,11 +45,11 @@
                 <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col">
+                            <th scope="col" class="text-center">
                                 {{ __('No.') }}
                             </th>
-                            <th scope="col">
-                                {{ __('Invoice') }}
+                            <th scope="col" class="text-center">
+                                {{ __('Invoice No.') }}
                             </th>
                             <th scope="col" class="text-center">
                                 {{ __('Customer') }}
@@ -74,26 +74,26 @@
                     <tbody>
                     @foreach ($orders as $order)
                         <tr>
-                            <td>
+                            <td class="text-center">
                                 {{ $loop->iteration }}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {{ $order->invoice_no }}
                             </td>
                             <td class="text-center">
                                 {{ $order->customer->name }}
                             </td>
                             <td class="text-center">
-                                {{ $order->order_date }}
+                                {{ $order->order_date->format('d-m-Y') }}
                             </td>
                             <td class="text-center">
                                 {{ $order->payment_type }}
                             </td>
                             <td class="text-center">
-                                {{ number_format($order->total, 2) }}
+                                {{ Illuminate\Support\Number::currency($order->total, 'EUR') }}
                             </td>
                             <td class="text-center">
-                                <span class="btn btn-success btn-sm text-uppercase">
+                                <span class="badge bg-green text-white text-uppercase">
                                     {{ $order->order_status }}
                                 </span>
                             </td>
@@ -115,7 +115,7 @@
             </div>
         </div>
     </div>
-    @endif
+@endif
 </div>
 @endsection
 

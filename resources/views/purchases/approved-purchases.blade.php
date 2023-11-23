@@ -1,72 +1,68 @@
 @extends('layouts.tabler')
 
 @section('content')
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-    <div class="container-xl px-4">
-        <div class="page-header-content pt-4">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto my-4">
-                    <h1 class="page-header-title">
-                        <div class="page-header-icon"><i class="fa-solid fa-cash-register"></i></div>
-                        Approved Purchase List
-                    </h1>
+<div class="page-body">
+    <div class="container-xl">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">
+                        {{ __('Purchases: Approved') }}
+                    </h3>
                 </div>
-                <div class="col-auto my-4">
-                    <a href="{{ route('purchases.create') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                    <a href="{{ route('purchases.index') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+
+                <div class="card-actions">
+                    <a href="{{ route('purchases.create') }}" class="btn btn-icon btn-outline-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    </a>
                 </div>
             </div>
-
-            @include('partials._breadcrumbs')
-        </div>
-    </div>
-
-    @include('partials.session')
-</header>
-
-<div class="container px-2 mt-n10">
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row mx-n4">
-
-                <div class="col-lg-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped align-middle">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">No.</th>
-                                    <th scope="col">Purchase</th>
-                                    <th scope="col">@sortablelink('supplier.name', 'Supplier')</th>
-                                    <th scope="col">@sortablelink('purchase_date', 'Date')</th>
-                                    <th scope="col">@sortablelink('total')</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($purchases as $purchase)
-                                <tr>
-                                    <td>{{ $purchase->purchase_no }}</td>
-                                    <td>{{ $purchase->supplier->name }}</td>
-                                    <td>{{ $purchase->purchase_date }}</td>
-                                    <td>{{ $purchase->total_amount }}</td>
-                                    <td>
-                                        <span class="btn btn-{{ $purchase->purchase_status == 0 ? 'warning' : 'success' }} btn-sm text-uppercase">{{ $purchase->purchase_status == 0 ? 'pending' : 'approved' }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-outline-success btn-sm mx-1">
-                                                <i class="fa-solid fa-eye"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
+            <div class="table-responsive">
+                <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">No.</th>
+                            <th scope="col">Purchase</th>
+                            <th scope="col" class="text-center">Supplier</th>
+                            <th scope="col" class="text-center">Date</th>
+                            <th scope="col" class="text-center">Total</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($purchases as $purchase)
+                        <tr>
+                            <td>
+                                {{ $loop->iteration }}
+                            </td>
+                            <td>
+                                {{ $purchase->purchase_no }}
+                            </td>
+                            <td class="text-center">
+                                {{ $purchase->supplier->name }}
+                            </td>
+                            <td class="text-center">
+                                {{ $purchase->purchase_date }}
+                            </td>
+                            <td class="text-center">
+                                {{ Illuminate\Support\Number::currency($purchase->total_amount, 'EUR') }}
+                            </td>
+                            <td class="text-center">
+                                <span class="btn btn-{{ $purchase->purchase_status == 0 ? 'warning' : 'success' }} btn-sm text-uppercase">{{ $purchase->purchase_status == 0 ? 'pending' : 'approved' }}</span>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-icon btn-outline-info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                {{--- ---}}
             </div>
         </div>
     </div>

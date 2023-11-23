@@ -127,3 +127,7 @@ Route::get('empty/', function () {
     return view('empty');
 })->name('empty')->middleware('password.confirm');
 
+
+Route::get('test/', function (){
+    return view('test');
+});

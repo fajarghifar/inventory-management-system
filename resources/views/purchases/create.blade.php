@@ -1,43 +1,54 @@
 @extends('layouts.tabler')
 
 @pushonce('page-styles')
-{{--- ---}}
+{{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />--}}
+{{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/virtual-select-plugin@1.0.40/dist/virtual-select.min.css">--}}
+
 @endpushonce
 
 @section('content')
-<div class="page-header d-print-none">
-    <div class="container-xl">
-        <div class="row g-2 align-items-center mb-3">
-            <div class="col">
-                <h2 class="page-title">
-                    {{ __('Create Purchase') }}
-                </h2>
-            </div>
-        </div>
-
-        @include('partials._breadcrumbs')
-    </div>
-</div>
-
-<x-alert/>
-
 <div class="page-body">
     <div class="container-xl">
+
+        <x-alert/>
+
         <div class="row row-cards">
 
             <form action="{{ route('purchases.store') }}" method="POST">
                 @csrf
                 <div class="row">
 
-                    <div class="col-xl-12">
-                        <div class="card mb-4">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h3 class="card-title">
+                                        {{ __('Create Purchase') }}
+                                    </h3>
+                                </div>
+
+                                <div class="card-actions btn-actions">
+                                    <div class="dropdown">
+                                        <a href="#" class="btn-action dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><!-- Download SVG icon from http://tabler-icons.io/i/dots-vertical -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path></svg>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end" style="">
+                                            {{--- ---}}
+                                        </div>
+                                    </div>
+
+                                    {{--- {{ URL::previous() }} ---}}
+                                    <a href="{{ route('purchases.index') }}" class="btn-action">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
                             <div class="card-body">
 
                                 <div class="row gx-3 mb-3">
                                     <div class="col-md-4">
-                                        <label for="purchase_date" class="small my-1">
-                                            Date
-                                            <span class="text-danger">*</span>
+                                        <label for="purchase_date" class="form-label required">
+                                            {{ __('Order Date') }}
                                         </label>
 
                                         <input name="purchase_date" id="purchase_date" type="date"
@@ -55,15 +66,27 @@
                                         @enderror
                                     </div>
 
-                                    <div class="col-md-4">
-                                        <label class="small my-1" for="supplier_id">Supplier <span class="text-danger">*</span></label>
-                                        <select class="form-select @error('supplier_id') is-invalid @enderror" id="supplier_id" name="supplier_id" required>
-                                            <option selected="" disabled="">Select a supplier:</option>
 
-                                            @foreach ($suppliers as $supplier)
-                                                <option value="{{ $supplier->id }}" @if(old('supplier_id') == $supplier->id) selected="selected" @endif>{{ $supplier->name }}</option>
-                                            @endforeach
-                                        </select>
+                                    <x-tom-select
+                                        label="Suppliers"
+                                        id="supplier_id"
+                                        name="supplier_id"
+                                        placeholder="Select Customer"
+                                        :data="$suppliers"
+                                    />
+
+
+
+
+{{---
+                                    <div class="col-md-4">
+                                        <label class="small mb-1" for="reference">
+                                            {{ __('Supplier') }}
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        @livewire('supplier-dropdown')
+
                                         @error('supplier_id')
                                         <div class="invalid-feedback">
                                             {{ $message }}
@@ -71,9 +94,10 @@
                                         @enderror
                                     </div>
 
+---}}
 
                                     <div class="col-md-4">
-                                        <label class="small mb-1" for="reference">
+                                        <label for="reference" class="form-label required">
                                             {{ __('Reference') }}
                                         </label>
 
@@ -97,6 +121,7 @@
 
                             <div class="card-footer text-end">
                                 {{--- onclick="return confirm('Are you sure you want to purchase?')" ---}}
+                                {{--- @disabled($errors->isNotEmpty()) ---}}
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Purchase') }}
                                 </button>
@@ -111,5 +136,5 @@
 @endsection
 
 @pushonce('page-scripts')
-{{--- ---}}
+
 @endpushonce

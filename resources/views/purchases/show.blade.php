@@ -14,11 +14,6 @@
                         <h3 class="card-title">
                             {{ __('Purchase Details') }}
                         </h3>
-                        {{---
-                        <p class="card-subtitle">
-                            Created: {{ $purchase->createdBy->name ?? null }}
-                        </p>
-                        ---}}
                     </div>
 
                     <div class="card-actions btn-actions">
@@ -60,9 +55,10 @@
                             <label for="purchase_date" class="small mb-1">
                                 {{ __('Order Date') }}
                             </label>
+
                             <input type="text" id="purchase_date"
                                    class="form-control"
-                                   value="{{ $purchase->purchase_date }}"
+                                   value="{{ $purchase->purchase_date->format('d-m-Y') }}"
                                    disabled
                             >
                         </div>

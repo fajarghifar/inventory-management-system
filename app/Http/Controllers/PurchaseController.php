@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Purchase\StorePurchaseRequest;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Product;
@@ -66,44 +67,29 @@ class PurchaseController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StorePurchaseRequest $request)
     {
-        $rules = [
-            'supplier_id' => 'required',
-            'purchase_date' => 'required|string',
-            'total_amount' => 'required|numeric'
-        ];
+        $purchase = Purchase::create($request->all());
 
-        $purchase_no = IdGenerator::generate([
-            'table' => 'purchases',
-            'field' => 'purchase_no',
-            'length' => 10,
-            'prefix' => 'PRS-'
-        ]);
-
-        $validatedData = $request->validate($rules);
-
-        $validatedData['purchase_status'] = 0; // 0 = pending, 1 = approved
-        $validatedData['purchase_no'] = $purchase_no;
-        $validatedData['created_by'] = auth()->user()->id;
-        $validatedData['created_at'] = Carbon::now();
-
-        $purchase_id = Purchase::insertGetId($validatedData);
-
-        //dd($request->all());
-
-        $pDetails = [];
-
-        foreach ($request->invoiceProducts as $product)
+        /*
+         * TODO: Must validate that
+         */
+        if (! $request->invoiceProducts == null)
         {
-            $pDetails['purchase_id'] = $purchase_id;
-            $pDetails['product_id'] = $product['product_id'];
-            $pDetails['quantity'] = $product['quantity'];
-            $pDetails['unitcost'] = $product['unitcost'];
-            $pDetails['total'] = $product['total'];
-            $pDetails['created_at'] = Carbon::now();
+            $pDetails = [];
 
-            PurchaseDetails::insert($pDetails);
+            foreach ($request->invoiceProducts as $product)
+            {
+                $pDetails['purchase_id']    = $purchase['id'];
+                $pDetails['product_id']     = $product['product_id'];
+                $pDetails['quantity']       = $product['quantity'];
+                $pDetails['unitcost']       = $product['unitcost'];
+                $pDetails['total']          = $product['total'];
+                $pDetails['created_at']     = Carbon::now();
+
+                //PurchaseDetails::insert($pDetails);
+                $purchase->details()->insert($pDetails);
+            }
         }
 
         return redirect()

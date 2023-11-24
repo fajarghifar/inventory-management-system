@@ -21,62 +21,19 @@ Inventory Management System with Laravel 10 and MySql.
 - Customers
 - Suppliers
 
-
 ## 🚀 How to Use
 
-1. **Clone Repository or Download**
-    ```bash
-    git clone https://github.com/fajarghifar/inventory-management-system
-    ```
-    
-2. **Setup**
-    ```bash
-    # Go into the repository
-    cd inventory-management-system
-
-    # Install dependencies
-    composer install
-
-    # Open with your text editor
-    code .
-    ```
-   
-3. **.ENV**
-    Rename or copy the `.env.example` file to `.env`
-    ```bash
-    # Generate app key
-    php artisan key:generate
-    ```
-   
-4. **Custom Faker Locale**
-    To set Faker Locale, add this line of code to the end `.env` file.
-    ```bash
-    # In this case, the locale is set to Indonesian
-
-    FAKER_LOCALE="id_ID"
-    ```
-
-5. **Setup Database**
-    Setup your database credentials in your `.env` file.
-
-6. **Seed Database**
-    ```bash
-    php artisan migrate:fresh --seed
-    ```
-   *Note: If showing an error, please try to rerun this command.*
-
-7. **Create Storage Link**
-    ```bash
-    php artisan storage:link
-    ```
-
-8. **Run Server**
-    ```bash
-    php artisan serve
-    ```
-
-9. **Login**
-    Try login with username: `admin` and password: `password`
+1. Clone Repository `git clone https://github.com/fajarghifar/inventory-management-system` 
+2. Go into the repository `cd inventory-management-system`
+3. Install Packages `composer install`
+4. Copy `.env` file `cp .env.example .env`
+5. Generate app key `php artisan key:generate`
+6. Setting up your database credentials in your `.env` file.
+7. Seed Database: `php artisan migrate:fresh ---seed`
+8. Create Storage Link `php artisan storage:link`
+9. Install NPM dependencies `npm install && npm run dev`
+10. Run `php artisan serve`
+11. Try login with email: `admin@admin.com` and password: `password`
 
 ## 🚀 Config
 

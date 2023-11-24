@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -32,15 +33,17 @@ class DueOrderController extends Controller
     {
         $order->loadMissing(['customer', 'details'])->get();
 
+        $customers = Customer::select(['id', 'name'])->get();
+
         return view('due.edit', [
-            'order' => $order
+            'order' => $order,
+            'customers' => $customers
         ]);
     }
 
     public function update(Order $order, Request $request)
     {
         $rules = [
-            'id' => 'required|numeric',
             'pay' => 'required|numeric'
         ];
 

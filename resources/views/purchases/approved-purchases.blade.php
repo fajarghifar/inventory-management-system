@@ -21,8 +21,8 @@
                 <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col">No.</th>
-                            <th scope="col">Purchase</th>
+                            <th scope="col" class="text-center">No.</th>
+                            <th scope="col" class="text-center">Purchase</th>
                             <th scope="col" class="text-center">Supplier</th>
                             <th scope="col" class="text-center">Date</th>
                             <th scope="col" class="text-center">Total</th>
@@ -33,17 +33,17 @@
                     <tbody>
                         @foreach ($purchases as $purchase)
                         <tr>
-                            <td>
+                            <td class="text-center">
                                 {{ $loop->iteration }}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {{ $purchase->purchase_no }}
                             </td>
                             <td class="text-center">
                                 {{ $purchase->supplier->name }}
                             </td>
                             <td class="text-center">
-                                {{ $purchase->purchase_date }}
+                                {{ $purchase->purchase_date->format('d-m-Y') }}
                             </td>
                             <td class="text-center">
                                 {{ Illuminate\Support\Number::currency($purchase->total_amount, 'EUR') }}

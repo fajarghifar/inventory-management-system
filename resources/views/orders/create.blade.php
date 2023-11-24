@@ -19,9 +19,7 @@
                         </div>
 
                         <div class="card-actions btn-actions">
-                            <a href="{{ route('orders.index') }}" class="btn-action">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
-                            </a>
+                            <x-actions.close route="{{ route('orders.index') }}"/>
                         </div>
                     </div>
 
@@ -241,7 +239,7 @@
                                                         <input type="hidden" name="selling_price" value="{{ $product->selling_price }}">
 
                                                         <button type="submit" class="btn btn-icon btn-outline-primary">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shopping-cart" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
+                                                            <x-icon.cart/>
                                                         </button>
                                                     </form>
                                                 </div>

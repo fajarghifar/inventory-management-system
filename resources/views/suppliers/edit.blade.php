@@ -1,24 +1,6 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
-<div class="page-header d-print-none">
-    <div class="container-xl">
-        <div class="row g-2 align-items-center mb-3">
-            <div class="col">
-                <h2 class="page-title">
-                    {{ __('Edit Supplier') }}
-                </h2>
-            </div>
-        </div>
-
-        @include('partials._breadcrumbs', ['model' => $supplier])
-    </div>
-</div>
-
 <div class="page-body">
     <div class="container-xl">
         <div class="row row-cards">
@@ -50,11 +32,18 @@
 
                     <div class="col-lg-8">
                         <div class="card">
-                            <div class="card-body">
-                                <h3 class="card-title">
-                                    {{ __('Supplier Details') }}
-                                </h3>
+                            <div class="card-header">
+                                <div>
+                                    <h3 class="card-title">
+                                        {{ __('Supplier Details') }}
+                                    </h3>
+                                </div>
 
+                                <div class="card-actions">
+                                    <x-actions.close route="{{ route('suppliers.index') }}" />
+                                </div>
+                            </div>
+                            <div class="card-body">
                                 <div class="row row-cards">
                                     <div class="col-md-12">
                                         <x-input name="name" :value="old('name', $supplier->name)" :required="true"/>
@@ -138,13 +127,9 @@
                                 </div>
                             </div>
                             <div class="card-footer text-end">
-                                <button class="btn btn-primary" type="submit">
+                                <x-button type="submit">
                                     {{ __('Save') }}
-                                </button>
-
-                                <a class="btn btn-outline-warning" href="{{ route('suppliers.index') }}">
-                                    {{ __('Cancel') }}
-                                </a>
+                                </x-button>
                             </div>
                         </div>
 

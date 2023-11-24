@@ -1,8 +1,6 @@
 @extends('layouts.tabler')
 
 @pushonce('page-styles')
-{{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />--}}
-{{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/virtual-select-plugin@1.0.40/dist/virtual-select.min.css">--}}
 
 @endpushonce
 

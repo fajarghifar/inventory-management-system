@@ -1,5 +1,5 @@
 <div class="mb-3">
-    <label for="slug" class="form-label">
+    <label for="slug" class="form-label required">
         {{ __('Slug') }}
     </label>
 

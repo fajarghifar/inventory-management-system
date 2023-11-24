@@ -1,12 +1,11 @@
 @props([
     'action',
     'method'
-
 ])
 
-<form action="{{ $action }}" method="{{ $method }}">
-    @method($method)
+<form action="{{ $action }}" method="POST">
     @csrf
+    @method($method)
 
     {{ $slot }}
 </form>

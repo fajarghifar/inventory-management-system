@@ -1,7 +1,6 @@
 <div class="mb-3">
-    <label for="name" class="form-label">
+    <label for="name" class="form-label required">
         {{ __('Name') }}
-        <span class="text-danger">*</span>
     </label>
 
     <input type="text"

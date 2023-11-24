@@ -1,16 +1,30 @@
 @props([
     'header',
     'content',
-    'footer'
+    'footer',
+    'title',
+    'actions'
 ])
 
 <div {{ $attributes->class(['card']) }}>
 
     @isset($header)
         <div {{ $header->attributes->class(['card-header']) }}>
-            <h3 class="card-title">
-                {{ $header }}
-            </h3>
+            @isset($title)
+                <div>
+                    <h3 class="card-title">
+                        {{ $title }}
+                    </h3>
+                </div>
+            @endisset
+
+            {{ $header }}
+
+            @isset($actions)
+                <div class="card-actions">
+                    {{ $actions }}
+                </div>
+            @endisset
         </div>
     @endisset
 
@@ -20,10 +34,13 @@
         </div>
     @endisset
 
+    @isset($slot)
+        {{ $slot }}
+    @endisset
+
     @isset($footer)
         <div {{ $footer->attributes->class(['card-footer']) }}>
             {{ $footer }}
         </div>
    @endisset
-
 </div>

@@ -1,5 +1,9 @@
 @extends('layouts.tabler')
 
+@pushonce('page-styles')
+    {{--- ---}}
+@endpushonce
+
 @section('content')
 <div class="page-body">
     @if($orders->isEmpty())
@@ -82,10 +86,14 @@
                 </table>
             </div>
             <div class="card-footer">
-
+                {{--- ---}}
             </div>
         </div>
     </div>
     @endif
 </div>
 @endsection
+
+@pushonce('page-scripts')
+    {{--- ---}}
+@endpushonce

@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
 <div class="page-header d-print-none">
     <div class="container-xl">
@@ -154,7 +150,3 @@
     </div>
 </div>
 @endsection
-
-@pushonce('page-scripts')
-{{--- ---}}
-@endpushonce

@@ -7,7 +7,8 @@
     'name' => $name,
     'id' => '' ?? $name,
     'placeholder' => '',
-    'data'
+    'data',
+    'value'
 ])
 
 <div class="col-md-4">
@@ -23,7 +24,7 @@
         </option>
 
         @foreach($data as $option)
-            <option value="{{ $option->id }}" @selected(old($name, ) == $option->id)>
+            <option value="{{ $option->id }}" @selected(old($name, $value = '' ?? null) == $option->id)>
                 {{ $option->name }}
             </option>
         @endforeach

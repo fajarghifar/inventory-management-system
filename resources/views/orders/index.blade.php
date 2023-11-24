@@ -1,124 +1,66 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
 <div class="page-body">
-@if($orders->isEmpty())
-    <div class="container-xl d-flex flex-column justify-content-center">
-        <div class="empty">
-            <div class="empty-img">
-                <img src="{{ asset('static/illustrations/undraw_bug_fixing_oc7a.svg') }}" height="128" alt="">
-            </div>
-            <p class="empty-title">No results found</p>
-            <p class="empty-subtitle text-secondary">
-                Try adjusting your search or filter to find what you're looking for.
-            </p>
-            <div class="empty-action">
-                <a href="{{ route('orders.create') }}" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-                    Add your first Order
-                </a>
-            </div>
-        </div>
-    </div>
-@else
+    @if($orders->isEmpty())
+    <x-empty
+        title="No orders found"
+        message="Try adjusting your search or filter to find what you're looking for."
+        button_label="{{ __('Add your first Order') }}"
+        button_route="{{ route('orders.create') }}"
+    />
+    @else
     <div class="container-xl">
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <h3 class="card-title">
-                        {{ __('Orders') }}
-                    </h3>
-                </div>
+        <x-card>
+            <x-slot:header>
+                <x-slot:title>
+                    {{ __('Orders') }}
+                </x-slot:title>
 
-                <div class="card-actions">
-                    <a href="{{ route('orders.create') }}" class="btn btn-icon btn-outline-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                    </a>
-                </div>
-            </div>
+                <x-slot:actions>
+                    <x-action.create route="{{ route('orders.create') }}" />
+                </x-slot:actions>
+            </x-slot:header>
 
-            <div class="table-responsive">
-                <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
-                    <thead class="thead-light">
-                        <tr>
-                            <th scope="col" class="text-center">
-                                {{ __('No.') }}
-                            </th>
-                            <th scope="col" class="text-center">
-                                {{ __('Invoice No.') }}
-                            </th>
-                            <th scope="col" class="text-center">
-                                {{ __('Customer') }}
-                            </th>
-                            <th scope="col" class="text-center">
-                                {{ __('Date') }}
-                            </th>
-                            <th scope="col" class="text-center">
-                                {{ __('Payment') }}
-                            </th>
-                            <th scope="col" class="text-center">
-                                {{ __('Total') }}
-                            </th>
-                            <th scope="col" class="text-center">
-                                {{ __('Status') }}
-                            </th>
-                            <th scope="col" class="text-center">
-                                {{ __('Action') }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <x-table.index>
+                <x-slot:th>
+                    <x-table.th>{{ __('No.') }}</x-table.th>
+                    <x-table.th>{{ __('Invoice No.') }}</x-table.th>
+                    <x-table.th>{{ __('Customer') }}</x-table.th>
+                    <x-table.th>{{ __('Date') }}</x-table.th>
+                    <x-table.th>{{ __('Payment') }}</x-table.th>
+                    <x-table.th>{{ __('Total') }}</x-table.th>
+                    <x-table.th>{{ __('Status') }}</x-table.th>
+                    <x-table.th>{{ __('Actions') }}</x-table.th>
+                </x-slot:th>
+                <x-slot:tbody>
                     @foreach ($orders as $order)
                         <tr>
-                            <td class="text-center">
-                                {{ $loop->iteration }}
-                            </td>
-                            <td class="text-center">
-                                {{ $order->invoice_no }}
-                            </td>
-                            <td class="text-center">
-                                {{ $order->customer->name }}
-                            </td>
-                            <td class="text-center">
-                                {{ $order->order_date->format('d-m-Y') }}
-                            </td>
-                            <td class="text-center">
-                                {{ $order->payment_type }}
-                            </td>
-                            <td class="text-center">
-                                {{ Illuminate\Support\Number::currency($order->total, 'EUR') }}
-                            </td>
-                            <td class="text-center">
-                                <span class="badge bg-green text-white text-uppercase">
+                            <x-table.td>{{ $loop->iteration }}</x-table.td>
+                            <x-table.td>{{ $order->invoice_no }}</x-table.td>
+                            <x-table.td>{{ $order->customer->name }}</x-table.td>
+                            <x-table.td>{{ $order->order_date->format('d-m-Y') }}</x-table.td>
+                            <x-table.td>{{ $order->payment_type }}</x-table.td>
+                            <x-table.td>{{ Illuminate\Support\Number::currency($order->total, 'EUR') }}</x-table.td>
+                            <x-table.td>
+                                <x-badge class="{{ $order->order_status === 'complete' ? 'bg-green' : 'bg-orange' }}">
                                     {{ $order->order_status }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ route('orders.show', $order) }}" class="btn btn-icon btn-outline-success">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-                                </a>
-                                <a href="{{ route('order.downloadInvoice', $order) }}" class="btn btn-icon btn-outline-warning">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-printer" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z" /></svg>
-                                </a>
-                            </td>
+                                </x-badge>
+                            </x-table.td>
+                            <x-table.td>
+                                <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>
+                                <x-button.print class="btn-icon" route="{{ route('order.downloadInvoice', $order) }}"/>
+                            </x-table.td>
                         </tr>
                     @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer">
+                </x-slot:tbody>
+            </x-table.index>
 
-            </div>
-        </div>
+            <x-slot:footer>
+                {{--- ---}}
+            </x-slot:footer>
+        </x-card>
     </div>
-@endif
+   @endif
 </div>
 @endsection
-
-@pushonce('page-scripts')
-    {{--    --}}
-@endpushonce

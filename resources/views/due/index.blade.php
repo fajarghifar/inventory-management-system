@@ -1,35 +1,14 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
 <div class="page-body">
     @if($orders->isEmpty())
-    <div class="empty">
-        <div class="empty-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <circle cx="12" cy="12" r="9" />
-                <line x1="9" y1="10" x2="9.01" y2="10" />
-                <line x1="15" y1="10" x2="15.01" y2="10" />
-                <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0" />
-            </svg>
-        </div>
-        <p class="empty-title">
-            {{ __('No orders found') }}
-        </p>
-        <p class="empty-subtitle text-secondary">
-            Try adjusting your search or filter to find what you're looking for.
-        </p>
-        <div class="empty-action">
-            <a href="{{ route('orders.create') }}" class="btn btn-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
-                Add your first Order
-            </a>
-        </div>
-    </div>
+    <x-empty
+        title="No orders found"
+        message="Try adjusting your search or filter to find what you're looking for."
+        button_label="{{ __('Add your first Order') }}"
+        button_route="{{ route('orders.create') }}"
+    />
     @else
     <div class="container-xl">
         <div class="card">
@@ -41,9 +20,7 @@
                 </div>
 
                 <div class="card-actions">
-                    <a href="{{ route('orders.create') }}" class="btn btn-icon btn-outline-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                    </a>
+                    <x-actions.create route="{{ route('orders.create') }}" />
                 </div>
             </div>
             <div class="table-responsive">
@@ -73,7 +50,7 @@
                                 {{ $order->customer->name }}
                             </td>
                             <td class="text-center">
-                                {{ $order->order_date }}
+                                {{ $order->order_date->format('d-m-Y') }}
                             </td>
                             <td class="text-center">
                                 {{ $order->payment_type }}
@@ -89,13 +66,8 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('due.show', $order) }}" class="btn btn-icon btn-outline-success">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
-                                </a>
-
-                                <a href="{{ route('due.edit', $order) }}" class="btn btn-icon btn-outline-warning">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-                                </a>
+                                <x-button.show class="btn-icon" route="{{ route('due.show', $order) }}"/>
+                                <x-button.edit class="btn-icon" route="{{ route('due.edit', $order) }}"/>
                             </td>
                         </tr>
                       @endforeach
@@ -110,7 +82,3 @@
     @endif
 </div>
 @endsection
-
-@pushonce('page-scripts')
-    {{--- ---}}
-@endpushonce

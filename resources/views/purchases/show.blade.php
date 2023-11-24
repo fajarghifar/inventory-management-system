@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
 <div class="page-body">
     <div class="container-xl">
@@ -44,9 +40,7 @@
                             </div>
                         </div>
 
-                        <a href="{{ URL::previous() }}" class="btn-action">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
-                        </a>
+                        <x-action.close route="{{ route('purchases.index') }}" />
                     </div>
                 </div>
                 <div class="card-body">
@@ -55,7 +49,6 @@
                             <label for="purchase_date" class="small mb-1">
                                 {{ __('Order Date') }}
                             </label>
-
                             <input type="text" id="purchase_date"
                                    class="form-control"
                                    value="{{ $purchase->purchase_date->format('d-m-Y') }}"
@@ -86,14 +79,6 @@
                         </div>
 
                         <div class="col">
-{{--                                    <label class="small mb-1">--}}
-{{--                                        {{ __('Created') }}--}}
-{{--                                    </label>--}}
-{{--                                    <div class="form-control">--}}
-{{--                                        {{ $purchase->createdBy->name ?? null }}--}}
-{{--                                    </div>--}}
-
-
                             <label for="create_by" class="small mb-1">
                                 {{ __('Created By') }}
                             </label>
@@ -169,15 +154,9 @@
                         </div>
                     </div>
                 </div>
-                {{---
                 <div class="card-footer">
-                    <div class="text-start">
-                        <p class="text-secondary">
-                            Update by {{ $purchase->updatedBy->name ?? null }}
-                        </p>
-                    </div>
+                    {{--- ---}}
                 </div>
-                ---}}
             </div>
         </div>
     </div>

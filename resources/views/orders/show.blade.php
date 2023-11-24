@@ -20,6 +20,7 @@
                             <a href="#" class="btn-action dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><!-- Download SVG icon from http://tabler-icons.io/i/dots-vertical -->
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path></svg>
                             </a>
+
                             <div class="dropdown-menu dropdown-menu-end" style="">
 {{--                                <a href="{{ route('orders.edit', $order) }}" class="dropdown-item text-warning">--}}
 {{--                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>--}}
@@ -43,9 +44,7 @@
                             </div>
                         </div>
 
-                        <a href="{{ URL::previous() }}" class="btn-action">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
-                        </a>
+                        <x-action.close route="{{ route('orders.index') }}"/>
                     </div>
                 </div>
 
@@ -91,6 +90,7 @@
                             <label for="payment_type" class="form-label required">
                                 {{ __('Payment Type') }}
                             </label>
+
                             <input type="text" id="payment_type" class="form-control" value="{{ $order->payment_type }}" disabled>
                         </div>
                     </div>
@@ -176,7 +176,3 @@
         </div>
     </div>
 @endsection
-
-@pushonce('page-scripts')
-    {{--- ---}}
-@endpushonce

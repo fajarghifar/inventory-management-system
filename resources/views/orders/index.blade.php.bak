@@ -1,0 +1,150 @@
+@extends('layouts.tabler')
+
+@section('content')
+<div class="page-body">
+    @if($orders->isEmpty())
+    <x-empty
+        title="No orders found"
+        message="Try adjusting your search or filter to find what you're looking for."
+        button_label="{{ __('Add your first Order') }}"
+        button_route="{{ route('orders.create') }}"
+    />
+    @else
+    <div class="container-xl">
+
+        <x-card>
+            <x-slot:header>
+
+            </x-slot:header>
+
+
+            <x-slot:content>
+
+            </x-slot:content>
+
+
+            <x-slot:footer></x-slot:footer>
+        </x-card>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">
+                        {{ __('Orders') }}
+                    </h3>
+                </div>
+
+                <div class="card-actions">
+                    <x-actions.create route="{{ route('orders.create') }}" />
+                </div>
+            </div>
+
+            <x-table.index>
+                <x-slot:th>
+                    <x-table.th>{{ __('No.') }}</x-table.th>
+                    <x-table.th>{{ __('Invoice No.') }}</x-table.th>
+                    <x-table.th>{{ __('Customer') }}</x-table.th>
+                    <x-table.th>{{ __('Date') }}</x-table.th>
+                    <x-table.th>{{ __('Payment') }}</x-table.th>
+                    <x-table.th>{{ __('Total') }}</x-table.th>
+                    <x-table.th>{{ __('Status') }}</x-table.th>
+                    <x-table.th>{{ __('Actions') }}</x-table.th>
+                </x-slot:th>
+                <x-slot:tbody>
+                    @foreach ($orders as $order)
+                        <tr>
+                            <x-table.td>{{ $loop->iteration }}</x-table.td>
+                            <x-table.td>{{ $order->invoice_no }}</x-table.td>
+                            <x-table.td>{{ $order->customer->name }}</x-table.td>
+                            <x-table.td>{{ $order->order_date->format('d-m-Y') }}</x-table.td>
+                            <x-table.td>{{ $order->payment_type }}</x-table.td>
+                            <x-table.td>{{ Illuminate\Support\Number::currency($order->total, 'EUR') }}</x-table.td>
+                            <x-table.td>
+                                <span class="badge {{ $order->order_status === 'complete' ? 'bg-green' : 'bg-orange' }} text-white text-uppercase">
+                                    {{ $order->order_status }}
+                                </span>
+                            </x-table.td>
+                            <x-table.td>
+                                <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>
+                                <x-button.print class="btn-icon" route="{{ route('order.downloadInvoice', $order) }}"/>
+                            </x-table.td>
+                        </tr>
+                    @endforeach
+                </x-slot:tbody>
+            </x-table.index>
+
+            {{---
+            <div class="table-responsive">
+                <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" class="text-center">
+                                {{ __('No.') }}
+                            </th>
+                            <th scope="col" class="text-center">
+                                {{ __('Invoice No.') }}
+                            </th>
+                            <th scope="col" class="text-center">
+                                {{ __('Customer') }}
+                            </th>
+                            <th scope="col" class="text-center">
+                                {{ __('Date') }}
+                            </th>
+                            <th scope="col" class="text-center">
+                                {{ __('Payment') }}
+                            </th>
+                            <th scope="col" class="text-center">
+                                {{ __('Total') }}
+                            </th>
+                            <th scope="col" class="text-center">
+                                {{ __('Status') }}
+                            </th>
+                            <th scope="col" class="text-center">
+                                {{ __('Action') }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($orders as $order)
+                        <tr>
+                            <td class="text-center">
+                                {{ $loop->iteration }}
+                            </td>
+                            <td class="text-center">
+                                {{ $order->invoice_no }}
+                            </td>
+                            <td class="text-center">
+                                {{ $order->customer->name }}
+                            </td>
+                            <td class="text-center">
+                                {{ $order->order_date->format('d-m-Y') }}
+                            </td>
+                            <td class="text-center">
+                                {{ $order->payment_type }}
+                            </td>
+                            <td class="text-center">
+                                {{ Illuminate\Support\Number::currency($order->total, 'EUR') }}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge {{ $order->order_status === 'complete' ? 'bg-green' : 'bg-orange' }} text-white text-uppercase">
+                                    {{ $order->order_status }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>
+                                <x-button.print class="btn-icon" route="{{ route('order.downloadInvoice', $order) }}"/>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+            ---}}
+            <div class="card-footer">
+
+            </div>
+        </div>
+    </div>
+@endif
+</div>
+@endsection

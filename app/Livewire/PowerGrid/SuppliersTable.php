@@ -47,27 +47,37 @@ final class SuppliersTable extends PowerGridComponent
             ->addColumn('name')
             ->addColumn('name_lower', fn (Supplier $model) => strtolower(e($model->name)))
             ->addColumn('created_at')
-            ->addColumn('created_at_formatted', fn (Supplier $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('created_at_formatted', fn (Supplier $model) => Carbon::parse($model->created_at)->format('d/m/Y'));
     }
 
     public function columns(): array
     {
         return [
             Column::make('ID', 'id')
+                ->headerAttribute('text-left')
+                ->bodyAttribute('text-left')
                 ->searchable()
                 ->sortable(),
 
             Column::make('Name', 'name')
+                ->headerAttribute('text-left')
+                ->bodyAttribute('text-left')
                 ->searchable()
                 ->sortable(),
 
             Column::make('Created at', 'created_at')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center')
                 ->hidden(),
 
             Column::make('Created at', 'created_at_formatted', 'created_at')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center')
                 ->searchable(),
 
             Column::action('Action')
+                ->headerAttribute('text-center', styleAttr: 'width: 150px;')
+                ->bodyAttribute('text-center d-flex justify-content-around')
         ];
     }
 

@@ -25,7 +25,9 @@ final class ProductsTable extends PowerGridComponent
             Exportable::make('export')
                 ->striped()
                 ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
+
             Header::make()->showSearchInput(),
+
             Footer::make()
                 ->showPerPage()
                 ->showRecordCount(),
@@ -63,29 +65,45 @@ final class ProductsTable extends PowerGridComponent
     {
         return [
             Column::make('ID', 'id')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center')
                 ->searchable()
                 ->sortable(),
 
-            Column::make('Image', 'image'),
+            Column::make('Image', 'image')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center'),
 
             Column::make('Name', 'name')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center')
                 ->searchable()
                 ->sortable(),
 
             Column::add()
                 ->title('Category')
-                ->field('category_name'),
+                ->field('category_name')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center'),
 
             Column::make('Quantity', 'quantity')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center')
                 ->sortable(),
 
-            Column::make('Unit', 'unit_name'),
+            Column::make('Unit', 'unit_name')
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center'),
 
             Column::make('Selling Price', 'selling_price')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->sortable()
                 ->searchable(),
 
             Column::action('Action')
+                ->headerAttribute('align-middle text-center', styleAttr: 'width: 150px;')
+                ->bodyAttribute('align-middle text-center d-flex justify-content-around')
         ];
     }
 
@@ -96,17 +114,10 @@ final class ProductsTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
-    }
-
     public function actions(\App\Models\Product $row): array
     {
         return [
             Button::make('show', file_get_contents('assets/svg/eye.svg'))
-//                ->slot('Show')
                 ->class('btn btn-outline-info btn-icon w-100')
                 ->tooltip('Show Product Details')
                 ->route('products.show', ['product' => $row])
@@ -126,16 +137,4 @@ final class ProductsTable extends PowerGridComponent
                 ->method('delete'),
         ];
     }
-
-    /*
-    public function actionRules(\App\Models\Product $row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }

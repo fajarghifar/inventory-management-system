@@ -42,30 +42,42 @@ final class CategoriesTable extends PowerGridComponent
             ->addColumn('name_lower', fn (Category $model) => strtolower(e($model->name)))
             ->addColumn('slug')
             ->addColumn('created_at')
-            ->addColumn('created_at_formatted', fn (Category $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('created_at_formatted', fn (Category $model) => Carbon::parse($model->created_at)->format('d/m/Y'));
     }
 
     public function columns(): array
     {
         return [
             Column::make('ID', 'id')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->searchable()
                 ->sortable(),
 
             Column::make('Name', 'name')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->searchable()
                 ->sortable(),
 
             Column::make('Slug', 'slug')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->searchable(),
 
             Column::make('Created at', 'created_at')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->hidden(),
 
             Column::make('Created at', 'created_at_formatted', 'created_at')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->searchable(),
 
             Column::action('Action')
+                ->headerAttribute('text-center', styleAttr: 'width: 150px;')
+                ->bodyAttribute('text-center d-flex justify-content-around')
         ];
     }
 
@@ -75,12 +87,6 @@ final class CategoriesTable extends PowerGridComponent
 //            Filter::inputText('name'),
 //            Filter::datepicker('created_at_formatted', 'created_at'),
         ];
-    }
-
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
     }
 
     public function actions(\App\Models\Category $row): array
@@ -107,16 +113,4 @@ final class CategoriesTable extends PowerGridComponent
                 ->method('delete'),
         ];
     }
-
-    /*
-    public function actionRules(\App\Models\Category $row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }

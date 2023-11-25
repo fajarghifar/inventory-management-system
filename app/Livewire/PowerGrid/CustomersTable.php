@@ -70,43 +70,22 @@ final class CustomersTable extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
+            Column::make('Id', 'id')
+                ->headerAttribute('text-left')
+                ->bodyAttribute('text-left'),
             Column::make('Name', 'name')
+                ->headerAttribute('text-left')
+                ->bodyAttribute('text-left')
                 ->sortable()
                 ->searchable(),
-
             Column::make('Email', 'email')
+                ->headerAttribute('text-left')
+                ->bodyAttribute('text-left')
                 ->sortable()
                 ->searchable(),
-
-            Column::make('Phone', 'phone')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Address', 'address')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Photo', 'photo')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Account holder', 'account_holder')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Account number', 'account_number')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Bank name', 'bank_name')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
-
             Column::action('Action')
+                ->headerAttribute('align-middle text-center', styleAttr: 'width: 150px;')
+                ->bodyAttribute('align-middle text-center d-flex justify-content-around')
         ];
     }
 
@@ -115,12 +94,6 @@ final class CustomersTable extends PowerGridComponent
         return [
 
         ];
-    }
-
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
     }
 
     public function actions(\App\Models\Customer $row): array
@@ -146,16 +119,4 @@ final class CustomersTable extends PowerGridComponent
                 ->method('delete'),
         ];
     }
-
-    /*
-    public function actionRules($row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }

@@ -72,20 +72,26 @@ final class QuotationsTable extends PowerGridComponent
     {
         return [
             Column::make('Id', 'id'),
+
             Column::make('Reference', 'reference')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->searchable(),
+
             Column::make('Date', 'date_formatted', 'date')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->sortable(),
 
-            Column::make('Customer id', 'customer_id'),
             Column::make('Customer name', 'customer_name')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->sortable()
                 ->searchable(),
 
             Column::make('Total amount', 'total_amount')
                 ->headerAttribute('text-center align-middle')
                 ->bodyAttribute('text-center align-middle'),
-
 
             Column::make('Status', 'status')
                 ->headerAttribute('text-center align-middle')
@@ -98,28 +104,16 @@ final class QuotationsTable extends PowerGridComponent
                 ->searchable(),
 
             Column::action('Action')
-                ->headerAttribute('text-center align-middle')
-                ->bodyAttribute('text-center align-middle')
+                ->headerAttribute('text-center', styleAttr: 'width: 150px;')
+                ->bodyAttribute('text-center d-flex justify-content-around')
         ];
     }
 
     public function filters(): array
     {
         return [
-//            Filter::datepicker('date'),
-//            Filter::inputText('reference')->operators(['contains']),
-//            Filter::inputText('customer_name')->operators(['contains']),
-//            Filter::inputText('status')->operators(['contains']),
-//            Filter::datetimepicker('created_at'),
-//            Filter::datetimepicker('updated_at'),
-//            Filter::datetimepicker('created_at'),
+            //
         ];
-    }
-
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
     }
 
     public function actions(\App\Models\Quotation $row): array
@@ -145,16 +139,4 @@ final class QuotationsTable extends PowerGridComponent
                 ->method('delete'),
         ];
     }
-
-    /*
-    public function actionRules($row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }

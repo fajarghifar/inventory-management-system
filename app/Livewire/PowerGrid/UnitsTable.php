@@ -49,52 +49,53 @@ final class UnitsTable extends PowerGridComponent
         return PowerGrid::columns()
             ->addColumn('id')
             ->addColumn('name')
-
-           /** Example of custom column using a closure **/
             ->addColumn('name_lower', fn (Unit $model) => strtolower(e($model->name)))
-
             ->addColumn('slug')
             ->addColumn('short_code')
-            ->addColumn('created_at_formatted', fn (Unit $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('created_at_formatted', fn (Unit $model) => Carbon::parse($model->created_at)->format('d/m/Y'));
     }
 
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
+            Column::make('Id', 'id')
+                ->headerAttribute('align-middle text-left')
+                ->bodyAttribute('align-middle text-left'),
+
             Column::make('Name', 'name')
+                ->headerAttribute('align-middle text-left')
+                ->bodyAttribute('align-middle text-left')
                 ->sortable()
                 ->searchable(),
 
             Column::make('Slug', 'slug')
+                ->headerAttribute('align-middle text-left')
+                ->bodyAttribute('align-middle text-left')
                 ->sortable()
                 ->searchable(),
 
             Column::make('Short code', 'short_code')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->sortable()
                 ->searchable(),
 
             Column::make('Created at', 'created_at_formatted', 'created_at')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->sortable(),
 
             Column::action('Action')
+                ->headerAttribute('text-center', styleAttr: 'width: 150px;')
+                ->bodyAttribute('text-center d-flex justify-content-around')
         ];
     }
 
     public function filters(): array
     {
         return [
-//            Filter::inputText('name')->operators(['contains']),
-//            Filter::inputText('slug')->operators(['contains']),
-//            Filter::inputText('short_code')->operators(['contains']),
-//            Filter::datetimepicker('created_at'),
+            //
         ];
-    }
-
-    #[\Livewire\Attributes\On('edit')]
-    public function edit($rowId): void
-    {
-        $this->js('alert('.$rowId.')');
     }
 
     public function actions(\App\Models\Unit $row): array
@@ -120,16 +121,4 @@ final class UnitsTable extends PowerGridComponent
                 ->tooltip('Delete Unit')
         ];
     }
-
-    /*
-    public function actionRules($row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }

@@ -56,14 +56,11 @@ final class UserTable extends PowerGridComponent
         return PowerGrid::columns()
             ->addColumn('id')
             ->addColumn('photo')
-
-           /** Example of custom column using a closure **/
             ->addColumn('photo_lower', fn (User $model) => strtolower(e($model->photo)))
-
             ->addColumn('name')
             ->addColumn('username')
             ->addColumn('email')
-            ->addColumn('created_at_formatted', fn (User $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('created_at_formatted', fn (User $model) => Carbon::parse($model->created_at)->format('d/m/Y'));
     }
 
     public function columns(): array
@@ -87,12 +84,13 @@ final class UserTable extends PowerGridComponent
                 ->searchable(),
 
             Column::make('Created at', 'created_at_formatted', 'created_at')
+                ->headerAttribute('align-middle text-center')
+                ->bodyAttribute('align-middle text-center')
                 ->sortable(),
 
             Column::action('Action')
-                ->isAction()
-                ->headerAttribute('w-0', '')
-                ->bodyAttribute('', '')
+                ->headerAttribute('text-center', styleAttr: 'width: 150px;')
+                ->bodyAttribute('text-center d-flex justify-content-around')
         ];
     }
 
@@ -129,16 +127,6 @@ final class UserTable extends PowerGridComponent
                 ->tooltip('Delete User')
                 ->route('users.destroy', ['user' => $row])
                 ->method('delete'),
-        ];
-    }
-
-    public function actionRules($row): array
-    {
-       return [
-            // Hide button edit for ID 1
-//            Rule::button('edit')
-//                ->when(fn($row) => $row->id === 1)
-//                ->hide(),
         ];
     }
 }

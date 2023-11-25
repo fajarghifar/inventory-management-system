@@ -1,12 +1,6 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
-    <x-alert/>
-
     <div class="page">
         <div class="page-body">
             <div class="container-xl">
@@ -162,8 +156,6 @@
                             {{ __('Pay Due') }}
                         </button>
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -171,8 +163,3 @@
 
     @include('partials._modal_due', $order)
 @endsection
-
-
-@pushonce('page-scripts')
-    {{--- ---}}
-@endpushonce

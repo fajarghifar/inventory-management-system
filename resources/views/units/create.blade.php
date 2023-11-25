@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="card-actions">
-                    <x-actions.close route="{{ route('units.index') }}" />
+                    <x-action.close route="{{ route('units.index') }}" />
                 </div>
             </div>
 

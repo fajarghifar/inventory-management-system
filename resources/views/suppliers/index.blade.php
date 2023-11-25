@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="card-actions">
-                        <x-actions.create route="{{ route('suppliers.create') }}" />
+                        <x-action.create route="{{ route('suppliers.create') }}" />
                     </div>
                 </div>
                 <div class="card-body">

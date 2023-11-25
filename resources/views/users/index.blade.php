@@ -11,7 +11,7 @@
                     </h3>
                 </div>
                 <div class="card-actions">
-                    <x-actions.create route="{{ route('users.create') }}"/>
+                    <x-action.create route="{{ route('users.create') }}"/>
                 </div>
             </div>
             <div class="card-body">

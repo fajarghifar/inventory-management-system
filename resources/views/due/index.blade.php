@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="card-actions">
-                    <x-actions.create route="{{ route('orders.create') }}" />
+                    <x-action.create route="{{ route('orders.create') }}" />
                 </div>
             </div>
             <div class="table-responsive">

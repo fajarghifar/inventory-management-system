@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
 <div class="page-body">
     <div class="container-xl">
@@ -19,7 +15,7 @@
                         </div>
 
                         <div class="card-actions btn-actions">
-                            <x-actions.close route="{{ route('orders.index') }}"/>
+                            <x-action.close route="{{ route('orders.index') }}"/>
                         </div>
                     </div>
 

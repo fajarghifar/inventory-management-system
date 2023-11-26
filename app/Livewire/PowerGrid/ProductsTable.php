@@ -118,20 +118,20 @@ final class ProductsTable extends PowerGridComponent
     {
         return [
             Button::make('show', file_get_contents('assets/svg/eye.svg'))
-                ->class('btn btn-outline-info btn-icon w-100')
+                ->class('btn btn-outline-info btn-icon')
                 ->tooltip('Show Product Details')
                 ->route('products.show', ['product' => $row])
                 ->method('get'),
 
             Button::make('edit', file_get_contents('assets/svg/edit.svg'))
-                ->class('btn btn-outline-warning btn-icon w-100')
+                ->class('btn btn-outline-warning btn-icon')
                 ->route('products.edit', ['product' => $row])
                 ->method('get')
                 ->tooltip('Edit Product'),
 
             Button::add('delete')
                 ->slot(file_get_contents('assets/svg/trash.svg'))
-                ->class('btn btn-outline-danger btn-icon w-100')
+                ->class('btn btn-outline-danger btn-icon')
                 ->tooltip('Delete Product')
                 ->route('products.destroy', ['product' => $row])
                 ->method('delete'),

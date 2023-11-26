@@ -22,6 +22,7 @@
                 </x-slot:actions>
             </x-slot:header>
 
+            {{---
             <x-table.index>
                 <x-slot:th>
                     <x-table.th>{{ __('No.') }}</x-table.th>
@@ -55,6 +56,11 @@
                     @endforeach
                 </x-slot:tbody>
             </x-table.index>
+            ---}}
+
+{{--            <livewire:power-grid.order-table/>--}}
+                <livewire:tables.order-table/>
+
 
             <x-slot:footer>
                 {{--- ---}}

@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
 <div class="page-body">
     @if($customers->isEmpty())
@@ -24,8 +20,3 @@
     @endif
 </div>
 @endsection
-
-@pushonce('page-scripts')
-    {{--    --}}
-@endpushonce
-

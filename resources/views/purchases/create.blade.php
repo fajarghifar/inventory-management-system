@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-
-@endpushonce
-
 @section('content')
 <div class="page-body">
     <div class="container-xl">
@@ -132,7 +128,3 @@
     </div>
 </div>
 @endsection
-
-@pushonce('page-scripts')
-
-@endpushonce

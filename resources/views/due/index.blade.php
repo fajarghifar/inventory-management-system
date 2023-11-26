@@ -18,7 +18,6 @@
                         {{ __('Due Order List') }}
                     </h3>
                 </div>
-
                 <div class="card-actions">
                     <x-action.create route="{{ route('orders.create') }}" />
                 </div>

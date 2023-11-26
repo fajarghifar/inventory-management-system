@@ -1,12 +1,6 @@
 @extends('layouts.auth')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
-
 @section('content')
-
 <form class="card card-md" action="{{ route('password.email') }}" method="post" autocomplete="off" novalidate>
     @csrf
 
@@ -46,8 +40,3 @@
     Forget it, <a href="{{ route('login') }}">send me back</a> to the sign in screen.
 </div>
 @endsection
-
-
-@pushonce('page-scripts')
-    {{--- ---}}
-@endpushonce

@@ -55,8 +55,9 @@ class Tabler extends Bootstrap5
     public function actions(): Actions
     {
         return Theme::actions()
-            ->tdBody('')
-            ->rowsBtn('');
+            ->headerBtn('', '')
+            ->tdBody('', '')
+            ->rowsBtn('', '');
     }
 
     public function toggleable(): Toggleable

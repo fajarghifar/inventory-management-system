@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Quotation;
 
-use App\Http\Requests\Quotation\StoreQuotationRequest;
-use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Customer;
 use App\Models\Quotation;
-use App\Http\Controllers\Controller;
 use App\Models\QuotationDetails;
-use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Gloudemans\Shoppingcart\Facades\Cart;
+use App\Http\Requests\Quotation\StoreQuotationRequest;
 
 class QuotationController extends Controller
 {
@@ -35,8 +35,6 @@ class QuotationController extends Controller
 
     public function store(StoreQuotationRequest $request)
     {
-//        dd($request);
-
         DB::transaction(function () use ($request) {
             $quotation = Quotation::create([
                 'date' => $request->date,

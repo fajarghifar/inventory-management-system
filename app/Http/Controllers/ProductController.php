@@ -196,7 +196,8 @@ class ProductController extends Controller
     /**
      * Handle export data products.
      */
-    function export(){
+    function export()
+    {
         $products = Product::all()->sortBy('product_name');
 
         $product_array [] = array(
@@ -231,7 +232,8 @@ class ProductController extends Controller
      *This function loads the customer data from the database then converts it
      * into an Array that will be exported to Excel
      */
-    public function exportExcel($products){
+    public function exportExcel($products)
+    {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
 

@@ -12,7 +12,7 @@
     <!-- Custom Stylesheet -->
     <link type="text/css" rel="stylesheet" href="{{ asset('assets/invoice/css/style.css') }}">
 </head>
-<body>
+    <body>
         <div class="invoice-16 invoice-content">
             <div class="container">
                 <div class="row">

@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="page-body">
-
     @include('partials.session')
 
     @if($orders->isEmpty())

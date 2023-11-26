@@ -1,11 +1,5 @@
 @extends('layouts.auth')
 
-
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
-
 @section('content')
 <div class="text-center">
     <div class="my-5">
@@ -13,7 +7,6 @@
             {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
         </p>
     </div>
-
 </div>
 
 
@@ -52,8 +45,3 @@
     </div>
 </form>
 @endsection
-
-
-@pushonce('page-scripts')
-    {{--- ---}}
-@endpushonce

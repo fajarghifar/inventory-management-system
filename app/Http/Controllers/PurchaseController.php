@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Purchase\StorePurchaseRequest;
+
 use Exception;
 use Carbon\Carbon;
 use App\Models\Product;
@@ -14,7 +14,7 @@ use App\Models\PurchaseDetails;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
+use App\Http\Requests\Purchase\StorePurchaseRequest;
 
 class PurchaseController extends Controller
 {

@@ -1,11 +1,5 @@
 @extends('layouts.auth')
 
-
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
-
 @section('content')
 <div class="card card-md">
     <div class="card-body">
@@ -81,8 +75,3 @@
     </span>
 </div>
 @endsection
-
-
-@pushonce('page-scripts')
-    {{--- ---}}
-@endpushonce

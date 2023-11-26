@@ -32,83 +32,80 @@
     </header>
 
     <div class="container px-4 mt-n10">
-
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row mx-n4">
-                        <div class="col-lg-12 card-header mt-n4">
-                            <form action="{{ route('categories.index') }}" method="GET">
-                                <div class="d-flex flex-wrap align-items-center justify-content-between">
-                                    <div class="form-group row align-items-center">
-                                        <label for="row" class="col-auto">Row:</label>
-                                        <div class="col-auto">
-                                            <label>
-                                                <select class="form-control" name="row">
-                                                    <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
-                                                    <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
-                                                    <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
-                                                    <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
-                                                </select>
-                                            </label>
-                                        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row mx-n4">
+                    <div class="col-lg-12 card-header mt-n4">
+                        <form action="{{ route('categories.index') }}" method="GET">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between">
+                                <div class="form-group row align-items-center">
+                                    <label for="row" class="col-auto">Row:</label>
+                                    <div class="col-auto">
+                                        <label>
+                                            <select class="form-control" name="row">
+                                                <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
+                                                <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
+                                                <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
+                                                <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
+                                            </select>
+                                        </label>
                                     </div>
+                                </div>
 
-                                    <div class="form-group row align-items-center justify-content-between">
-                                        <label class="control-label col-sm-3" for="search">Search:</label>
-                                        <div class="col-sm-8">
-                                            <div class="input-group">
-                                                <input type="text" id="search" class="form-control me-1" name="search" placeholder="Search category" value="{{ request('search') }}">
-                                                <div class="input-group-append">
-                                                    <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20 text-white"></i></button>
-                                                </div>
+                                <div class="form-group row align-items-center justify-content-between">
+                                    <label class="control-label col-sm-3" for="search">Search:</label>
+                                    <div class="col-sm-8">
+                                        <div class="input-group">
+                                            <input type="text" id="search" class="form-control me-1" name="search" placeholder="Search category" value="{{ request('search') }}">
+                                            <div class="input-group-append">
+                                                <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20 text-white"></i></button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </form>
-                        </div>
-
-                        <hr>
-
-                        <div class="col-lg-12">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">No.</th>
-                                        <th scope="col">@sortablelink('name', 'Category Name')</th>
-                                        <th scope="col">@sortablelink('slug', 'Category Slug')</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach ($category->products as $product)
-                                        <tr>
-{{--                                            <th scope="row">{{ (($product->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>--}}
-                                            <td>{{ $product->name }}</td>
-                                            <td>{{ $product->slug }}</td>
-                                            <td>
-                                                <div class="d-flex">
-                                                    <a href="{{ route('products.edit', $product) }}" class="btn btn-outline-primary btn-sm mx-1"><i class="fas fa-edit"></i></a>
-                                                    <form action="{{ route('products.destroy', $product) }}" method="POST">
-                                                        @csrf
-                                                        @method('delete')
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this record?')">
-                                                            <i class="far fa-trash-alt"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
                             </div>
-                        </div>
+                        </form>
+                    </div>
 
+                    <hr>
+
+                    <div class="col-lg-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">No.</th>
+                                    <th scope="col">@sortablelink('name', 'Category Name')</th>
+                                    <th scope="col">@sortablelink('slug', 'Category Slug')</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($category->products as $product)
+                                    <tr>
+{{--                                            <th scope="row">{{ (($product->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>--}}
+                                        <td>{{ $product->name }}</td>
+                                        <td>{{ $product->slug }}</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a href="{{ route('products.edit', $product) }}" class="btn btn-outline-primary btn-sm mx-1"><i class="fas fa-edit"></i></a>
+                                                <form action="{{ route('products.destroy', $product) }}" method="POST">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this record?')">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
+        </div>
     </div>
 @endsection

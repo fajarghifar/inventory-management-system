@@ -4,7 +4,6 @@
 <div class="page-body">
     <div class="container-xl">
         <div class="row row-cards">
-
             <div class="col-lg-7">
                 <div class="card">
                     <div class="card-header">
@@ -13,12 +12,10 @@
                                 {{ __('New Order') }}
                             </h3>
                         </div>
-
                         <div class="card-actions btn-actions">
                             <x-action.close route="{{ route('orders.index') }}"/>
                         </div>
                     </div>
-
                     <form action="{{ route('invoice.create') }}" method="POST">
                     @csrf
                         <div class="card-body">

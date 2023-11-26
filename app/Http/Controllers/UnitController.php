@@ -8,9 +8,6 @@ use App\Http\Requests\Unit\UpdateUnitRequest;
 
 class UnitController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $units = Unit::query()
@@ -22,29 +19,11 @@ class UnitController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('units.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUnitRequest $request)
-    {
-        Unit::create($request->validated());
-
-        return redirect()
-            ->route('units.index')
-            ->with('success', 'Unit has been created!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Unit $unit)
     {
         $unit->loadMissing('products')->get();
@@ -54,9 +33,15 @@ class UnitController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    public function store(StoreUnitRequest $request)
+    {
+        Unit::create($request->validated());
+
+        return redirect()
+            ->route('units.index')
+            ->with('success', 'Unit has been created!');
+    }
+
     public function edit(Unit $unit)
     {
         return view('units.edit', [
@@ -64,9 +49,6 @@ class UnitController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateUnitRequest $request, Unit $unit)
     {
         $unit->update($request->all());
@@ -76,9 +58,6 @@ class UnitController extends Controller
             ->with('success', 'Unit has been updated!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Unit $unit)
     {
         $unit->delete();

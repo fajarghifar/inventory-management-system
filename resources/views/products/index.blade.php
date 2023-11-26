@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
     <div class="page-body">
         @if($products->isEmpty())

@@ -1,11 +1,5 @@
 @extends('layouts.auth')
 
-
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
-
 @section('content')
     <form class="card card-md" action="{{ route('password.store') }}" method="POST" autocomplete="off">
         @csrf
@@ -71,8 +65,3 @@
         </div>
     </form>
 @endsection
-
-
-@pushonce('page-scripts')
-    {{--- ---}}
-@endpushonce

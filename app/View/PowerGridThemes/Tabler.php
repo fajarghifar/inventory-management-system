@@ -26,24 +26,23 @@ class Tabler extends Bootstrap5
 
     public function table(): Table
     {
-        return Theme::table('table card-table table-vcenter text-nowrap datatable')
-            ->div('table-responsive col-md-12', 'margin: 10px 0 10px;')
+        return Theme::table('table table-bordered card-table table-vcenter text-nowrap datatable')
+            ->div('table-responsive')
             ->thead('')
             ->thAction('')
-            ->tdAction('', '')
+            ->tdAction('')
             ->tr('')
-            ->th('') // white-space: nowrap;min-width: 50px;font-size: 0.75rem;color: #6b6a6a;padding-top: 8px;padding-bottom: 8px;
+            ->th('')
             ->tbody('')
-            ->tdBodyEmpty('', 'vertical-align: middle; line-height: normal;')
-            ->tdBodyTotalColumns('', 'font-size: 0.875rem; line-height: 1.25rem; --tw-text-opacity: 1; color: rgb(76 79 82 / var(--tw-text-opacity)); padding-left: 0.75rem; padding-right: 0.75rem; padding-top: 0.5rem; padding-bottom: 0.5rem;')
-            ->tdBody('', '');
+            ->tdBodyEmpty('', '')
+            ->tdBodyTotalColumns('', '');
     }
 
     public function cols(): Cols
     {
         return Theme::cols()
             ->div('')
-            ->clearFilter('', 'color: #c30707; cursor:pointer; float: right;');
+            ->clearFilter('' );
     }
 
     public function footer(): Footer
@@ -139,7 +138,7 @@ class Tabler extends Bootstrap5
     public function searchBox(): SearchBox
     {
         return Theme::searchBox()
-            ->input('col-12 col-sm-8 form-control')
+            ->input('col-12 col-sm-8 form-control') // form-control form-control-sm
             ->iconSearch('bi bi-search')
             ->iconClose('');
     }

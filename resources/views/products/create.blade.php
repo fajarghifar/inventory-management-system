@@ -1,24 +1,6 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-{{--- ---}}
-@endpushonce
-
 @section('content')
-<div class="page-header d-print-none">
-    <div class="container-xl">
-        <div class="row g-2 align-items-center mb-3">
-            <div class="col">
-                <h2 class="page-title">
-                    {{ __('Create Product') }}
-                </h2>
-            </div>
-        </div>
-
-        @include('partials._breadcrumbs')
-    </div>
-</div>
-
 <div class="page-body">
     <div class="container-xl">
         <div class="row row-cards">
@@ -313,9 +295,9 @@
                             </div>
 
                             <div class="card-footer text-end">
-                                <button class="btn btn-primary" type="submit">
+                                <x-button.save type="submit">
                                     {{ __('Save') }}
-                                </button>
+                                </x-button.save>
 
                                 <a class="btn btn-warning" href="{{ route('products.index') }}">
                                     {{ __('Cancel') }}

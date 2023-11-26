@@ -11,10 +11,10 @@
                                 {{ __('Due Order Details') }}
                             </h3>
                         </div>
-
                         <div class="card-actions btn-actions">
                             <div class="dropdown">
-                                <a href="#" class="btn-action dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><!-- Download SVG icon from http://tabler-icons.io/i/dots-vertical -->
+                                <a href="#" class="btn-action dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <!-- Download SVG icon from http://tabler-icons.io/i/dots-vertical -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path></svg>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" style="">
@@ -24,11 +24,9 @@
                                     </a>
                                 </div>
                             </div>
-
                             <x-action.close route="{{ route('due.index') }}" />
                         </div>
                     </div>
-
                     <div class="card-body">
                         <div class="row row-cards mb-3">
                             <div class="col">
@@ -89,7 +87,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach ($order->details as $item)
+                                    @foreach ($order->details as $item)
                                     <tr>
                                         <td class="align-middle text-center">
                                             {{ $loop->iteration  }}
@@ -120,25 +118,25 @@
                                             {{ number_format($item->total, 2) }}
                                         </td>
                                     </tr>
-                                @endforeach
-                                <tr>
-                                    <td colspan="6" class="text-end">
-                                        Payed amount
-                                    </td>
-                                    <td class="text-center">{{ number_format($order->pay, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="6" class="text-end">Due</td>
-                                    <td class="text-center">{{ number_format($order->due, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="6" class="text-end">VAT</td>
-                                    <td class="text-center">{{ number_format($order->vat, 2) }}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="6" class="text-end">Total</td>
-                                    <td class="text-center">{{ number_format($order->total, 2) }}</td>
-                                </tr>
+                                    @endforeach
+                                    <tr>
+                                        <td colspan="6" class="text-end">
+                                            Payed amount
+                                        </td>
+                                        <td class="text-center">{{ number_format($order->pay, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" class="text-end">Due</td>
+                                        <td class="text-center">{{ number_format($order->due, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" class="text-end">VAT</td>
+                                        <td class="text-center">{{ number_format($order->vat, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" class="text-end">Total</td>
+                                        <td class="text-center">{{ number_format($order->total, 2) }}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

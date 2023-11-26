@@ -16,9 +16,7 @@
     </div>
 </header>
 
-<!-- BEGIN: Main page content -->
 <div class="container-xl px-4 mt-4">
-    <!-- Account page navigation -->
     <nav class="nav nav-borders">
         <a class="nav-link active ms-0" href="{{ route('profile.edit') }}">Profile</a>
         <a class="nav-link" href="{{ route('profile.settings') }}">Settings</a>
@@ -79,9 +77,11 @@
                             </div>
                             @enderror
                         </div>
-                        <!-- Form Group (email address) -->
                         <div class="mb-3">
-                            <label class="small mb-1" for="email">Email address</label>
+                            <label class="small mb-1" for="email">
+                                Email address
+                            </label>
+
                             <input class="form-control form-control-solid @error('photo') is-invalid @enderror" id="email" name="email" type="text" placeholder="" value="{{ old('email', $user->email) }}"  autocomplete="off" />
                             @error('email')
                             <div class="invalid-feedback">
@@ -89,15 +89,16 @@
                             </div>
                             @enderror
                         </div>
-                        <!-- Save changes button -->
-                        <button class="btn btn-primary" type="submit">Update</button>
+
+                        <button class="btn btn-primary" type="submit">
+                            {{ __('Update') }}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </form>
 </div>
-<!-- END: Main page content -->
 @endsection
 
 @push('page-scripts')

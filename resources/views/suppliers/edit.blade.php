@@ -40,7 +40,7 @@
                                 </div>
 
                                 <div class="card-actions">
-                                    <x-actions.close route="{{ route('suppliers.index') }}" />
+                                    <x-action.close route="{{ route('suppliers.index') }}" />
                                 </div>
                             </div>
                             <div class="card-body">

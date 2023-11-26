@@ -1,11 +1,6 @@
 @extends('layouts.tabler')
 
-@push('page-styles')
-    {{--- ---}}
-@endpush
-
 @section('content')
-
 <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
     <div class="container-xl px-4">
         <div class="page-header-content">
@@ -22,13 +17,9 @@
 </header>
 
 @include('partials.session')
-
 <div class="container-xl px-4">
     <div class="row">
-
-        <!-- BEGIN: Section Left -->
         <div class="col-xl-6">
-            <!-- BEGIN: Cart -->
             <div class="card mb-4">
                 <div class="card-header">
                     Cart

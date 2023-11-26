@@ -1,7 +1,6 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
 
 @section('content')
-<!-- BEGIN: Header -->
 <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
     <div class="container-xl px-4">
         <div class="page-header-content">
@@ -19,8 +18,6 @@
 
 <div class="container-xl px-4">
     <div class="row">
-
-        <!-- BEGIN: Information Supplier -->
         <div class="col-xl-12">
             <div class="card mb-4">
                 <div class="card-header">
@@ -53,33 +50,28 @@
                             <div class="form-control form-control-solid">{{ $purchase->purchase_date }}</div>
                         </div>
                     </div>
-                    <!-- Form Row -->
                     <div class="row gx-3 mb-3">
-                        <!-- Form Group (no invoice) -->
                         <div class="col-md-6">
                             <label class="small mb-1">No Purchase</label>
                             <div class="form-control form-control-solid">{{ $purchase->purchase_no }}</div>
                         </div>
-                        <!-- Form Group (paid amount) -->
                         <div class="col-md-6">
                             <label class="small mb-1">Total</label>
                             <div class="form-control form-control-solid">{{ $purchase->total_amount }}</div>
                         </div>
                     </div>
-                    <!-- Form Row -->
+
                     <div class="row gx-3 mb-3">
-                        <!-- Form Group (due amount) -->
                         <div class="col-md-6">
                             <label class="small mb-1">Created By</label>
                             <div class="form-control form-control-solid">{{ $purchase->user_created->name }}</div>
                         </div>
-                        <!-- Form Group (paid amount) -->
                         <div class="col-md-6">
                             <label class="small mb-1">Updated By</label>
                             <div class="form-control form-control-solid">{{ $purchase->user_updated ? $purchase->user_updated->name : '-' }}</div>
                         </div>
                     </div>
-                    <!-- Form Group (address) -->
+
                     <div class="mb-3">
                         <label  class="small mb-1">Address</label>
                         <div class="form-control form-control-solid">{{ $purchase->supplier->address }}</div>
@@ -100,16 +92,14 @@
                 </div>
             </div>
         </div>
-        <!-- END: Information Supplier -->
 
-
-        <!-- BEGIN: Table Product -->
         <div class="col-xl-12">
             <div class="card mb-4 mb-xl-0">
-                <div class="card-header">List Product</div>
+                <div class="card-header">
+                    List Product
+                </div>
 
                 <div class="card-body">
-                    <!-- BEGIN: Products List -->
                     <div class="col-lg-12">
                         <div class="table-responsive">
                             <table class="table table-striped align-middle">
@@ -148,12 +138,9 @@
                             </table>
                         </div>
                     </div>
-                    <!-- END: Products List -->
                 </div>
             </div>
         </div>
-        <!-- END: Table Product -->
     </div>
 </div>
-<!-- END: Main Page Content -->
 @endsection

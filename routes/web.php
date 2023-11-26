@@ -118,15 +118,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('/purchases/update/{purchase}', [PurchaseController::class, 'update'])->name('purchases.update');
     Route::delete('/purchases/delete/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.delete');
-
 });
 
 require __DIR__.'/auth.php';
-
-Route::get('empty/', function () {
-    return view('empty');
-})->name('empty')->middleware('password.confirm');
-
 
 Route::get('test/', function (){
     return view('test');

@@ -1,6 +1,5 @@
 <div class="modal modal-blur fade" id="modal-due" tabindex="-1" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-
         <form method="POST" action="{{ route('due.update', $order) }}">
             @csrf
             @method('put')

@@ -43,7 +43,7 @@
         style="{{ $column->hidden === true ? 'display:none' : '' }}; {{ $theme->table->tdBodyStyle . ' ' . $column->bodyStyle ?? '' }}"
         wire:key="row-{{ $column->field }}"
     >
-        <div class="pg-actions d-flex  align-items-center"> <!--- justify-content-between --->
+        <div class="pg-actions d-flex d-grid gap-2 d-md-flex justify-content-between">
             <!-- Render Action -->
             @if (filled(data_get($row, 'actions')) && $column->isAction)
                 @foreach (data_get($row, 'actions') as $key => $action)

@@ -3,10 +3,11 @@
 @section('content')
     <form class="card card-md" action="{{ route('password.confirm') }}" method="POST" autocomplete="off" novalidate>
         @csrf
-
         <div class="card-body text-center">
             <div class="mb-4">
-                <h2 class="card-title">{{ __('Confirm Password') }}</h2>
+                <h2 class="card-title">
+                    {{ __('Confirm Password') }}
+                </h2>
                 <p class="text-secondary">
                     {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
                 </p>
@@ -16,7 +17,9 @@
                 <h3>{{ Auth::user()->name }}</h3>
             </div>
             <div class="mb-4">
-                <label for="password" class="visually-hidden">Password</label>
+                <label for="password" class="visually-hidden">
+                    Password
+                </label>
                 <input type="password" name="password" id="password" class="form-control" placeholder="Password&hellip;">
             </div>
             <div>

@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="card-actions">
-                            <x-actions.close route="{{ route('purchases.create') }}" />
+                            <x-action.close route="{{ route('purchases.create') }}" />
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -77,9 +77,9 @@
                     </div>
 
                     <div class="card-footer text-end">
-                        <x-buttons.edit class="btn btn-outline-warning" route="{{ route('suppliers.edit', $supplier) }}">
+                        <x-button.edit class="btn btn-outline-warning" route="{{ route('suppliers.edit', $supplier) }}">
                             {{ __('Edit') }}
-                        </x-buttons.edit>
+                        </x-button.edit>
                     </div>
                 </div>
             </div>

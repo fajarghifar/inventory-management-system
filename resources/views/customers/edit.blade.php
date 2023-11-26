@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-{{--- ---}}
-@endpushonce
-
 @section('content')
 <div class="page-header d-print-none">
     <div class="container-xl">
@@ -69,7 +65,7 @@
 
                                     <div class="col-sm-6 col-md-6">
                                         <label for="bank_name" class="form-label">
-                                            Bank Name
+                                            {{ __('Bank Name') }}
                                         </label>
 
                                         <select class="form-select @error('bank_name') is-invalid @enderror" id="bank_name" name="bank_name">
@@ -146,5 +142,5 @@
 @endsection
 
 @pushonce('page-scripts')
-<script src="{{ asset('assets/js/img-preview.js') }}"></script>
+    <script src="{{ asset('assets/js/img-preview.js') }}"></script>
 @endpushonce

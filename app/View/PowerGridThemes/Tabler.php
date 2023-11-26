@@ -30,7 +30,7 @@ class Tabler extends Bootstrap5
             ->div('table-responsive col-md-12', 'margin: 10px 0 10px;')
             ->thead('')
             ->thAction('')
-            ->tdAction('', '')
+            ->tdAction('')
             ->tr('')
             ->th('') // white-space: nowrap;min-width: 50px;font-size: 0.75rem;color: #6b6a6a;padding-top: 8px;padding-bottom: 8px;
             ->tbody('')
@@ -56,8 +56,9 @@ class Tabler extends Bootstrap5
     public function actions(): Actions
     {
         return Theme::actions()
-            ->tdBody('')
-            ->rowsBtn('');
+            ->headerBtn('', '')
+            ->tdBody('', '')
+            ->rowsBtn('', '');
     }
 
     public function toggleable(): Toggleable

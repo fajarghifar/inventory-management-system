@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="card-actions">
-                    <x-actions.close route="{{ route('categories.index') }}" />
+                    <x-action.close route="{{ route('categories.index') }}" />
                 </div>
             </div>
             <form action="{{ route('categories.update', $category->slug) }}" method="POST">

@@ -1,9 +1,5 @@
 @extends('layouts.tabler')
 
-@pushonce('page-styles')
-    {{--- ---}}
-@endpushonce
-
 @section('content')
     <div class="page-body">
         @if($quotations->isEmpty())
@@ -37,8 +33,3 @@
         @endif
     </div>
 @endsection
-
-@pushonce('page-scripts')
-    {{--    --}}
-@endpushonce
-

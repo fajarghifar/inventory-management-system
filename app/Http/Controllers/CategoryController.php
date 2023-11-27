@@ -10,8 +10,8 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
-        
+        $categories = Category::latest()->limit(5)->get();
+
         return view('categories.index', [
             'categories' => $categories,
         ]);
@@ -61,7 +61,7 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()
-            ->back()
+            ->route('categories.index')
             ->with('success', 'Category has been deleted!');
     }
 }

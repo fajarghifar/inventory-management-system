@@ -11,6 +11,8 @@
     />
     @else
     <div class="container-xl">
+
+        {{---
         <div class="card">
             <div class="card-header">
                 <div>
@@ -23,6 +25,7 @@
                     <x-action.create route="{{ route('purchases.create') }}" />
                 </div>
             </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
                     <thead class="thead-light">
@@ -83,11 +86,17 @@
                 </tbody>
             </table>
             </div>
+
+
+
             <div class="card-footer d-flex align-items-center">
                 {{ $purchases->links() }}
             </div>
         </div>
     </div>
+    ---}}
+
+        @livewire('tables.purchase-table')
     @endif
 </div>
 @endsection

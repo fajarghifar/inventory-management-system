@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Purchase extends Model
 {
+    use HasFactory;
+
     protected $guarded = [
         'id',
     ];
@@ -47,5 +49,12 @@ class Purchase extends Model
     public function details(): HasMany
     {
         return $this->hasMany(PurchaseDetails::class);
+    }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('purchase_no', 'like', "%{$value}%")
+            ->orWhere('purchase_status', 'like', "%{$value}%")
+        ;
     }
 }

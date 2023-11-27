@@ -296,12 +296,9 @@
                             </div>
 
                             <div class="card-footer text-end">
-{{--                                <x-button.save type="submit">--}}
-{{--                                    {{ __('Save') }}--}}
-{{--                                </x-button.save>--}}
-                                <button type="submit" class="btn btn-primary">
+                                <x-button.save type="submit">
                                     {{ __('Save') }}
-                                </button>
+                                </x-button.save>
 
                                 <a class="btn btn-warning" href="{{ route('products.index') }}">
                                     {{ __('Cancel') }}

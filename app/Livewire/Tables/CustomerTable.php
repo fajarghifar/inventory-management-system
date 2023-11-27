@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Tables;
 
-use App\Models\Order;
+use App\Models\Customer;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class OrderTable extends Component
+class CustomerTable extends Component
 {
     use WithPagination;
 
@@ -14,7 +14,7 @@ class OrderTable extends Component
 
     public $search = '';
 
-    public $sortField = 'invoice_no';
+    public $sortField = 'name';
 
     public $sortAsc = false;
 
@@ -33,9 +33,9 @@ class OrderTable extends Component
 
     public function render()
     {
-        return view('livewire.tables.order-table', [
-            'orders' => Order::query()
-                ->with(['customer', 'details'])
+        return view('livewire.tables.customer-table', [
+            'customers' => Customer::query()
+                ->with('orders', 'quotations')
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
                 ->paginate($this->perPage)

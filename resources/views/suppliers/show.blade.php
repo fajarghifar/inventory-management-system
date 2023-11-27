@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="card-actions">
-                            <x-action.close route="{{ route('purchases.create') }}" />
+                            <x-action.close route="{{ route('suppliers.index') }}" />
                         </div>
                     </div>
                     <div class="table-responsive">

@@ -2,12 +2,12 @@
     <div class="card-header">
         <div>
             <h3 class="card-title">
-                {{ __('Purchases') }}
+                {{ __('Orders') }}
             </h3>
         </div>
 
         <div class="card-actions">
-            <x-action.create route="{{ route('purchases.create') }}" />
+            <x-action.create route="{{ route('orders.create') }}" />
         </div>
     </div>
 
@@ -44,33 +44,39 @@
                         {{ __('No.') }}
                     </th>
                     <th scope="col" class="align-middle text-center">
-                        <a wire:click.prevent="sortBy('purchase_no')" href="#" role="button">
-                            {{ __('Purchase No.') }}
-                            @include('inclues._sort-icon', ['field' => 'purchase_no'])
+                        <a wire:click.prevent="sortBy('invoice_no')" href="#" role="button">
+                            {{ __('Invoice No.') }}
+                            @include('inclues._sort-icon', ['field' => 'invoice_no'])
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
-                        <a wire:click.prevent="sortBy('supplier_id')" href="#" role="button">
-                            {{ __('Supplier') }}
-                            @include('inclues._sort-icon', ['field' => 'supplier_id'])
+                        <a wire:click.prevent="sortBy('customer_id')" href="#" role="button">
+                            {{ __('Customer') }}
+                            @include('inclues._sort-icon', ['field' => 'customer_id'])
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
-                        <a wire:click.prevent="sortBy('purchase_date')" href="#" role="button">
+                        <a wire:click.prevent="sortBy('order_date')" href="#" role="button">
                             {{ __('Date') }}
-                            @include('inclues._sort-icon', ['field' => 'purchase_date'])
+                            @include('inclues._sort-icon', ['field' => 'order_date'])
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
-                        <a wire:click.prevent="sortBy('total_amount')" href="#" role="button">
+                        <a wire:click.prevent="sortBy('payment_type')" href="#" role="button">
+                            {{ __('Paymet') }}
+                            @include('inclues._sort-icon', ['field' => 'payment_type'])
+                        </a>
+                    </th>
+                    <th scope="col" class="align-middle text-center">
+                        <a wire:click.prevent="sortBy('total')" href="#" role="button">
                             {{ __('Total') }}
-                            @include('inclues._sort-icon', ['field' => 'total_amount'])
+                            @include('inclues._sort-icon', ['field' => 'total'])
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
-                        <a wire:click.prevent="sortBy('purchase_status')" href="#" role="button">
+                        <a wire:click.prevent="sortBy('order_status')" href="#" role="button">
                             {{ __('Status') }}
-                            @include('inclues._sort-icon', ['field' => 'purchase_status'])
+                            @include('inclues._sort-icon', ['field' => 'order_status'])
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
@@ -79,51 +85,39 @@
                 </tr>
             </thead>
             <tbody>
-            @forelse ($purchases as $purchase)
+            @forelse ($orders as $order)
                 <tr>
                     <td class="align-middle text-center">
                         {{ $loop->iteration }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ $purchase->purchase_no }}
+                        {{ $order->invoice_no }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ $purchase->supplier->name }}
+                        {{ $order->customer->name }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ $purchase->purchase_date->format('d-m-Y') }}
+                        {{ $order->order_date->format('d-m-Y') }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ Illuminate\Support\Number::currency($purchase->total_amount, 'EUR') }}
+                        {{ $order->payment_type }}
                     </td>
-
-                    @if ($purchase->purchase_status == 1)
-                        <td class="align-middle text-center">
-                            <span class="badge bg-green text-white text-uppercase">
-                                {{ __('APPROVED') }}
-                            </span>
-                        </td>
-                        <td class="align-middle text-center">
-                            <x-button.show class="btn-icon" route="{{ route('purchases.show', $purchase) }}"/>
-
-                            <x-button.edit class="btn-icon" route="{{ route('purchases.edit', $purchase) }}"/>
-                        </td>
-                    @else
-                        <td class="align-middle text-center">
-                            <span class="badge bg-orange text-white text-uppercase">
-                                {{ __('PENDING') }}
-                            </span>
-                        </td>
-                        <td class="align-middle text-center" style="width: 10%">
-                            <x-button.show class="btn-icon" route="{{ route('purchases.show', $purchase) }}"/>
-                            <x-button.edit class="btn-icon" route="{{ route('purchases.edit', $purchase) }}"/>
-                            <x-button.delete class="btn-icon" route="{{ route('purchases.delete', $purchase) }}"/>
-                        </td>
-                    @endif
+                    <td class="align-middle text-center">
+                        {{ Illuminate\Support\Number::currency($order->total, 'EUR') }}
+                    </td>
+                    <td class="align-middle text-center">
+                        <span class="badge {{ $order->order_status === 'complete' ? 'bg-green' : 'bg-orange' }} text-white text-uppercase">
+                            {{ $order->order_status }}
+                        </span>
+                    </td>
+                    <td class="align-middle text-center">
+                        <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>
+                        <x-button.print class="btn-icon" route="{{ route('order.downloadInvoice', $order) }}"/>
+                    </td>
                 </tr>
-                @empty
+            @empty
                 <tr>
-                    <td class="align-middle text-center" colspan="7">
+                    <td class="align-middle text-center" colspan="8">
                         No results found
                     </td>
                 </tr>
@@ -134,12 +128,11 @@
 
     <div class="card-footer d-flex align-items-center">
         <p class="m-0 text-secondary">
-            Showing <span>{{ $purchases->firstItem() }}</span>
-            to <span>{{ $purchases->lastItem() }}</span> of <span>{{ $purchases->total() }}</span> entries
+            Showing <span>{{ $orders->firstItem() }}</span> to <span>{{ $orders->lastItem() }}</span> of <span>{{ $orders->total() }}</span> entries
         </p>
 
         <ul class="pagination m-0 ms-auto">
-        {{ $purchases->links() }}
+            {{ $orders->links() }}
         </ul>
     </div>
 </div>

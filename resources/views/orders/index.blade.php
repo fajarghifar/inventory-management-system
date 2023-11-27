@@ -11,16 +11,16 @@
     />
     @else
     <div class="container-xl">
-        <x-card>
-            <x-slot:header>
-                <x-slot:title>
-                    {{ __('Orders') }}
-                </x-slot:title>
+{{--        <x-card>--}}
+{{--            <x-slot:header>--}}
+{{--                <x-slot:title>--}}
+{{--                    {{ __('Orders') }}--}}
+{{--                </x-slot:title>--}}
 
-                <x-slot:actions>
-                    <x-action.create route="{{ route('orders.create') }}" />
-                </x-slot:actions>
-            </x-slot:header>
+{{--                <x-slot:actions>--}}
+{{--                    <x-action.create route="{{ route('orders.create') }}" />--}}
+{{--                </x-slot:actions>--}}
+{{--            </x-slot:header>--}}
 
             {{---
             <x-table.index>
@@ -58,14 +58,7 @@
             </x-table.index>
             ---}}
 
-{{--            <livewire:power-grid.order-table/>--}}
-                <livewire:tables.order-table/>
-
-
-            <x-slot:footer>
-                {{--- ---}}
-            </x-slot:footer>
-        </x-card>
+        <livewire:tables.order-table />
     </div>
    @endif
 </div>

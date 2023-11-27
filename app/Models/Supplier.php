@@ -36,4 +36,13 @@ class Supplier extends Model
     {
         return $this->hasMany(Purchase::class);
     }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('name', 'like', "%{$value}%")
+            ->orWhere('email', 'like', "%{$value}%")
+            ->orWhere('phone', 'like', "%{$value}%")
+            ->orWhere('shopname', 'like', "%{$value}%")
+            ->orWhere('type', 'like', "%{$value}%");
+    }
 }

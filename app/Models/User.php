@@ -31,6 +31,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'updated_at' => 'datetime'
     ];
 
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('name', 'like', "%{$value}%")
+            ->orWhere('email', 'like', "%{$value}%");
+    }
+
     public function getRouteKeyName(): string
     {
         return 'name';

@@ -45,4 +45,11 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetails::class);
     }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('invoice_no', 'like', "%{$value}%")
+            ->orWhere('order_status', 'like', "%{$value}%")
+            ->orWhere('payment_type', 'like', "%{$value}%");
+    }
 }

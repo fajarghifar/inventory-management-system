@@ -66,4 +66,10 @@ class Product extends Model
             set: fn ($value) => $value * 100,
         );
     }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('name', 'like', "%{$value}%")
+            ->orWhere('code', 'like', "%{$value}%");
+    }
 }

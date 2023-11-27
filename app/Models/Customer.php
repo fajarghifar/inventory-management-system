@@ -39,4 +39,11 @@ class Customer extends Model
     {
         return $this->HasMany(Quotation::class);
     }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('name', 'like', "%{$value}%")
+            ->orWhere('email', 'like', "%{$value}%")
+            ->orWhere('phone', 'like', "%{$value}%");
+    }
 }

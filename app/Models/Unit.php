@@ -25,13 +25,20 @@ class Unit extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
-
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('name', 'like', "%{$value}%")
+            ->orWhere('slug', 'like', "%{$value}%")
+            ->orWhere('short_code', 'like', "%{$value}%");
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

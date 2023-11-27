@@ -58,4 +58,11 @@ class Quotation extends Model
 //            //set: fn ($value) => $value * 100,
 //        );
 //    }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('reference', 'like', "%{$value}%")
+            ->orWhere('customer_name', 'like', "%{$value}%")
+            ->orWhere('status', 'like', "%{$value}%");
+    }
 }

@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Livewire\Tables;
+
+use App\Models\Order;
+use Illuminate\Database\Eloquent\Builder;
+use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
+use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
+
+class OrderTable extends DataTableComponent
+{
+    protected $model = Order::class;
+
+    public function configure(): void
+    {
+        $this->setPrimaryKey('id');
+    }
+
+    public function columns(): array
+    {
+        return [
+            Column::make("Id", "id")
+                ->sortable(),
+
+            Column::make("Customer id", "customer_id")
+                ->sortable(),
+
+            Column::make("Order date", "order_date")
+                ->sortable()
+                ->format(fn($value, $row, Column $column) => $value->format('d-m-Y')),
+
+            Column::make("Order status", "order_status")
+                ->sortable()
+                ->format(
+                    fn($value, $row, Column $column) => '
+                        <span class="badge bg-green text-white">
+                    '.$row->order_status.'</span>'
+                )
+                ->html(),
+
+            Column::make("Invoice no", "invoice_no")
+                ->sortable(),
+            Column::make("Payment type", "payment_type")
+                ->sortable(),
+        ];
+    }
+
+    public function filters(): array
+    {
+        return [
+            SelectFilter::make('Status')
+                ->setFilterPillTitle('Order Status')
+                ->setFilterPillValues([
+                    'complete' => 'COMPLETE',
+                    'pending' => 'PENDING',
+                ])
+                ->options([
+                    '' => 'All',
+                    'complete' => 'COMPLETE',
+                    'pending' => 'PENDING',
+                ])
+                ->filter(function(Builder $builder, string $value) {
+                    if ($value === 'complete') {
+                        $builder->where('order_status', 'complete');
+                    } elseif ($value === 'pending') {
+                        $builder->where('order_status', 'pending');
+                    }
+                }),
+        ];
+    }
+}

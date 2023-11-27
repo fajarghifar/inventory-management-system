@@ -33,8 +33,6 @@ class CategoryController extends Controller
 
     public function show(Category $category)
     {
-        $category->loadMissing(['products'])->get();
-
         return view('categories.show', [
             'category' => $category
         ]);

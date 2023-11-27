@@ -18,27 +18,36 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        $products = Product::select('id', 'name')
+            ->limit(1)
+            ->get();
 
         return view('products.index', [
             'products' => $products,
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(Request $request)
     {
+        $categories = Category::all();
+        $units = Unit::all();
+
+        if ($request->has('category'))
+        {
+            $categories = Category::whereSlug($request->get('category'))->get();
+        }
+
+        if ($request->has('unit'))
+        {
+            $units = Unit::whereSlug($request->get('unit'))->get();
+        }
+
         return view('products.create', [
-            'categories' => Category::all(),
-            'units' => Unit::all(),
+            'categories' => $categories,
+            'units' => $units,
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProductRequest $request)
     {
 //        dd($request);
@@ -62,9 +71,6 @@ class ProductController extends Controller
             ->with('success', 'Product has been created!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
         // Generate a barcode
@@ -78,9 +84,6 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Product $product)
     {
         return view('products.edit', [
@@ -90,9 +93,6 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->except('product_image'));
@@ -122,9 +122,6 @@ class ProductController extends Controller
             ->with('success', 'Product has been updated!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Product $product)
     {
         /**
@@ -141,9 +138,6 @@ class ProductController extends Controller
             ->with('success', 'Product has been deleted!');
     }
 
-    /**
-     * Handle export data products.
-     */
     public function import()
     {
         return view('products.import');
@@ -194,9 +188,6 @@ class ProductController extends Controller
             ->with('success', 'Data product has been imported!');
     }
 
-    /**
-     * Handle export data products.
-     */
     function export()
     {
         $products = Product::all()->sortBy('product_name');
@@ -229,10 +220,6 @@ class ProductController extends Controller
         $this->exportExcel($product_array);
     }
 
-    /**
-     *This function loads the customer data from the database then converts it
-     * into an Array that will be exported to Excel
-     */
     public function exportExcel($products)
     {
         ini_set('max_execution_time', 0);
@@ -253,5 +240,4 @@ class ProductController extends Controller
             return;
         }
     }
-
 }

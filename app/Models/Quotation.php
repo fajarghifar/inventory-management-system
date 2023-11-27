@@ -51,13 +51,39 @@ class Quotation extends Model
         return $this->belongsTo(Customer::class);
     }
 
-//    protected function totalAmount(): Attribute
-//    {
-//        return Attribute::make(
-//            get: fn ($value) => $value / 100,
-//            //set: fn ($value) => $value * 100,
-//        );
-//    }
+
+    protected function shippingAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value / 100,
+            set: fn ($value) => $value * 100,
+        );
+    }
+
+    protected function totalAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value / 100,
+            set: fn ($value) => $value * 100,
+        );
+    }
+
+    protected function taxAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value / 100,
+            set: fn ($value) => $value * 100,
+        );
+    }
+
+    protected function discountAmount(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value / 100,
+            set: fn ($value) => $value * 100,
+        );
+    }
+
 
     public function scopeSearch($query, $value): void
     {

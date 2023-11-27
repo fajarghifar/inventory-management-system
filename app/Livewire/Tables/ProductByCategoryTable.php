@@ -3,10 +3,11 @@
 namespace App\Livewire\Tables;
 
 use App\Models\Category;
+use App\Models\Product;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class CategoryTable extends Component
+class ProductByCategoryTable extends Component
 {
     use WithPagination;
 
@@ -16,7 +17,9 @@ class CategoryTable extends Component
 
     public $sortField = 'name';
 
-    public $sortAsc = false;
+    public $sortAsc = true;
+
+    public $category = null;
 
     public function sortBy($field): void
     {
@@ -31,11 +34,15 @@ class CategoryTable extends Component
         $this->sortField = $field;
     }
 
+    public function mount($category)
+    {
+        $this->category = $category;
+    }
+
     public function render()
     {
-        return view('livewire.tables.category-table', [
-            'categories' => Category::query()
-                ->with(['products'])
+        return view('livewire.tables.product-by-category-table',[
+            'products' => Product::where('category_id', $this->category->id)
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
                 ->paginate($this->perPage)

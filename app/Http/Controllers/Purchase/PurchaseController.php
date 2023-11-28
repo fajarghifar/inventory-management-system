@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Purchase;
 
 
-use Exception;
-use Carbon\Carbon;
-use App\Models\Product;
-use App\Models\Category;
-use App\Models\Purchase;
-use App\Models\Supplier;
-use Illuminate\Http\Request;
-use App\Models\PurchaseDetails;
-use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpSpreadsheet\Writer\Xls;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\StorePurchaseRequest;
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Purchase;
+use App\Models\PurchaseDetails;
+use App\Models\Supplier;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
 
 class PurchaseController extends Controller
 {

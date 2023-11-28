@@ -10,7 +10,6 @@ use App\Http\Requests\User\UpdateUserRequest;
 
 class UserController extends Controller
 {
-
     public function index()
     {
         // TODO: Select columns

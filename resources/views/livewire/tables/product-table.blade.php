@@ -6,8 +6,26 @@
             </h3>
         </div>
 
-        <div class="card-actions">
-            <x-action.create route="{{ route('products.create') }}" />
+        <div class="card-actions btn-group">
+            <div class="dropdown">
+                <a href="#" class="btn-action dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <x-icon.vertical-dots/>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" style="">
+                    <a href="{{ route('products.create') }}" class="dropdown-item">
+                        <x-icon.plus/>
+                        {{ __('Create Product') }}
+                    </a>
+                    <a href="{{ route('products.import.view') }}" class="dropdown-item">
+                        <x-icon.plus/>
+                        {{ __('Import Products') }}
+                    </a>
+                    <a href="{{ route('products.export.store') }}" class="dropdown-item">
+                        <x-icon.plus/>
+                        {{ __('Export Products') }}
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

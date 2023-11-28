@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Tables;
 
-use App\Models\Category;
 use App\Models\Product;
 use Livewire\Component;
 use Livewire\WithPagination;

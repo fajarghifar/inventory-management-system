@@ -106,9 +106,11 @@
                         {{ Illuminate\Support\Number::currency($order->total, 'EUR') }}
                     </td>
                     <td class="align-middle text-center">
-                        <span class="badge {{ $order->order_status === 'complete' ? 'bg-green' : 'bg-orange' }} text-white text-uppercase">
+                        <x-status dot color="{{ $order->order_status === 'complete' ? 'green' : 'orange' }}"
+                                  class="text-uppercase"
+                        >
                             {{ $order->order_status }}
-                        </span>
+                        </x-status>
                     </td>
                     <td class="align-middle text-center">
                         <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>

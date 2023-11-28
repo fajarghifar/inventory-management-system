@@ -313,7 +313,7 @@
                                     {{ __('Update') }}
                                 </button>
 
-                                <a class="btn btn-danger" href="{{ route('products.index') }}">
+                                <a class="btn btn-danger" href="{{ url()->previous() }}">
                                     {{ __('Cancel') }}
                                 </a>
                             </div>

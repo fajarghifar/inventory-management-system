@@ -9,9 +9,11 @@ use App\Http\Controllers\Order\OrderCompleteController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\OrderPendingController;
 use App\Http\Controllers\PosController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Product\ProductExportController;
+use App\Http\Controllers\Product\ProductImportController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\Purchase\PurchaseController;
 use App\Http\Controllers\Quotation\QuotationController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
@@ -42,8 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/', [DashboardController::class, 'index'])->name('dashboard');
 
     // User Management
-    Route::resource('/users', UserController::class);
-        //->except(['show']);
+    Route::resource('/users', UserController::class); //->except(['show']);
     Route::put('/user/change-password/{username}', [UserController::class, 'updatePassword'])->name('users.updatePassword');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -57,13 +58,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/categories', CategoryController::class);
     Route::resource('/units', UnitController::class);
 
-    // Default Controller
-    //Route::get('/get-all-product', [DefaultController::class, 'GetProducts'])->name('get-all-product');
-
     // Route Products
-    Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
-    Route::get('/products/import', [ProductController::class, 'import'])->name('products.import');
-    Route::post('/products/import', [ProductController::class, 'handleImport'])->name('products.handleImport');
+    Route::get('products/import/', [ProductImportController::class, 'create'])->name('products.import.view');
+    Route::post('products/import/', [ProductImportController::class, 'store'])->name('products.import.store');
+    Route::get('products/export/', [ProductExportController::class, 'create'])->name('products.export.store');
     Route::resource('/products', ProductController::class);
 
     // Route POS
@@ -74,7 +72,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //Route::post('/pos/invoice', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
     Route::post('invoice/create/', [InvoiceController::class, 'create'])->name('invoice.create');
-
 
     // Route Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -98,13 +95,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/details/{order_id}/download', [OrderController::class, 'downloadInvoice'])->name('order.downloadInvoice');
 
 
-
     // Route Purchases
     Route::get('/purchases/approved', [PurchaseController::class, 'approvedPurchases'])->name('purchases.approvedPurchases');
     Route::get('/purchases/report', [PurchaseController::class, 'dailyPurchaseReport'])->name('purchases.dailyPurchaseReport');
     Route::get('/purchases/report/export', [PurchaseController::class, 'getPurchaseReport'])->name('purchases.getPurchaseReport');
     Route::post('/purchases/report/export', [PurchaseController::class, 'exportPurchaseReport'])->name('purchases.exportPurchaseReport');
-
 
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');

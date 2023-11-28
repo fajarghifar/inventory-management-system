@@ -1,50 +1,48 @@
 @extends('layouts.tabler')
 
 @section('content')
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-    <div class="container-xl px-4">
-        <div class="page-header-content pt-4">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto mt-4">
-                    <h1 class="page-header-title">
-                        <div class="page-header-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
-                        Import Product
-                    </h1>
-                </div>
-            </div>
+<div class="page-body">
+    <div class="container-xl">
 
-            @include('partials._breadcrumbs')
-        </div>
+        <form action="{{ route('products.import.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <x-card>
+                <x-slot:header>
+                    <x-slot:title>
+                        {{ __('Import Products') }}
+                    </x-slot:title>
+
+                    <x-slot:actions>
+                        <x-action.close route="{{ route('products.index') }}" />
+                    </x-slot:actions>
+                </x-slot:header>
+
+                <x-slot:content>
+                    <input type="file"
+                           id="file"
+                           name="file"
+                           class="form-control @error('file') is-invalid @enderror"
+                           accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    >
+
+                    @error('file')
+                    <div class="invalid-feedback">
+                        {{ $message }}
+                    </div>
+                    @enderror
+                </x-slot:content>
+
+                <x-slot:footer class="text-end">
+                    <x-button type="submit">
+                        {{ __('Import') }}
+                    </x-button>
+                </x-slot:footer>
+            </x-card>
+        </form>
     </div>
-</header>
-
-<div class="container-xl px-2 mt-n10">
-    <form action="{{ route('products.handleImport') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="card mb-4 mb-xl-0">
-                    <div class="card-header">
-                        Import Product
-                    </div>
-                    <div class="card-body">
-                        <input class="form-control form-control-solid mb-3 @error('file') is-invalid @enderror" type="file"  id="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                        <button class="btn btn-primary" type="submit">
-                            Import
-                        </button>
-                        @error('file')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
 </div>
 @endsection
 
-@push('page-scripts')
+@pushonce('page-scripts')
     <script src="{{ asset('assets/js/img-preview.js') }}"></script>
-@endpush
+@endpushonce

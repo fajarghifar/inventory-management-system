@@ -103,7 +103,7 @@
                         {{ $order->payment_type }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ Illuminate\Support\Number::currency($order->total, 'EUR') }}
+                        {{ Number::currency($order->total, 'EUR') }}
                     </td>
                     <td class="align-middle text-center">
 {{--                        <x-status dot color="{{ $order->order_status === 'complete' ? 'green' : 'orange' }}"--}}

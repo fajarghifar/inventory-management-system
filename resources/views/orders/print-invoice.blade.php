@@ -87,13 +87,13 @@
                                                     {{ $item->product->name }}
                                                 </td>
                                                 <td class="align-middle text-center">
-                                                    {{ \Illuminate\Support\Number::currency($item->unitcost, 'EUR') }}
+                                                    {{ Number::currency($item->unitcost, 'EUR') }}
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     {{ $item->quantity }}
                                                 </td>
                                                 <td class="align-middle text-center">
-                                                    {{ \Illuminate\Support\Number::currency($item->total, 'EUR') }}
+                                                    {{ Number::currency($item->total, 'EUR') }}
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -106,7 +106,7 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <strong>
-                                                        {{ Illuminate\Support\Number::currency($order->sub_total, 'EUR') }}
+                                                        {{ Number::currency($order->sub_total, 'EUR') }}
                                                     </strong>
                                                 </td>
                                             </tr>
@@ -116,7 +116,7 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <strong>
-                                                        {{ \Illuminate\Support\Number::currency($order->vat, 'EUR') }}
+                                                        {{ Number::currency($order->vat, 'EUR') }}
                                                     </strong>
                                                 </td>
                                             </tr>
@@ -126,7 +126,7 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <strong>
-                                                        {{ \Illuminate\Support\Number::currency($order->total, 'EUR') }}
+                                                        {{ Number::currency($order->total, 'EUR') }}
                                                     </strong>
                                                 </td>
                                             </tr>

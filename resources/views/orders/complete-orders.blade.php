@@ -64,7 +64,7 @@
                             <td class="text-center">{{ $order->customer->name }}</td>
                             <td class="text-center">{{ $order->order_date->format('d-m-Y') }}</td>
                             <td class="text-center">{{ $order->payment_type }}</td>
-                            <td class="text-center">{{ Illuminate\Support\Number::currency($order->total, 'EUR') }}</td>
+                            <td class="text-center">{{ Number::currency($order->total, 'EUR') }}</td>
                             <td class="text-center">
                                 <span class="badge bg-green text-white text-uppercase">
                                     {{ $order->order_status }}

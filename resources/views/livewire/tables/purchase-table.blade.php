@@ -94,7 +94,7 @@
                         {{ $purchase->date->format('d-m-Y') }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ Illuminate\Support\Number::currency($purchase->total_amount, 'EUR') }}
+                        {{ Number::currency($purchase->total_amount, 'EUR') }}
                     </td>
 
                     @if ($purchase->status === \App\Enums\PurchaseStatus::APPROVED)

@@ -46,7 +46,7 @@
                                 {{ $purchase->purchase_date->format('d-m-Y') }}
                             </td>
                             <td class="text-center">
-                                {{ Illuminate\Support\Number::currency($purchase->total_amount, 'EUR') }}
+                                {{ Number::currency($purchase->total_amount, 'EUR') }}
                             </td>
                             <td class="text-center">
                                 <span class="btn btn-{{ $purchase->purchase_status == 0 ? 'warning' : 'success' }} btn-sm text-uppercase">{{ $purchase->purchase_status == 0 ? 'pending' : 'approved' }}</span>

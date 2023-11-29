@@ -94,7 +94,7 @@
                         {{ $quotation->customer->name }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ Illuminate\Support\Number::currency($quotation->total_amount, 'EUR') }}
+                        {{ Number::currency($quotation->total_amount, 'EUR') }}
                     </td>
                     <td class="align-middle text-center">
                         <span class="badge {{ $quotation->status === \App\Enums\QuotationStatus::PENDING ? 'bg-orange' : 'bg-green' }} text-white text-uppercase">

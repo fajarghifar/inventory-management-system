@@ -56,12 +56,12 @@
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-green text-white">
-                                    {{ Illuminate\Support\Number::currency($order->pay, 'EUR') }}
+                                    {{ Number::currency($order->pay, 'EUR') }}
                                 </span>
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-yellow text-white">
-                                    {{ Illuminate\Support\Number::currency($order->due, 'EUR') }}
+                                    {{ Number::currency($order->due, 'EUR') }}
                                 </span>
                             </td>
                             <td class="text-center">

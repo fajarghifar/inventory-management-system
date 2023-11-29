@@ -106,11 +106,7 @@
                         {{ Number::currency($order->total, 'EUR') }}
                     </td>
                     <td class="align-middle text-center">
-{{--                        <x-status dot color="{{ $order->order_status === 'complete' ? 'green' : 'orange' }}"--}}
-{{--                                  class="text-uppercase"--}}
-{{--                        >--}}
-
-                        <x-status dot color="{{ $order->order_status->name === 'COMPLETE' ? 'green' : 'orange' }}"
+                        <x-status dot color="{{ $order->order_status === \App\Enums\OrderStatus::COMPLETE ? 'green' : 'orange' }}"
                                   class="text-uppercase"
                         >
                             {{ $order->order_status->label() }}

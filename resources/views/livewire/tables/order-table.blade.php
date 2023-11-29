@@ -106,10 +106,14 @@
                         {{ Illuminate\Support\Number::currency($order->total, 'EUR') }}
                     </td>
                     <td class="align-middle text-center">
-                        <x-status dot color="{{ $order->order_status === 'complete' ? 'green' : 'orange' }}"
+{{--                        <x-status dot color="{{ $order->order_status === 'complete' ? 'green' : 'orange' }}"--}}
+{{--                                  class="text-uppercase"--}}
+{{--                        >--}}
+
+                        <x-status dot color="{{ $order->order_status->name === 'COMPLETE' ? 'green' : 'orange' }}"
                                   class="text-uppercase"
                         >
-                            {{ $order->order_status }}
+                            {{ $order->order_status->label() }}
                         </x-status>
                     </td>
                     <td class="align-middle text-center">

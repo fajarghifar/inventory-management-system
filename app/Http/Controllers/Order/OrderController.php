@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Order;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\OrderStoreRequest;
 use App\Models\Customer;
@@ -11,6 +12,7 @@ use App\Models\Product;
 use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +27,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function create(Request $request)
+    public function create()
     {
         $products = Product::with(['category', 'unit'])->get();
 
@@ -42,7 +44,6 @@ class OrderController extends Controller
 
     public function store(OrderStoreRequest $request)
     {
-        //$order = Order::insertGetId($request->all());
         $order = Order::create($request->all());
 
         // Create Order Details
@@ -64,8 +65,7 @@ class OrderController extends Controller
         Cart::destroy();
 
         return redirect()
-            ->route('orders.pending')
-            //->route('orders.index')
+            ->route('orders.index')
             ->with('success', 'Order has been created!');
     }
 
@@ -80,19 +80,19 @@ class OrderController extends Controller
 
     public function update(Order $order, Request $request)
     {
-        //$order_id = $request->id;
+        // TODO refactoring
 
         // Reduce the stock
         $products = OrderDetails::where('order_id', $order)->get();
 
-
         foreach ($products as $product) {
             Product::where('id', $product->product_id)
-                    ->update(['stock' => DB::raw('stock-'.$product->quantity)]);
+                    //->update(['stock' => DB::raw('stock-'.$product->quantity)]);
+                    ->update(['quantity' => DB::raw('quantity-'.$product->quantity)]);
         }
 
         $order->update([
-            'order_status' => 'complete'
+            'order_status' => OrderStatus::COMPLETE
         ]);
 
         return redirect()
@@ -105,18 +105,18 @@ class OrderController extends Controller
         $order->delete();
     }
 
-    public function downloadInvoice(Int $order_id)
+    public function downloadInvoice($order)
     {
-        $order = Order::with('customer')->where('id', $order_id)->first();
+        // TODO: Need refactor
+        //dd($order);
 
-        $orderDetails = OrderDetails::with('product')
-                        ->where('order_id', $order_id)
-                        ->orderBy('id', 'DESC')
-                        ->get();
+        //$order = Order::with('customer')->where('id', $order_id)->first();
+        $order = Order::with(['customer', 'details'])
+            ->where('id', $order)
+            ->first();
 
         return view('orders.print-invoice', [
             'order' => $order,
-            'orderDetails' => $orderDetails,
         ]);
     }
 }

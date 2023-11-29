@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Validation\Rules\Enum;
 
 class Order extends Model
 {
@@ -27,13 +29,14 @@ class Order extends Model
     ];
 
     protected $with = [
-        'customer',
+        //'customer',
     ];
 
     protected $casts = [
         'order_date'    => 'date',
         'created_at'    => 'datetime',
-        'updated_at'    => 'datetime'
+        'updated_at'    => 'datetime',
+        'order_status'  => OrderStatus::class
     ];
 
     public function customer(): BelongsTo

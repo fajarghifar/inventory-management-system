@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PurchaseStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,18 +18,19 @@ class Purchase extends Model
 
     protected $fillable = [
         'supplier_id',
-        'purchase_date',
+        'date',
         'purchase_no',
-        'purchase_status',
+        'status',
         'total_amount',
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
-        'purchase_date' => 'date',
-        'created_at'    => 'datetime',
-        'updated_at'    => 'datetime'
+        'date'       => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'status'     => PurchaseStatus::class
     ];
 
     public function supplier(): BelongsTo
@@ -54,7 +56,7 @@ class Purchase extends Model
     public function scopeSearch($query, $value): void
     {
         $query->where('purchase_no', 'like', "%{$value}%")
-            ->orWhere('purchase_status', 'like', "%{$value}%")
+            ->orWhere('status', 'like', "%{$value}%")
         ;
     }
 }

@@ -80,7 +80,8 @@
                                         </thead>
 
                                         <tbody>
-                                            @foreach ($orderDetails as $item)
+{{--                                            @foreach ($orderDetails as $item)--}}
+                                            @foreach ($order->details as $item)
                                             <tr>
                                                 <td class="align-middle">
                                                     {{ $item->product->name }}

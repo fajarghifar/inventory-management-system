@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Purchase;
 
 
+use App\Enums\PurchaseStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\StorePurchaseRequest;
 use App\Models\Category;
@@ -21,11 +22,6 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-//        $purchases = Purchase::latest()
-//            ->with('supplier')
-//            ->paginate(10);
-
-
         return view('purchases.index', [
             'purchases' => Purchase::latest()->get()
         ]);
@@ -34,7 +30,7 @@ class PurchaseController extends Controller
     public function approvedPurchases()
     {
         $purchases = Purchase::with(['supplier'])
-            ->where('purchase_status', 1)->get(); // 1 = approved
+            ->where('status', PurchaseStatus::APPROVED)->get(); // 1 = approved
 
         return view('purchases.approved-purchases', [
             'purchases' => $purchases
@@ -111,7 +107,8 @@ class PurchaseController extends Controller
 
         Purchase::findOrFail($purchase->id)
             ->update([
-                'purchase_status' => 1, // 1 = approved, 0 = pending
+                //'purchase_status' => 1, // 1 = approved, 0 = pending
+                'status' => PurchaseStatus::APPROVED,
                 'updated_by' => auth()->user()->id
             ]);
 
@@ -134,7 +131,7 @@ class PurchaseController extends Controller
     {
         $purchases = Purchase::with(['supplier'])
             //->where('purchase_status', 1)
-            ->where('purchase_date', today()->format('Y-m-d'))->get();
+            ->where('date', today()->format('Y-m-d'))->get();
 
         return view('purchases.details-purchase', [
             'purchases' => $purchases

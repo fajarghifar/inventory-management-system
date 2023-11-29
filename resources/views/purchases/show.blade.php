@@ -23,7 +23,7 @@
                                     {{ __('Edit Purchase') }}
                                 </a>
 
-                                @if ($purchase->purchase_status == 0)
+                                @if ($purchase->status === \App\Enums\PurchaseStatus::PENDING)
                                     <form action="{{ route('purchases.update', $purchase) }}" method="POST">
                                         @csrf
                                         @method('put')
@@ -46,12 +46,13 @@
                 <div class="card-body">
                     <div class="row row-cards mb-3">
                         <div class="col">
-                            <label for="purchase_date" class="small mb-1">
+                            <label for="date" class="small mb-1">
                                 {{ __('Order Date') }}
                             </label>
-                            <input type="text" id="purchase_date"
+
+                            <input type="text" id="date"
                                    class="form-control"
-                                   value="{{ $purchase->purchase_date->format('d-m-Y') }}"
+                                   value="{{ $purchase->date->format('d-m-Y') }}"
                                    disabled
                             >
                         </div>

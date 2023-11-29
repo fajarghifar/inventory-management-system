@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Quotation;
 
+use App\Enums\QuotationStatus;
 use App\Models\Product;
 use App\Models\Customer;
 use App\Models\Quotation;
@@ -29,7 +30,10 @@ class QuotationController extends Controller
         return view('quotations.create', [
             'cart' => Cart::content('quotation'),
             'products' => Product::all(),
-            'customers' => Customer::all()
+            'customers' => Customer::all(),
+
+            // maybe?
+            //'statuses' => QuotationStatus::cases()
         ]);
     }
 

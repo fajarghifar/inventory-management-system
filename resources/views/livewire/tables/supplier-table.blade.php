@@ -88,7 +88,7 @@
                         {{ $supplier->shopname }}
                     </td>
                     <td class="align-middle text-center">
-                        <span class="badge {{ $supplier->type === 'complete' ? 'bg-green' : 'bg-orange' }} text-white text-uppercase">
+                        <span class="badge bg-primary text-white text-uppercase">
                             {{ $supplier->type }}
                         </span>
                     </td>

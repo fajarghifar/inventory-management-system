@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SupplierType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,6 +31,7 @@ class Supplier extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'type' => SupplierType::class
     ];
 
     public function purchases(): HasMany

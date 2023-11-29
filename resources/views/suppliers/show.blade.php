@@ -58,7 +58,7 @@
                                 </tr>
                                 <tr>
                                     <td>Type</td>
-                                    <td>{{ $supplier->type }}</td>
+                                    <td>{{ $supplier->type->label() }}</td>
                                 </tr>
                                 <tr>
                                     <td>Account holder</td>

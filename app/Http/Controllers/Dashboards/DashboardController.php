@@ -21,7 +21,7 @@ class DashboardController extends Controller
         $purchases = Purchase::count();
         $todayPurchases = Purchase::query()
             //->where('purchase_status', '=', 1)
-            ->where('purchase_date', today()->format('Y-m-d'))->get()
+            ->where('date', today()->format('Y-m-d'))->get()
             ->count();
         $categories = Category::count();
         $quotations = Quotation::count();

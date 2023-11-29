@@ -269,12 +269,11 @@
                                             <select name="tax_type" id="tax_type"
                                                     class="form-select @error('tax_type') is-invalid @enderror"
                                             >
-                                                <option value="1" @selected(old('tax_type', $product->tax_type) === 1)>
-                                                    Inclusive
+                                                @foreach(\App\Enums\TaxType::cases() as $taxType)
+                                                <option value="{{ $taxType->value }}" @selected(old('tax_type', $product->tax_type) == $taxType->value)>
+                                                    {{ $taxType->label() }}
                                                 </option>
-                                                <option value="2" @selected(old('tax_type', $product->tax_type) === 2)>
-                                                    Exclusive
-                                                </option>
+                                                @endforeach
                                             </select>
 
                                             @error('tax_type')

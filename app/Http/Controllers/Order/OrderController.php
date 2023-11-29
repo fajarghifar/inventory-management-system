@@ -71,7 +71,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->loadMissing('details')->get();
+        $order->loadMissing(['customer', 'details'])->get();
 
         return view('orders.show', [
            'order' => $order

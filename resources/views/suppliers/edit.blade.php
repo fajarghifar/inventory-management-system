@@ -58,9 +58,11 @@
                                         </label>
 
                                         <select class="form-select @error('type') is-invalid @enderror" id="type" name="type">
-                                            <option selected="" disabled="">Select a type:</option>
-                                            <option value="Distributor" @if(old('type', $supplier->type) == 'Distributor')selected="selected"@endif>Distributor</option>
-                                            <option value="Whole Seller" @if(old('type', $supplier->type) == 'Whole Seller')selected="selected"@endif>Whole Seller</option>
+                                            @foreach(\App\Enums\SupplierType::cases() as $supplierType)
+                                            <option value="{{ $supplierType->value }}" @selected(old('type', $supplier->type) == $supplierType->value)>
+                                                {{ $supplierType->label() }}
+                                            </option>
+                                            @endforeach
                                         </select>
 
                                         @error('type')

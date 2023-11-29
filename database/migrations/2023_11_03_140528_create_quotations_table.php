@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('discount_amount')->default(0);
             $table->integer('shipping_amount')->default(0);
             $table->integer('total_amount');
-            $table->string('status');
+            $table->tinyInteger('status');
             $table->text('note')->nullable();
 
             $table->timestamps();

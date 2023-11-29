@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Purchase;
 
+use App\Enums\PurchaseStatus;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -15,10 +16,10 @@ class StorePurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'supplier_id'       => 'required',
-            'purchase_date'     => 'required|string',
-            'total_amount'      => 'required|numeric',
-            'purchase_status'   => 'required',
+            'supplier_id'   => 'required',
+            'date'          => 'required|string',
+            'total_amount'  => 'required|numeric',
+            'status'        => 'required',
         ];
     }
 
@@ -31,8 +32,8 @@ class StorePurchaseRequest extends FormRequest
                 'length' => 10,
                 'prefix' => 'PRS-'
             ]),
-            'purchase_status'   => 0, // 0 = pending, 1 = approved
-            'created_by'        => auth()->user()->id,
+            'status'     => PurchaseStatus::PENDING->value,
+            'created_by' => auth()->user()->id,
         ]);
     }
 

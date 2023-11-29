@@ -97,8 +97,8 @@
                         {{ Illuminate\Support\Number::currency($quotation->total_amount, 'EUR') }}
                     </td>
                     <td class="align-middle text-center">
-                        <span class="badge {{ $quotation->status === 'Sent' ? 'bg-green' : 'bg-orange' }} text-white text-uppercase">
-                            {{ $quotation->status }}
+                        <span class="badge {{ $quotation->status === \App\Enums\QuotationStatus::PENDING ? 'bg-orange' : 'bg-green' }} text-white text-uppercase">
+                            {{ $quotation->status->label() }}
                         </span>
                     </td>
                     <td class="align-middle text-center">

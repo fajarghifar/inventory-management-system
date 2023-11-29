@@ -18,7 +18,7 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end" style="">
-                                @if ($order->order_status->value === 0)
+                                @if ($order->order_status === \App\Enums\OrderStatus::PENDING)
                                     <form action="{{ route('orders.update', $order) }}" method="POST">
                                         @csrf
                                         @method('put')
@@ -151,12 +151,15 @@
                 </div>
 
                 <div class="card-footer text-end">
-                    @if ($order->order_status->value === 0)
+                    @if ($order->order_status === \App\Enums\OrderStatus::PENDING)
                         <form action="{{ route('orders.update', $order) }}" method="POST">
                             @method('put')
                             @csrf
 
-                            <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to complete this order?')">
+                            <button type="submit"
+                                    class="btn btn-success"
+                                    onclick="return confirm('Are you sure you want to complete this order?')"
+                            >
                                 {{ __('Complete Order') }}
                             </button>
                         </form>

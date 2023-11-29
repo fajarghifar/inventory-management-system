@@ -11,26 +11,6 @@
         />
     @else
         <div class="container-xl">
-
-            {{---
-            <div class="card">
-                <div class="card-header">
-                    <div>
-                        <h3 class="card-title">
-                            {{ __('Suppliers') }}
-                        </h3>
-                    </div>
-
-                    <div class="card-actions">
-                        <x-action.create route="{{ route('suppliers.create') }}" />
-                    </div>
-                </div>
-                <div class="card-body">
-                    <livewire:power-grid.suppliers-table/>
-                </div>
-            </div>
-            ---}}
-
             @livewire('tables.supplier-table')
         </div>
     @endif

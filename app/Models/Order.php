@@ -6,7 +6,6 @@ use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Validation\Rules\Enum;
 
 class Order extends Model
 {
@@ -26,10 +25,6 @@ class Order extends Model
         'payment_type',
         'pay',
         'due',
-    ];
-
-    protected $with = [
-        //'customer',
     ];
 
     protected $casts = [

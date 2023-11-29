@@ -41,19 +41,19 @@
 
                                 <div class="row gx-3 mb-3">
                                     <div class="col-md-4">
-                                        <label for="purchase_date" class="form-label required">
-                                            {{ __('Order Date') }}
+                                        <label for="date" class="form-label required">
+                                            {{ __('Purchase Date') }}
                                         </label>
 
-                                        <input name="purchase_date" id="purchase_date" type="date"
+                                        <input name="date" id="date" type="date"
                                                class="form-control example-date-input
 
-                                               @error('purchase_date') is-invalid @enderror"
-                                               value="{{ old('purchase_date') ?? now()->format('Y-m-d') }}"
+                                               @error('date') is-invalid @enderror"
+                                               value="{{ old('date') ?? now()->format('Y-m-d') }}"
                                                required
                                         >
 
-                                        @error('purchase_date')
+                                        @error('date')
                                         <div class="invalid-feedback">
                                             {{ $message }}
                                         </div>
@@ -68,27 +68,6 @@
                                         placeholder="Select Customer"
                                         :data="$suppliers"
                                     />
-
-
-
-
-{{---
-                                    <div class="col-md-4">
-                                        <label class="small mb-1" for="reference">
-                                            {{ __('Supplier') }}
-                                            <span class="text-danger">*</span>
-                                        </label>
-
-                                        @livewire('supplier-dropdown')
-
-                                        @error('supplier_id')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
-                                    </div>
-
----}}
 
                                     <div class="col-md-4">
                                         <label for="reference" class="form-label required">

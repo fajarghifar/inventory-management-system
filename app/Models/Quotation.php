@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\QuotationStatus;
 use Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -29,7 +30,8 @@ class Quotation extends Model
     protected $casts = [
         'date' => 'date',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'status' => QuotationStatus::class
     ];
 
     public static function boot() {

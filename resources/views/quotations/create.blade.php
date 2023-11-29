@@ -101,19 +101,35 @@
                                             Status
                                             <span class="text-danger">*</span>
                                         </label>
+
+                                        {{---
                                         <select class="form-select" name="status" id="status" required>
                                             <option value="Pending">Pending</option>
                                             <option value="Sent">Sent</option>
                                         </select>
+                                        ---}}
+
+                                        <select class="form-select" name="status" id="status" required>
+                                            @foreach(\App\Enums\QuotationStatus::cases() as $status)
+                                            <option value="{{ $status->value  }}">
+                                                {{ $status->label() }}
+                                            </option>
+                                            @endforeach
+                                        </select>
                                     </div>
 
                                     <div class="col">
-                                        <label class="small mb-1" for="reference">
-                                            Reference
+                                        <label for="reference" class="small mb-1">
+                                            {{ __('Reference') }}
                                         </label>
 
-                                        <input type="text" class="form-control"
-                                               id="reference" name="reference" value="QT" readonly>
+                                        <input type="text"
+                                               id="reference"
+                                               name="reference"
+                                               class="form-control"
+                                               value="QT"
+                                               readonly
+                                        >
 
                                         @error('reference')
                                             <div class="invalid-feedback">
@@ -125,10 +141,11 @@
 
                                 <livewire:product-cart :cartInstance="'quotation'"/>
 
-
                                 <div class="col-md-12 mt-4">
                                     <div class="form-group">
-                                        <label for="note">Notes</label>
+                                        <label for="note">
+                                            {{ __('Notes') }}
+                                        </label>
                                         <textarea name="note" id="note" rows="5" class="form-control"></textarea>
                                     </div>
                                 </div>
@@ -136,7 +153,7 @@
                                 <div class="col-md-12 mt-4">
                                     <div class="d-flex flex-wrap">
                                         <button type="submit" class="btn btn-success add-list mx-1">
-                                            Create Quotation
+                                            {{ __('Create Quotation') }}
                                         </button>
                                     </div>
                                 </div>

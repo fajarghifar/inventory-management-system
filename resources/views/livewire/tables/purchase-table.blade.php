@@ -56,9 +56,9 @@
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
-                        <a wire:click.prevent="sortBy('purchase_date')" href="#" role="button">
+                        <a wire:click.prevent="sortBy('date')" href="#" role="button">
                             {{ __('Date') }}
-                            @include('inclues._sort-icon', ['field' => 'purchase_date'])
+                            @include('inclues._sort-icon', ['field' => 'date'])
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
@@ -68,9 +68,9 @@
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
-                        <a wire:click.prevent="sortBy('purchase_status')" href="#" role="button">
+                        <a wire:click.prevent="sortBy('status')" href="#" role="button">
                             {{ __('Status') }}
-                            @include('inclues._sort-icon', ['field' => 'purchase_status'])
+                            @include('inclues._sort-icon', ['field' => 'status'])
                         </a>
                     </th>
                     <th scope="col" class="align-middle text-center">
@@ -91,13 +91,13 @@
                         {{ $purchase->supplier->name }}
                     </td>
                     <td class="align-middle text-center">
-                        {{ $purchase->purchase_date->format('d-m-Y') }}
+                        {{ $purchase->date->format('d-m-Y') }}
                     </td>
                     <td class="align-middle text-center">
                         {{ Illuminate\Support\Number::currency($purchase->total_amount, 'EUR') }}
                     </td>
 
-                    @if ($purchase->purchase_status == 1)
+                    @if ($purchase->status === \App\Enums\PurchaseStatus::APPROVED)
                         <td class="align-middle text-center">
                             <span class="badge bg-green text-white text-uppercase">
                                 {{ __('APPROVED') }}

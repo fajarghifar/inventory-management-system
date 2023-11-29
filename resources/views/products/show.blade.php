@@ -147,7 +147,7 @@
                                     </tr>
                                     <tr>
                                         <td>Tax Type</td>
-                                        <td>{{ $product->tax_type }}</td>
+                                        <td>{{ $product->tax_type->label() }}</td>
                                     </tr>
                                     <tr>
                                         <td>{{ __('Notes') }}</td>

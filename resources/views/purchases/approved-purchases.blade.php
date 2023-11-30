@@ -1,107 +1,70 @@
-@extends('layouts.dashboard')
+@extends('layouts.tabler')
 
 @section('content')
-<!-- BEGIN: Header -->
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-    <div class="container-xl px-4">
-        <div class="page-header-content pt-4">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto my-4">
-                    <h1 class="page-header-title">
-                        <div class="page-header-icon"><i class="fa-solid fa-cash-register"></i></div>
-                        Approved Purchase List
-                    </h1>
+<div class="page-body">
+    <div class="container-xl">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">
+                        {{ __('Purchases: Approved') }}
+                    </h3>
                 </div>
-                <div class="col-auto my-4">
-                    <a href="{{ route('purchases.createPurchase') }}" class="btn btn-primary add-list my-1"><i class="fa-solid fa-plus me-3"></i>Add</a>
-                    <a href="{{ route('purchases.allPurchases') }}" class="btn btn-danger add-list my-1"><i class="fa-solid fa-trash me-3"></i>Clear Search</a>
+
+                <div class="card-actions">
+                    <a href="{{ route('purchases.create') }}" class="btn btn-icon btn-outline-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    </a>
                 </div>
             </div>
-
-            @include('partials._breadcrumbs')
-        </div>
-    </div>
-
-    @include('partials.session')
-</header>
-
-<div class="container px-2 mt-n10">
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row mx-n4">
-                <div class="col-lg-12 card-header mt-n4">
-                    <form action="#" method="GET">
-                        <div class="d-flex flex-wrap align-items-center justify-content-between">
-                            <div class="form-group row align-items-center">
-                                <label for="row" class="col-auto">Row:</label>
-                                <div class="col-auto">
-                                    <select class="form-control" name="row">
-                                        <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
-                                        <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
-                                        <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
-                                        <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group row align-items-center justify-content-between">
-                                <label class="control-label col-sm-3" for="search">Search:</label>
-                                <div class="col-sm-8">
-                                    <div class="input-group">
-                                        <input type="text" id="search" class="form-control me-1" name="search" placeholder="Search order" value="{{ request('search') }}">
-                                        <div class="input-group-append">
-                                            <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20 text-white"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <hr>
-
-                <div class="col-lg-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped align-middle">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">No.</th>
-                                    <th scope="col">Purchase</th>
-                                    <th scope="col">@sortablelink('supplier.name', 'Supplier')</th>
-                                    <th scope="col">@sortablelink('purchase_date', 'Date')</th>
-                                    <th scope="col">@sortablelink('total')</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($purchases as $purchase)
-                                <tr>
-                                    <th scope="row">{{ (($purchases->currentPage() * (request('row') ? request('row') : 10)) - (request('row') ? request('row') : 10)) + $loop->iteration  }}</th>
-                                    <td>{{ $purchase->purchase_no }}</td>
-                                    <td>{{ $purchase->supplier->name }}</td>
-                                    <td>{{ $purchase->purchase_date }}</td>
-                                    <td>{{ $purchase->total_amount }}</td>
-                                    <td>
-                                        <span class="btn btn-{{ $purchase->purchase_status == 0 ? 'warning' : 'success' }} btn-sm text-uppercase">{{ $purchase->purchase_status == 0 ? 'pending' : 'approved' }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <a href="{{ route('purchases.purchaseDetails', $purchase->id) }}" class="btn btn-outline-success btn-sm mx-1"><i class="fa-solid fa-eye"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {{ $purchases->links() }}
+            <div class="table-responsive">
+                <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" class="text-center">No.</th>
+                            <th scope="col" class="text-center">Purchase</th>
+                            <th scope="col" class="text-center">Supplier</th>
+                            <th scope="col" class="text-center">Date</th>
+                            <th scope="col" class="text-center">Total</th>
+                            <th scope="col" class="text-center">Status</th>
+                            <th scope="col" class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($purchases as $purchase)
+                        <tr>
+                            <td class="text-center">
+                                {{ $loop->iteration }}
+                            </td>
+                            <td class="text-center">
+                                {{ $purchase->purchase_no }}
+                            </td>
+                            <td class="text-center">
+                                {{ $purchase->supplier->name }}
+                            </td>
+                            <td class="text-center">
+                                {{ $purchase->purchase_date->format('d-m-Y') }}
+                            </td>
+                            <td class="text-center">
+                                {{ Number::currency($purchase->total_amount, 'EUR') }}
+                            </td>
+                            <td class="text-center">
+                                <span class="btn btn-{{ $purchase->purchase_status == 0 ? 'warning' : 'success' }} btn-sm text-uppercase">{{ $purchase->purchase_status == 0 ? 'pending' : 'approved' }}</span>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-icon btn-outline-info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                {{--- ---}}
             </div>
         </div>
     </div>
 </div>
-<!-- END: Main Page Content -->
 @endsection

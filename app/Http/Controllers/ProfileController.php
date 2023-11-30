@@ -12,10 +12,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
         return view('profile.edit', [
             'user' => $request->user(),
@@ -35,21 +32,24 @@ class ProfileController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        if ($validatedData['email'] != $user->email) {
+        if ($validatedData['email'] != $user->email)
+        {
             $validatedData['email_verified_at'] = null;
         }
 
         /**
          * Handle upload image
          */
-        if ($file = $request->file('photo')) {
+        if ($file = $request->file('photo'))
+        {
             $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
             $path = 'public/profile/';
 
             /**
              * Delete an image if exists.
              */
-            if($user->photo){
+            if($user->photo)
+            {
                 Storage::delete($path . $user->photo);
             }
 
@@ -67,16 +67,13 @@ class ProfileController extends Controller
             ->with('success', 'Profile has been updated!');
     }
 
-    public function settings(Request $request): View
+    public function settings(Request $request)
     {
         return view('profile.settings', [
             'user' => $request->user(),
         ]);
     }
 
-    /**
-     * Delete the user's account.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
@@ -91,7 +88,6 @@ class ProfileController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
 
         return redirect()
             ->to('/');

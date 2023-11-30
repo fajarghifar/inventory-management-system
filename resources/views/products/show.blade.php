@@ -1,121 +1,175 @@
-@extends('layouts.dashboard')
-
-@push('page-styles')
-    {{--- ---}}
-@endpush
+@extends('layouts.tabler')
 
 @section('content')
-<!-- BEGIN: Header -->
-<header class="page-header page-header-dark bg-gradient-primary-to-secondary pb-10">
-    <div class="container-xl px-4">
-        <div class="page-header-content pt-4">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto mt-4">
-                    <h1 class="page-header-title">
-                        <div class="page-header-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
-                        Details Product
-                    </h1>
-                </div>
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col">
+                <h2 class="page-title">
+                    {{ $product->name }}
+                </h2>
             </div>
 
-            @include('partials._breadcrumbs')
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a href="{{ route('products.edit', $product) }}" class="btn btn-warning d-none d-sm-inline-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+                        {{ __('Edit') }}
+                    </a>
+                </div>
+            </div>
         </div>
+
+        @include('partials._breadcrumbs')
     </div>
-</header>
+</div>
 
-<div class="container-xl px-2 mt-n10">
-    <div class="row">
-        <div class="col-xl-4">
-            <!-- Product image card-->
-            <div class="card mb-4 mb-xl-0">
-                <div class="card-header">Product Image</div>
-                <div class="card-body text-center">
-                    <!-- Product image -->
-                    <img class="img-account-profile mb-2" src="{{ asset('assets/img/products/default.webp') }}" alt="" id="image-preview" />
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                {{ __('Product Image') }}
+                            </h3>
+
+                            <img class="img-account-profile mb-2" src="{{ asset('assets/img/products/default.webp') }}" alt="" id="image-preview" />
+                        </div>
+                    </div>
+                </div>
+
+                <!---
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                Product Code
+                            </div>
+                            <div class="row row-cards">
+                                <div class="col-md-6">
+                                    <label class="small mb-1">
+                                        Product code
+                                    </label>
+
+                                    <div class="form-control">
+                                        {{ $product->code }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 align-middle">
+                                    <label class="small mb-1">
+                                        Barcode
+                                    </label>
+
+                                    <div class="mt-1">
+                                        {!! $barcode !!}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                --->
+
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                {{ __('Product Details') }}
+                            </h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered card-table table-vcenter text-nowrap datatable">
+                                <tbody>
+                                    <tr>
+                                        <td>Name</td>
+                                        <td>{{ $product->name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Slug</td>
+                                        <td>{{ $product->slug }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="text-secondary">Code</span></td>
+                                        <td>{{ $product->code }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Barcode</td>
+                                        <td>{!! $barcode !!}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Category</td>
+                                        <td>
+                                            <a href="{{ route('categories.show', $product->category) }}" class="badge bg-blue-lt">
+                                                {{ $product->category->name }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Unit</td>
+                                        <td>
+                                            <a href="{{ route('categories.show', $product->unit) }}" class="badge bg-blue-lt">
+                                                {{ $product->unit->short_code }}
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Quantity</td>
+                                        <td>{{ $product->quantity }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quantity Alert</td>
+                                        <td>
+                                            <span class="badge bg-red-lt">
+                                                {{ $product->quantity_alert }}
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Buying Price</td>
+                                        <td>{{ $product->buying_price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Selling Price</td>
+                                        <td>{{ $product->selling_price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tax</td>
+                                        <td>
+                                            <span class="badge bg-red-lt">
+                                                {{ $product->tax }} %
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tax Type</td>
+                                        <td>{{ $product->tax_type->label() }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ __('Notes') }}</td>
+                                        <td>{{ $product->notes }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-end">
+                            <a class="btn btn-info" href="{{ url()->previous() }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+                                {{ __('Back') }}
+                            </a>
+                            <a class="btn btn-warning" href="{{ route('products.edit', $product) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+                                {{ __('Edit') }}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-xl-8">
-            <!-- BEGIN: Product Code -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    Product Code
-                </div>
-                <div class="card-body">
-                    <!-- Form Row -->
-                    <div class="row gx-3 mb-3">
-                        <!-- Form Group (type of product category) -->
-                        <div class="col-md-6">
-                            <label class="small mb-1">Product code</label>
-                            <div class="form-control form-control-solid">{{ $product->product_code  }}</div>
-                        </div>
-                        <!-- Form Group (type of product unit) -->
-                        <div class="col-md-6 align-middle">
-                            <label class="small mb-1">Barcode</label>
-                            <div class="mt-1">
-                              {!! $barcode !!}
-                              </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END: Product Code -->
-
-            <!-- BEGIN: Product Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    Product Information
-                </div>
-                <div class="card-body">
-                    <!-- Form Group (product name) -->
-                    <div class="mb-3">
-                        <label class="small mb-1">Product name</label>
-                        <div class="form-control form-control-solid">{{ $product->product_name }}</div>
-                    </div>
-                    <!-- Form Row -->
-                    <div class="row gx-3 mb-3">
-                        <!-- Form Group (type of product category) -->
-                        <div class="col-md-6">
-                            <label class="small mb-1">Product category</label>
-                            <div class="form-control form-control-solid">{{ $product->category->name  }}</div>
-                        </div>
-                        <!-- Form Group (type of product unit) -->
-                        <div class="col-md-6">
-                            <label class="small mb-1">Product unit</label>
-                            <div class="form-control form-control-solid">{{ $product->unit->name  }}</div>
-                        </div>
-                    </div>
-                    <!-- Form Row -->
-                    <div class="row gx-3 mb-3">
-                        <!-- Form Group (buying price) -->
-                        <div class="col-md-6">
-                            <label class="small mb-1">Buying price</label>
-                            <div class="form-control form-control-solid">{{ $product->buying_price  }}</div>
-                        </div>
-                        <!-- Form Group (selling price) -->
-                        <div class="col-md-6">
-                            <label class="small mb-1">Selling price</label>
-                            <div class="form-control form-control-solid">{{ $product->selling_price  }}</div>
-                        </div>
-                    </div>
-                    <!-- Form Group (stock) -->
-                    <div class="mb-3">
-                        <label class="small mb-1">Stock</label>
-                        <div class="form-control form-control-solid">{{ $product->stock  }}</div>
-                    </div>
-
-                    <!-- Submit button -->
-                    <a class="btn btn-primary" href="{{ route('products.index') }}">Back</a>
-                </div>
-            </div>
-            <!-- END: Product Information -->
         </div>
     </div>
 </div>
-<!-- END: Main Page Content -->
 @endsection
-
-@push('page-scripts')
-    {{--- ---}}
-@endpush

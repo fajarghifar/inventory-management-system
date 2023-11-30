@@ -31,6 +31,7 @@ class UpdateUserRequest extends FormRequest
                 'max:50',
                 Rule::unique('users', 'email')->ignore($this->user)
             ],
+            /*
             'username' => [
                 'required',
                 'min:4',
@@ -39,6 +40,7 @@ class UpdateUserRequest extends FormRequest
                 //'unique:users,username,'.$user->id
                 Rule::unique('users', 'username')->ignore($this->user)
             ],
+            */
         ];
     }
 }

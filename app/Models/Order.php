@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
-use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
 {
-    use HasFactory, Sortable;
+    protected $guarded = [
+        'id',
+    ];
 
     protected $fillable = [
         'customer_id',
@@ -24,24 +27,27 @@ class Order extends Model
         'due',
     ];
 
-    public $sortable = [
-        'customer_id',
-        'order_date',
-        'pay',
-        'due',
-        'total',
+    protected $casts = [
+        'order_date'    => 'date',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
+        'order_status'  => OrderStatus::class
     ];
 
-    protected $guarded = [
-        'id',
-    ];
-
-    protected $with = [
-        'customer',
-    ];
-
-    public function customer()
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'id');
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function details(): HasMany
+    {
+        return $this->hasMany(OrderDetails::class);
+    }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('invoice_no', 'like', "%{$value}%")
+            ->orWhere('order_status', 'like', "%{$value}%")
+            ->orWhere('payment_type', 'like', "%{$value}%");
     }
 }

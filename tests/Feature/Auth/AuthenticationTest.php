@@ -20,10 +20,10 @@ class AuthenticationTest extends TestCase
         $this->user = $this->createUser();
     }
 
-    private function createUser(): User
-    {
-        return User::factory()->create();
-    }
+//    public function createUser(): User
+//    {
+//        return User::factory()->create();
+//    }
 
     public function test_login_screen_can_be_rendered(): void
     {

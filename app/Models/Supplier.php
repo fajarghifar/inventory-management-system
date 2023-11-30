@@ -2,13 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\SupplierType;
 use Illuminate\Database\Eloquent\Model;
-use Kyslik\ColumnSortable\Sortable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Supplier extends Model
 {
-    use HasFactory, Sortable;
+    use HasFactory;
+
+    protected $guarded = [
+        'id',
+    ];
+
     protected $fillable = [
         'name',
         'email',
@@ -22,20 +28,23 @@ class Supplier extends Model
         'bank_name',
     ];
 
-    protected $guarded = [
-        'id',
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'type' => SupplierType::class
     ];
 
-    public $sortable = [
-        'name',
-        'email',
-        'shopname',
-    ];
-
-    public function scopeFilter($query, array $filters)
+    public function purchases(): HasMany
     {
-        $query->when($filters['search'] ?? false, function ($query, $search) {
-            return $query->where('name', 'like', '%' . $search . '%')->orWhere('shopname', 'like', '%' . $search . '%');
-        });
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function scopeSearch($query, $value): void
+    {
+        $query->where('name', 'like', "%{$value}%")
+            ->orWhere('email', 'like', "%{$value}%")
+            ->orWhere('phone', 'like', "%{$value}%")
+            ->orWhere('shopname', 'like', "%{$value}%")
+            ->orWhere('type', 'like', "%{$value}%");
     }
 }

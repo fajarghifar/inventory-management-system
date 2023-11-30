@@ -6,16 +6,24 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "anayarojo/shoppingcart": "^4.2",
+        "awobaz/compoships": "^2.2",
         "guzzlehttp/guzzle": "^7.2",
-        "hardevine/shoppingcart": "^3.2",
         "haruncpi/laravel-id-generator": "^1.1",
         "laravel/framework": "^10.8",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+        "laravolt/avatar": "^5.0",
+        "livewire/livewire": "^3.1",
+        "mimisk13/laravel-tabler": "^0.0.5",
         "phpoffice/phpspreadsheet": "^1.28",
-        "picqer/php-barcode-generator": "^2.2"
+        "picqer/php-barcode-generator": "^2.2",
+        "power-components/livewire-powergrid": "^5.1",
+        "rappasoft/laravel-livewire-tables": "^3.1"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.9",
+        "beyondcode/laravel-query-detector": "^1.7",
         "fakerphp/faker": "^1.9.1",
         "kyslik/column-sortable": "^6.5",
         "laravel/breeze": "^1.20",
@@ -31,7 +39,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -51,6 +62,9 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "test": [
+            "vendor\\bin\\phpunit --coverage-html reports/"
         ]
     },
     "extra": {

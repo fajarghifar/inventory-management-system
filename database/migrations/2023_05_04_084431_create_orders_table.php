@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('customer_id');
+            $table->foreignIdFor(\App\Models\Customer::class)
+                ->constrained();
             $table->string('order_date');
-            $table->string('order_status');
+            $table->tinyInteger('order_status')
+                ->comment('0 - Pending / 1 - Complete');
             $table->integer('total_products');
             $table->integer('sub_total');
             $table->integer('vat');

@@ -24,26 +24,25 @@ Inventory Management System with Laravel 10 and MySql.
 ## 🚀 How to Use
 
 1. Clone Repository
-2. 
 
 ```bash
 git clone https://github.com/fajarghifar/inventory-management-system
 ```
 
-4. Go into the repository 
+2. Go into the repository 
 
 ```bash
 cd inventory-management-system
 ```
 
-5. Install Packages 
+3. Install Packages 
 
 ```bash
 composer install
 ```
 
 
-6. Copy `.env` file 
+4. Copy `.env` file 
 
 ```bash
 
@@ -51,41 +50,41 @@ cp .env.example .env
 
 ```
 
-7. Generate app key 
+5. Generate app key 
 
 ```bash
 php artisan key:generate
 ```
 
-8. Setting up your database credentials in your `.env` file.
-9. Seed Database: 
+6. Setting up your database credentials in your `.env` file.
+7. Seed Database: 
 
 ```bash
 
-php artisan migrate:fresh ---seed
+php artisan migrate:fresh --seed
 
 ```
-10. Create Storage Link
+8. Create Storage Link
 
 ```bash
 php artisan storage:link
 ```
 
-12. Install NPM dependencies 
+9. Install NPM dependencies 
 
 ```bash
 
 npm install && npm run dev
 
 ```
-14. Run 
+10. Run 
 
 ```bash
 
 php artisan serve
 
 ```
-15. Try login with email: 
+11. Try login with email: 
 
 ```bash
 

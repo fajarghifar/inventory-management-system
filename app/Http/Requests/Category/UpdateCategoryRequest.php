@@ -26,11 +26,6 @@ class UpdateCategoryRequest extends FormRequest
             'name' => [
                 'required',
                 Rule::unique('categories')->ignore($this->category)
-            ],
-            'slug' => [
-                'required',
-                'alpha_dash',
-                Rule::unique('categories')->ignore($this->category)
             ]
         ];
     }

@@ -25,11 +25,6 @@ class StoreCategoryRequest extends FormRequest
             'name' => [
                 'required',
                 'unique:categories,name'
-            ],
-            'slug' => [
-                'required',
-                'unique:categories,slug',
-                'alpha_dash'
             ]
         ];
     }

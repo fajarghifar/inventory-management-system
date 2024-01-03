@@ -26,14 +26,6 @@
                         :value="old('name', $category->name)"
                         required
                     />
-
-                    <x-input
-                        label="{{ __('Slug') }}"
-                        id="slug"
-                        name="slug"
-                        :value="old('slug', $category->slug)"
-                        required
-                    />
                 </div>
                 <div class="card-footer text-end">
                     <x-button type="submit">

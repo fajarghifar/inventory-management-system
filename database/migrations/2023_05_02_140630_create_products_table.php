@@ -31,8 +31,6 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Category::class)
                 ->nullable()
                 ->constrained()
-//                ->restrictOnDelete();
-//                ->cascadeOnDelete();
                 ->nullOnDelete();
 
             $table->foreignIdFor(\App\Models\Unit::class)->constrained()

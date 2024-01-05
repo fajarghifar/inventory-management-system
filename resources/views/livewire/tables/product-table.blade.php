@@ -102,7 +102,7 @@
                             {{ $loop->iteration }}
                         </td>
                         <td class="align-middle text-center">
-                            <img style="    width: 90px;"
+                            <img style="width: 90px;"
                                 src="{{ $product->product_image ? asset('storage/products/' . $product->product_image) : asset('assets/img/products/default.webp') }}"
                                 alt="">
                         </td>
@@ -121,7 +121,8 @@
                         <td class="align-middle text-center" style="width: 10%">
                             <x-button.show class="btn-icon" route="{{ route('products.show', $product) }}" />
                             <x-button.edit class="btn-icon" route="{{ route('products.edit', $product) }}" />
-                            <x-button.delete class="btn-icon" route="{{ route('products.destroy', $product) }}" />
+                            <x-button.delete class="btn-icon" route="{{ route('products.destroy', $product) }}"
+                                onclick="return confirm('are you sure!')" />
                         </td>
                     </tr>
                 @empty

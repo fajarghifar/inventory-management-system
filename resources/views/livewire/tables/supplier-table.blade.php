@@ -68,6 +68,12 @@
                     </a>
                 </th>
                 <th scope="col" class="align-middle text-center">
+                    <a wire:click.prevent="sortBy('created_at')" href="#" role="button">
+                        {{ __('Created at') }}
+                        @include('inclues._sort-icon', ['field' => 'created_at'])
+                    </a>
+                </th>
+                <th scope="col" class="align-middle text-center">
                     {{ __('Action') }}
                 </th>
             </tr>
@@ -93,9 +99,14 @@
                         </span>
                     </td>
                     <td class="align-middle text-center">
+                        <span class="">
+                            {{ $supplier->created_at->diffForHumans() }}
+                        </span>
+                    </td>
+                    <td class="align-middle text-center">
                         <x-button.show class="btn-icon" route="{{ route('suppliers.show', $supplier) }}"/>
                         <x-button.edit class="btn-icon" route="{{ route('suppliers.edit', $supplier) }}"/>
-                        <x-button.delete class="btn-icon" route="{{ route('suppliers.destroy', $supplier) }}"/>
+                        <x-button.delete class="btn-icon" route="{{ route('suppliers.destroy', $supplier) }}" onclick="return confirm('are you sure!')"/>
                     </td>
                 </tr>
             @empty

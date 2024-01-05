@@ -29,13 +29,11 @@ class ProductController extends Controller
         $categories = Category::all(['id', 'name']);
         $units = Unit::all(['id', 'name']);
 
-        if ($request->has('category'))
-        {
+        if ($request->has('category')) {
             $categories = Category::whereSlug($request->get('category'))->get();
         }
 
-        if ($request->has('unit'))
-        {
+        if ($request->has('unit')) {
             $units = Unit::whereSlug($request->get('unit'))->get();
         }
 
@@ -52,9 +50,9 @@ class ProductController extends Controller
         /**
          * Handle upload image
          */
-        if($request->hasFile('product_image')){
+        if ($request->hasFile('product_image')) {
             $file = $request->file('product_image');
-            $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
 
             $file->storeAs('products/', $filename, 'public');
             $product->update([
@@ -93,16 +91,16 @@ class ProductController extends Controller
     {
         $product->update($request->except('product_image'));
 
-        if($request->hasFile('product_image')){
+        if ($request->hasFile('product_image')) {
 
             // Delete Old Photo
-            if($product->product_image){
+            if ($product->product_image) {
                 unlink(public_path('storage/products/') . $product->product_image);
             }
 
             // Prepare New Photo
             $file = $request->file('product_image');
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
 
             // Store an image to Storage
             $file->storeAs('products/', $fileName, 'public');
@@ -123,8 +121,11 @@ class ProductController extends Controller
         /**
          * Delete photo if exists.
          */
-        if($product->product_image){
-            unlink(public_path('storage/products/') . $product->product_image);
+        if ($product->product_image) {
+            // check if image exists in our file system
+            if (file_exists(public_path('storage/products/') . $product->product_image)) {
+                unlink(public_path('storage/products/') . $product->product_image);
+            }
         }
 
         $product->delete();

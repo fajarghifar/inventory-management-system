@@ -28,6 +28,8 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\User::class, 'created_by');
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')
                 ->nullable();
+                $table->uuid();
+                $table->foreignId("user_id")->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

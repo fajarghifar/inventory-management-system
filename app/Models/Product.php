@@ -29,7 +29,9 @@ class Product extends Model
         'category_id',
         'unit_id',
         'created_at',
-        'updated_at'
+        'updated_at',
+        "user_id",
+        "uuid"
     ];
 
     protected $casts = [
@@ -73,5 +75,14 @@ class Product extends Model
     {
         $query->where('name', 'like', "%{$value}%")
             ->orWhere('code', 'like', "%{$value}%");
+    }
+     /**
+     * Get the user that owns the Category
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

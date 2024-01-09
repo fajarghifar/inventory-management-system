@@ -24,7 +24,9 @@ class Quotation extends Model
         'status',
         'note',
         'created_at',
-        'updated_at'
+        'updated_at',
+        "user_id",
+        "uuid"
     ];
 
     protected $casts = [
@@ -92,5 +94,15 @@ class Quotation extends Model
         $query->where('reference', 'like', "%{$value}%")
             ->orWhere('customer_name', 'like', "%{$value}%")
             ->orWhere('status', 'like', "%{$value}%");
+    }
+
+     /**
+     * Get the user that owns the Category
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -31,6 +31,9 @@ return new class extends Migration
             $table->integer('total_amount');
             $table->tinyInteger('status');
             $table->text('note')->nullable();
+            $table->uuid();
+            $table->foreignId("user_id")->constrained()->onDelete('cascade');
+
 
             $table->timestamps();
         });

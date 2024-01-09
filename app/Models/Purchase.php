@@ -24,6 +24,8 @@ class Purchase extends Model
         'total_amount',
         'created_by',
         'updated_by',
+        "user_id",
+        "uuid"
     ];
 
     protected $casts = [
@@ -58,5 +60,14 @@ class Purchase extends Model
         $query->where('purchase_no', 'like', "%{$value}%")
             ->orWhere('status', 'like', "%{$value}%")
         ;
+    }
+     /**
+     * Get the user that owns the Category
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

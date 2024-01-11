@@ -333,9 +333,9 @@
                                     <div class="dropdown-menu">
                                         <div class="dropdown-menu-columns">
                                             <div class="dropdown-menu-column">
-                                                <a class="dropdown-item" href="{{ route('users.index') }}">
+                                                {{-- <a class="dropdown-item" href="{{ route('users.index') }}">
                                                     {{ __('Users') }}
-                                                </a>
+                                                </a> --}}
                                                 <a class="dropdown-item" href="{{ route('categories.index') }}">
                                                     {{ __('Categories') }}
                                                 </a>

@@ -15,22 +15,26 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $orders = Order::count();
-        $products = Product::count();
+        $orders = Order::where("user_id", auth()->id())->count();
+        $products = Product::where("user_id", auth()->id())->count();
 
-        $purchases = Purchase::count();
-        $todayPurchases = Purchase::query()
-            //->where('purchase_status', '=', 1)
-            ->where('date', today()->format('Y-m-d'))->get()
-            ->count();
-        $categories = Category::count();
-        $quotations = Quotation::count();
+        $purchases = Purchase::where("user_id", auth()->id())->count();
+        $todayPurchases = Purchase::where('date', today()->format('Y-m-d'))->count();
+        $todayProducts = Product::where('created_at', today()->format('Y-m-d'))->count();
+        $todayQuotations = Quotation::where('created_at', today()->format('Y-m-d'))->count();
+        $todayOrders = Order::where('created_at', today()->format('Y-m-d'))->count();
+
+        $categories = Category::where("user_id", auth()->id())->count();
+        $quotations = Quotation::where("user_id", auth()->id())->count();
 
         return view('dashboard', [
             'products' => $products,
             'orders' => $orders,
             'purchases' => $purchases,
             'todayPurchases' => $todayPurchases,
+            'todayProducts' => $todayProducts,
+            'todayQuotations' => $todayQuotations,
+            'todayOrders' => $todayOrders,
             'categories' => $categories,
             'quotations' => $quotations
         ]);

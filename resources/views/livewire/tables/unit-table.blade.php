@@ -70,7 +70,7 @@
             @forelse ($units as $unit)
                 <tr>
                     <td class="align-middle text-center" style="width: 10%">
-                        {{ $unit->id }}
+                        {{ $loop->index }}
                     </td>
                     <td class="align-middle text-center">
                         {{ $unit->name }}

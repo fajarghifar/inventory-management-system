@@ -20,7 +20,6 @@ class Unit extends Model
         'slug',
         'short_code',
         "user_id",
-        "uuid"
     ];
 
     protected $casts = [

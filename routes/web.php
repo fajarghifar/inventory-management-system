@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/', [DashboardController::class, 'index'])->name('dashboard');
 
     // User Management
-    Route::resource('/users', UserController::class); //->except(['show']);
+    // Route::resource('/users', UserController::class); //->except(['show']);
     Route::put('/user/change-password/{username}', [UserController::class, 'updatePassword'])->name('users.updatePassword');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

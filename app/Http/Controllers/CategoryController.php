@@ -11,7 +11,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::count();
+        $categories = Category::where("user_id", auth()->id())->count();
 
         return view('categories.index', [
             'categories' => $categories,
@@ -26,6 +26,7 @@ class CategoryController extends Controller
     public function store(StoreCategoryRequest $request)
     {
         Category::create([
+            "user_id"=>auth()->id(),
             "name" => $request->name,
             "slug" => Str::slug($request->name)
         ]);

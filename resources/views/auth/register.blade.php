@@ -7,11 +7,25 @@
     <div class="card-body">
         <h2 class="card-title text-center mb-4">Create new account</h2>
         <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
+            <label for="username" class="form-label">Username</label>
+            <input type="text" name="username" id="username"
+                   class="form-control @error('username') is-invalid @enderror"
+                   value="{{ old('username') }}"
+                   placeholder="Enter username"
+            >
+
+            @error('username')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
             <input type="text" name="name" id="name"
                    class="form-control @error('name') is-invalid @enderror"
                    value="{{ old('name') }}"
-                   placeholder="Enter name"
+                   placeholder="Enter Full Name"
             >
 
             @error('name')

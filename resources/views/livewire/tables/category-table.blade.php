@@ -77,7 +77,7 @@
                 @forelse ($categories as $category)
                     <tr>
                         <td class="align-middle text-center" style="width: 10%">
-                            {{ $category->id }}
+                            {{ $loop->index }}
                         </td>
                         <td class="align-middle text-center">
                             {{ $category->name }}

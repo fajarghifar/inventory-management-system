@@ -7,7 +7,7 @@
             <div class="card-header">
                 <div>
                     <h3 class="card-title">
-                        {{ __('Unit Details') }}
+                        {{ __('Create Unit') }}
                     </h3>
                 </div>
 
@@ -20,8 +20,6 @@
                 @csrf
                 <div class="card-body">
                     <livewire:name />
-
-                    <livewire:slug />
 
                     <x-input
                         label="{{ __('Short Code') }}"

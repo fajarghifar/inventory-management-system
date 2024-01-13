@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="page-body">
-    @if($customers->isEmpty())
+    @if(!$customers)
         <x-empty
             title="No customers found"
             message="Try adjusting your search or filter to find what you're looking for."

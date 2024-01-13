@@ -24,8 +24,8 @@ class StoreCustomerRequest extends FormRequest
         return [
             'photo' => 'image|file|max:1024',
             'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:customers,email',
-            'phone' => 'required|string|max:25|unique:customers,phone',
+            'email' => 'required|email|max:50',
+            'phone' => 'required|string|max:25',
             'account_holder' => 'max:50',
             'account_number' => 'max:25',
             'bank_name' => 'max:25',

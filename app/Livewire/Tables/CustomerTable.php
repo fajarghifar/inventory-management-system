@@ -20,10 +20,8 @@ class CustomerTable extends Component
 
     public function sortBy($field): void
     {
-        if($this->sortField === $field)
-        {
-            $this->sortAsc = ! $this->sortAsc;
-
+        if ($this->sortField === $field) {
+            $this->sortAsc = !$this->sortAsc;
         } else {
             $this->sortAsc = true;
         }
@@ -34,7 +32,7 @@ class CustomerTable extends Component
     public function render()
     {
         return view('livewire.tables.customer-table', [
-            'customers' => Customer::query()
+            'customers' => Customer::where("user_id", auth()->id())
                 ->with('orders', 'quotations')
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')

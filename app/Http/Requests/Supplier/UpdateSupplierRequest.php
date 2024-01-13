@@ -36,14 +36,12 @@ class UpdateSupplierRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                'max:50',
-                Rule::unique('suppliers', 'email')->ignore($this->supplier)
+                'max:50'
             ],
             'phone' => [
                 'required',
                 'string',
-                'max:25',
-                Rule::unique('suppliers', 'phone')->ignore($this->supplier)
+                'max:25'
             ],
             'shopname' => [
                 'required',

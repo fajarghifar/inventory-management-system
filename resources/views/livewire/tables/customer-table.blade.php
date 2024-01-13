@@ -73,7 +73,7 @@
             @forelse ($customers as $customer)
                 <tr>
                     <td class="align-middle text-center">
-                        {{ $customer->id }}
+                        {{ $loop->index }}
                     </td>
                     <td class="align-middle text-center">
                         {{ $customer->name }}
@@ -85,9 +85,9 @@
                         {{ $customer->created_at->diffForHumans() }}
                     </td>
                     <td class="align-middle text-center">
-                        <x-button.show class="btn-icon" route="{{ route('customers.show', $customer) }}"/>
-                        <x-button.edit class="btn-icon" route="{{ route('customers.edit', $customer) }}"/>
-                        <x-button.delete class="btn-icon" route="{{ route('customers.destroy', $customer) }}" onclick="return confirm('are you sure!')"/>
+                        <x-button.show class="btn-icon" route="{{ route('customers.show', $customer->uuid) }}"/>
+                        <x-button.edit class="btn-icon" route="{{ route('customers.edit', $customer->uuid) }}"/>
+                        <x-button.delete class="btn-icon" route="{{ route('customers.destroy', $customer->uuid) }}" onclick="return confirm('are you sure!')"/>
                     </td>
                 </tr>
             @empty

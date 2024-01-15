@@ -103,7 +103,7 @@
                         </td>
                         <td class="align-middle text-center">
                             <img style="width: 90px;"
-                                src="{{ $product->product_image ? asset('storage/products/' . $product->product_image) : asset('assets/img/products/default.webp') }}"
+                                src="{{ $product->product_image ? asset('storage/' . $product->product_image) : asset('assets/img/products/default.webp') }}"
                                 alt="">
                         </td>
                         <td class="align-middle text-center">
@@ -119,9 +119,9 @@
                             {{ $product->quantity }}
                         </td>
                         <td class="align-middle text-center" style="width: 10%">
-                            <x-button.show class="btn-icon" route="{{ route('products.show', $product) }}" />
-                            <x-button.edit class="btn-icon" route="{{ route('products.edit', $product) }}" />
-                            <x-button.delete class="btn-icon" route="{{ route('products.destroy', $product) }}"
+                            <x-button.show class="btn-icon" route="{{ route('products.show', $product->uuid) }}" />
+                            <x-button.edit class="btn-icon" route="{{ route('products.edit', $product->uuid) }}" />
+                            <x-button.delete class="btn-icon" route="{{ route('products.destroy', $product->uuid) }}"
                                 onclick="return confirm('are you sure!')" />
                         </td>
                     </tr>

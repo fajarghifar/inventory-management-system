@@ -26,7 +26,6 @@ class StoreProductRequest extends FormRequest
         return [
             'product_image'     => 'image|file|max:2048',
             'name'              => 'required|string',
-            'slug'              => 'required|unique:products',
             'category_id'       => 'required|integer',
             'unit_id'           => 'required|integer',
             'quantity'          => 'required|integer',
@@ -39,16 +38,11 @@ class StoreProductRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'slug' => Str::slug($this->name, '-'),
-            'code' => IdGenerator::generate([
-                'table' => 'products',
-                'field' => 'code',
-                'length' => 4,
-                'prefix' => 'PC'
-            ])
-        ]);
-    }
+    // protected function prepareForValidation(): void
+    // {
+    //     $this->merge([
+    //         'slug' => Str::slug($this->name, '-'),
+    //         'code' =>
+    //     ]);
+    // }
 }

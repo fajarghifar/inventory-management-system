@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId("user_id")->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug');
-            $table->string('code')->unique()->nullable();
+            $table->string('code');
             //$table->string('product_barcode_symbology')->nullable();
             $table->integer('quantity');
             $table->integer('buying_price')->comment('Buying Price');

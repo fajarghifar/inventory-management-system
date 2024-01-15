@@ -8,16 +8,16 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Unit;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Http\Request;
 use Picqer\Barcode\BarcodeGeneratorHTML;
+use Str;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::select('id', 'name')
-            ->limit(1)
-            ->get();
+        $products = Product::where("user_id", auth()->id())->count();
 
         return view('products.index', [
             'products' => $products,
@@ -26,15 +26,15 @@ class ProductController extends Controller
 
     public function create(Request $request)
     {
-        $categories = Category::all(['id', 'name']);
-        $units = Unit::all(['id', 'name']);
+        $categories = Category::where("user_id", auth()->id())->get(['id', 'name']);
+        $units = Unit::where("user_id", auth()->id())->get(['id', 'name']);
 
         if ($request->has('category')) {
-            $categories = Category::whereSlug($request->get('category'))->get();
+            $categories = Category::where("user_id", auth()->id())->whereSlug($request->get('category'))->get();
         }
 
         if ($request->has('unit')) {
-            $units = Unit::whereSlug($request->get('unit'))->get();
+            $units = Unit::where("user_id", auth()->id())->whereSlug($request->get('unit'))->get();
         }
 
         return view('products.create', [
@@ -45,24 +45,40 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->all());
-
         /**
          * Handle upload image
          */
+        $image = "";
         if ($request->hasFile('product_image')) {
-            $file = $request->file('product_image');
-            $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-
-            $file->storeAs('products/', $filename, 'public');
-            $product->update([
-                'product_image' => $filename
-            ]);
+            $image = $request->file('product_image')->store('products', 'public');
         }
 
-        return redirect()
-            ->back()
-            ->with('success', 'Product has been created!');
+        Product::create([
+            "code" => IdGenerator::generate([
+                'table' => 'products',
+                'field' => 'code',
+                'length' => 4,
+                'prefix' => 'PC'
+            ]),
+
+            'product_image'     => $image,
+            'name'              => $request->name,
+            'category_id'       => $request->category_id,
+            'unit_id'           => $request->unit_id,
+            'quantity'          => $request->quantity,
+            'buying_price'      => $request->buying_price,
+            'selling_price'     => $request->selling_price,
+            'quantity_alert'    => $request->quantity_alert,
+            'tax'               => $request->tax,
+            'tax_type'          => $request->tax_type,
+            'notes'             => $request->notes,
+            "user_id" => auth()->id(),
+            "slug" => Str::slug($request->name, '-'),
+            "uuid" => Str::uuid()
+        ]);
+
+
+        return to_route('products.index')->with('success', 'Product has been created!');
     }
 
     public function show(Product $product)
@@ -81,8 +97,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         return view('products.edit', [
-            'categories' => Category::all(),
-            'units' => Unit::all(),
+            'categories' => Category::where("user_id", auth()->id())->all(),
+            'units' => Unit::where("user_id", auth()->id())->all(),
             'product' => $product
         ]);
     }

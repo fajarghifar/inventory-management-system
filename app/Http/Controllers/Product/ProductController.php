@@ -81,8 +81,9 @@ class ProductController extends Controller
         return to_route('products.index')->with('success', 'Product has been created!');
     }
 
-    public function show(Product $product)
+    public function show($uuid)
     {
+        $product = Product::where("uuid", $uuid)->firstOrFail();
         // Generate a barcode
         $generator = new BarcodeGeneratorHTML();
 
@@ -94,53 +95,61 @@ class ProductController extends Controller
         ]);
     }
 
-    public function edit(Product $product)
+    public function edit($uuid)
     {
+        $product = Product::where("uuid", $uuid)->firstOrFail();
         return view('products.edit', [
-            'categories' => Category::where("user_id", auth()->id())->all(),
-            'units' => Unit::where("user_id", auth()->id())->all(),
+            'categories' => Category::where("user_id", auth()->id())->get(),
+            'units' => Unit::where("user_id", auth()->id())->get(),
             'product' => $product
         ]);
     }
 
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, $uuid)
     {
+        $product = Product::where("uuid", $uuid)->firstOrFail();
         $product->update($request->except('product_image'));
 
+        $image = $product->product_image;
         if ($request->hasFile('product_image')) {
 
             // Delete Old Photo
             if ($product->product_image) {
-                unlink(public_path('storage/products/') . $product->product_image);
+                unlink(public_path('storage/') . $product->product_image);
             }
-
-            // Prepare New Photo
-            $file = $request->file('product_image');
-            $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-
-            // Store an image to Storage
-            $file->storeAs('products/', $fileName, 'public');
-
-            // Save DB
-            $product->update([
-                'product_image' => $fileName
-            ]);
+            $image = $request->file('product_image')->store('products', 'public');
         }
+
+        $product->name = $request->name;
+        $product->name = Str::slug($request->name, '-');
+        $product->category_id = $request->category_id;
+        $product->unit_id = $request->unit_id;
+        $product->quantity = $request->quantity;
+        $product->buying_price = $request->buying_price;
+        $product->selling_price = $request->selling_price;
+        $product->quantity_alert = $request->quantity_alert;
+        $product->tax = $request->tax;
+        $product->tax_type = $request->tax_type;
+        $product->notes = $request->notes;
+        $product->product_image = $image;
+        $product->save();
+
 
         return redirect()
             ->route('products.index')
             ->with('success', 'Product has been updated!');
     }
 
-    public function destroy(Product $product)
+    public function destroy($uuid)
     {
+        $product = Product::where("uuid", $uuid)->firstOrFail();
         /**
          * Delete photo if exists.
          */
         if ($product->product_image) {
             // check if image exists in our file system
-            if (file_exists(public_path('storage/products/') . $product->product_image)) {
-                unlink(public_path('storage/products/') . $product->product_image);
+            if (file_exists(public_path('storage/') . $product->product_image)) {
+                unlink(public_path('storage/') . $product->product_image);
             }
         }
 

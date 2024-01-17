@@ -29,7 +29,7 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" style="">
-                                    <form action="{{ route('orders.update', $order) }}" method="POST">
+                                    <form action="{{ route('orders.update', $order->uuid) }}" method="POST">
                                         @csrf
                                         @method('put')
 
@@ -112,7 +112,7 @@
                                         <td class="align-middle text-center">
                                             <div style="max-height: 80px; max-width: 80px;">
                                                 <img class="img-fluid"
-                                                    src="{{ $item->product->product_image ? asset('storage/products/' . $item->product->product_image) : asset('assets/img/products/default.webp') }}">
+                                                    src="{{ $item->product->product_image ? asset('storage/' . $item->product->product_image) : asset('assets/img/products/default.webp') }}">
                                             </div>
                                         </td>
                                         <td class="align-middle text-center">
@@ -157,7 +157,7 @@
 
                 <div class="card-footer text-end">
                     @if ($order->order_status === \App\Enums\OrderStatus::PENDING)
-                        <form action="{{ route('orders.update', $order) }}" method="POST">
+                        <form action="{{ route('orders.update', $order->uuid) }}" method="POST">
                             @method('put')
                             @csrf
 

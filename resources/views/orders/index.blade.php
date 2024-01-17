@@ -1,28 +1,24 @@
 @extends('layouts.tabler')
 
 @section('content')
-<div class="page-body">
-    @if($orders->isEmpty())
-    <x-empty
-        title="No orders found"
-        message="Try adjusting your search or filter to find what you're looking for."
-        button_label="{{ __('Add your first Order') }}"
-        button_route="{{ route('orders.create') }}"
-    />
-    @else
-    <div class="container-xl">
-{{--        <x-card>--}}
-{{--            <x-slot:header>--}}
-{{--                <x-slot:title>--}}
-{{--                    {{ __('Orders') }}--}}
-{{--                </x-slot:title>--}}
+    <div class="page-body">
+        @if (!$orders)
+            <x-empty title="No orders found" message="Try adjusting your search or filter to find what you're looking for."
+                button_label="{{ __('Add your first Order') }}" button_route="{{ route('orders.create') }}" />
+        @else
+            <div class="container-xl">
+                {{--        <x-card> --}}
+                {{--            <x-slot:header> --}}
+                {{--                <x-slot:title> --}}
+                {{--                    {{ __('Orders') }} --}}
+                {{--                </x-slot:title> --}}
 
-{{--                <x-slot:actions>--}}
-{{--                    <x-action.create route="{{ route('orders.create') }}" />--}}
-{{--                </x-slot:actions>--}}
-{{--            </x-slot:header>--}}
+                {{--                <x-slot:actions> --}}
+                {{--                    <x-action.create route="{{ route('orders.create') }}" /> --}}
+                {{--                </x-slot:actions> --}}
+                {{--            </x-slot:header> --}}
 
-            {{---
+                {{-- -
             <x-table.index>
                 <x-slot:th>
                     <x-table.th>{{ __('No.') }}</x-table.th>
@@ -56,10 +52,10 @@
                     @endforeach
                 </x-slot:tbody>
             </x-table.index>
-            ---}}
+            - --}}
 
-        <livewire:tables.order-table />
+                <livewire:tables.order-table />
+            </div>
+        @endif
     </div>
-   @endif
-</div>
 @endsection

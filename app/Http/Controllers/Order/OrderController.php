@@ -15,12 +15,13 @@ use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Str;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::latest()->get();
+        $orders = Order::where("user_id", auth()->id())->count();
 
         return view('orders.index', [
             'orders' => $orders
@@ -29,9 +30,9 @@ class OrderController extends Controller
 
     public function create()
     {
-        $products = Product::with(['category', 'unit'])->get();
+        $products = Product::where("user_id", auth()->id())->with(['category', 'unit'])->get();
 
-        $customers = Customer::all(['id', 'name']);
+        $customers = Customer::where("user_id", auth()->id())->get(['id', 'name']);
 
         $carts = Cart::content();
 
@@ -44,7 +45,26 @@ class OrderController extends Controller
 
     public function store(OrderStoreRequest $request)
     {
-        $order = Order::create($request->all());
+        $order = Order::create([
+            'customer_id' => $request->customer_id,
+            'payment_type' => $request->payment_type,
+            'pay' => $request->pay,
+            'order_date' => Carbon::now()->format('Y-m-d'),
+            'order_status' => OrderStatus::PENDING->value,
+            'total_products' => Cart::count(),
+            'sub_total' => Cart::subtotal(),
+            'vat' => Cart::tax(),
+            'total' => Cart::total(),
+            'invoice_no' => IdGenerator::generate([
+                'table' => 'orders',
+                'field' => 'invoice_no',
+                'length' => 10,
+                'prefix' => 'INV-'
+            ]),
+            'due' => (Cart::total() - $request->pay),
+            "user_id" => auth()->id(),
+            "uuid" => Str::uuid(),
+        ]);
 
         // Create Order Details
         $contents = Cart::content();
@@ -69,26 +89,28 @@ class OrderController extends Controller
             ->with('success', 'Order has been created!');
     }
 
-    public function show(Order $order)
+    public function show($uuid)
     {
+        $order = Order::where("uuid", $uuid)->firstOrFail();
         $order->loadMissing(['customer', 'details'])->get();
 
         return view('orders.show', [
-           'order' => $order
+            'order' => $order
         ]);
     }
 
-    public function update(Order $order, Request $request)
+    public function update($uuid, Request $request)
     {
+        $order = Order::where("uuid", $uuid)->firstOrFail();
         // TODO refactoring
 
         // Reduce the stock
-        $products = OrderDetails::where('order_id', $order)->get();
+        $products = OrderDetails::where('order_id', $order->id)->get();
 
         foreach ($products as $product) {
             Product::where('id', $product->product_id)
-                    //->update(['stock' => DB::raw('stock-'.$product->quantity)]);
-                    ->update(['quantity' => DB::raw('quantity-'.$product->quantity)]);
+                //->update(['stock' => DB::raw('stock-'.$product->quantity)]);
+                ->update(['quantity' => DB::raw('quantity-' . $product->quantity)]);
         }
 
         $order->update([
@@ -100,20 +122,22 @@ class OrderController extends Controller
             ->with('success', 'Order has been completed!');
     }
 
-    public function destroy(Order $order)
+    public function destroy($uuid)
     {
+        $order = Order::where("uuid", $uuid)->firstOrFail();
         $order->delete();
     }
 
-    public function downloadInvoice($order)
+    public function downloadInvoice($uuid)
     {
+        $order = Order::with(['customer', 'details'])->where("uuid", $uuid)->firstOrFail();
         // TODO: Need refactor
         //dd($order);
 
         //$order = Order::with('customer')->where('id', $order_id)->first();
-        $order = Order::with(['customer', 'details'])
-            ->where('id', $order)
-            ->first();
+        // $order = Order::
+        //     ->where('id', $order)
+        //     ->first();
 
         return view('orders.print-invoice', [
             'order' => $order,

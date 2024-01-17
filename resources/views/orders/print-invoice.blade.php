@@ -29,7 +29,7 @@
                             <div class="row">
                                 <div class="col-lg-6 col-sm-6">
                                     <div class="logo">
-                                        <h1>Name Store</h1>
+                                        <h1>{{ Str::title(auth()->user()->store_name) }}</h1>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-sm-6">
@@ -62,12 +62,15 @@
                                     <p class="inv-from-1">{{ $order->customer->email }}</p>
                                     <p class="inv-from-2">{{ $order->customer->address }}</p>
                                 </div>
+                                @php
+                                    $user = auth()->user();
+                                @endphp
                                 <div class="col-sm-6 text-end mb-50">
                                     <h4 class="inv-title-1">Store</h4>
-                                    <p class="inv-from-1">Name Store</p>
-                                    <p class="inv-from-1">(+62) 123 123 123</p>
-                                    <p class="inv-from-1">email@example.com</p>
-                                    <p class="inv-from-2">Cirebon, Jawa Barat, Indonesia</p>
+                                    <p class="inv-from-1">{{ Str::title($user->store_name) }}</p>
+                                    <p class="inv-from-1">{{ $user->store_phone }}</p>
+                                    <p class="inv-from-1">{{ $user->store_email }}</p>
+                                    <p class="inv-from-2">{{ $user->store_address }}</p>
                                 </div>
                             </div>
                         </div>

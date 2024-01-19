@@ -13,17 +13,19 @@ use App\Models\PurchaseDetails;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Exception;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use Str;
 
 class PurchaseController extends Controller
 {
     public function index()
     {
         return view('purchases.index', [
-            'purchases' => Purchase::latest()->get()
+            'purchases' => Purchase::where("user_id",auth()->id())->count()
         ]);
     }
 
@@ -37,8 +39,9 @@ class PurchaseController extends Controller
         ]);
     }
 
-    public function show(Purchase $purchase)
+    public function show($uuid)
     {
+        $purchase = Purchase::where("uuid",$uuid)->firstOrFail();
         // N+1 Problem if load 'createdBy', 'updatedBy',
         $purchase->loadMissing(['supplier', 'details'])->get();
 
@@ -47,8 +50,9 @@ class PurchaseController extends Controller
         ]);
     }
 
-    public function edit(Purchase $purchase)
+    public function edit($uuid)
     {
+        $purchase = Purchase::where("uuid",$uuid)->firstOrFail();
         // N+1 Problem if load 'createdBy', 'updatedBy',
         $purchase->with(['supplier', 'details'])->get();
 
@@ -60,14 +64,29 @@ class PurchaseController extends Controller
     public function create()
     {
         return view('purchases.create', [
-            'categories' => Category::select(['id', 'name'])->get(),
-            'suppliers' => Supplier::select(['id', 'name'])->get(),
+            'categories' => Category::where("user_id",auth()->id())->select(['id', 'name'])->get(),
+            'suppliers' => Supplier::where("user_id",auth()->id())->select(['id', 'name'])->get(),
         ]);
     }
 
     public function store(StorePurchaseRequest $request)
     {
-        $purchase = Purchase::create($request->all());
+        $purchase = Purchase::create([
+            'purchase_no' => IdGenerator::generate([
+                'table' => 'purchases',
+                'field' => 'purchase_no',
+                'length' => 10,
+                'prefix' => 'PRS-'
+            ]),
+            'status'     => PurchaseStatus::PENDING->value,
+            'created_by' => auth()->user()->id,
+            'supplier_id.required' =>$request->required,
+            'supplier_id'   =>$request->supplier_id,
+            'date'          =>$request->date,
+            'total_amount'  =>$request->total_amount,
+            "uuid"=>Str::uuid(),
+            "user_id"=>auth()->id()
+        ]);
 
         /*
          * TODO: Must validate that
@@ -95,8 +114,9 @@ class PurchaseController extends Controller
             ->with('success', 'Purchase has been created!');
     }
 
-    public function update(Purchase $purchase, Request $request)
+    public function update($uuid, Request $request)
     {
+        $purchase =Purchase::where("uuid",$uuid)->firstOrFail();
         $products = PurchaseDetails::where('purchase_id', $purchase->id)->get();
 
         foreach ($products as $product)
@@ -107,7 +127,6 @@ class PurchaseController extends Controller
 
         Purchase::findOrFail($purchase->id)
             ->update([
-                //'purchase_status' => 1, // 1 = approved, 0 = pending
                 'status' => PurchaseStatus::APPROVED,
                 'updated_by' => auth()->user()->id
             ]);
@@ -117,8 +136,9 @@ class PurchaseController extends Controller
             ->with('success', 'Purchase has been approved!');
     }
 
-    public function destroy(Purchase $purchase)
+    public function destroy($uuid)
     {
+        $purchase = Purchase::where("uuid",$uuid)->firstOrFail();
         $purchase->delete();
 
         return redirect()

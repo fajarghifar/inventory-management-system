@@ -1,14 +1,16 @@
 <div class="d-inline-block">
     <!-- Button trigger Discount Modal -->
-{{--    <span wire:click="$dispatch('discountModalRefresh', { product_id: {{ $cart_item->id }}, row_id: '{{ $cart_item->rowId }}' })" role="button" class="badge badge-warning pointer-event" data-toggle="modal" data-target="#discountModal{{ $cart_item->id }}">--}}
-{{--        <i class="bi bi-pencil-square text-white"></i>--}}
-{{--    </span>--}}
-    <span wire:click="$dispatch('discountModalRefresh', { product_id: {{ $cart_item->id }}, row_id: '{{ $cart_item->rowId }}' })"
-          role="button" data-toggle="modal" data-target="#discountModal{{ $cart_item->id }}">
+    {{--    <span wire:click="$dispatch('discountModalRefresh', { product_id: {{ $cart_item->id }}, row_id: '{{ $cart_item->rowId }}' })" role="button" class="badge badge-warning pointer-event" data-toggle="modal" data-target="#discountModal{{ $cart_item->id }}"> --}}
+    {{--        <i class="bi bi-pencil-square text-white"></i> --}}
+    {{--    </span> --}}
+    <span
+        wire:click="$dispatch('discountModalRefresh', { product_id: {{ $cart_item->id }}, row_id: '{{ $cart_item->rowId }}' })"
+        role="button" data-toggle="modal" data-target="#discountModal{{ $cart_item->id }}">
         [+]
     </span>
     <!-- Discount Modal -->
-    <div wire:ignore.self class="modal fade" id="discountModal{{ $cart_item->id }}" tabindex="-1" role="dialog" aria-labelledby="discountModalLabel" aria-hidden="true">
+    <div wire:ignore.self class="modal fade" id="discountModal{{ $cart_item->id }}" tabindex="-1" role="dialog"
+        aria-labelledby="discountModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -16,8 +18,8 @@
                         {{ $cart_item->name }}
                         <br>
                         <span class="badge badge-success">
-                        {{ $cart_item->options->code }}
-                    </span>
+                            {{ $cart_item->options->code }}
+                        </span>
                     </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -42,18 +44,21 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        @if($discount_type[$cart_item->id] == 'percentage')
+                        @if ($discount_type[$cart_item->id] == 'percentage')
                             <label>Discount(%) <span class="text-danger">*</span></label>
-                            <input wire:model="item_discount.{{ $cart_item->id }}" type="number" class="form-control" value="{{ $item_discount[$cart_item->id] }}" min="0" max="100">
+                            <input wire:model="item_discount.{{ $cart_item->id }}" type="number" class="form-control"
+                                value="{{ $item_discount[$cart_item->id] }}" min="0" max="100">
                         @elseif($discount_type[$cart_item->id] == 'fixed')
                             <label>Discount <span class="text-danger">*</span></label>
-                            <input wire:model="item_discount.{{ $cart_item->id }}" type="number" class="form-control" value="{{ $item_discount[$cart_item->id] }}">
+                            <input wire:model="item_discount.{{ $cart_item->id }}" type="number" class="form-control"
+                                value="{{ $item_discount[$cart_item->id] }}">
                         @endif
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button wire:click="setProductDiscount('{{ $cart_item->rowId }}', {{ $cart_item->id }})" type="button" class="btn btn-primary">Save changes</button>
+                    <button wire:click="setProductDiscount('{{ $cart_item->rowId }}', {{ $cart_item->id }})"
+                        type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>

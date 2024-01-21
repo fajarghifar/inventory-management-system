@@ -11,12 +11,13 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Http\Requests\Quotation\StoreQuotationRequest;
+use Str;
 
 class QuotationController extends Controller
 {
     public function index()
     {
-        $quotations = Quotation::with(['customer'])->get();
+        $quotations = Quotation::where("user_id",auth()->id())->count();
 
         return view('quotations.index', [
             'quotations' => $quotations
@@ -29,8 +30,8 @@ class QuotationController extends Controller
 
         return view('quotations.create', [
             'cart' => Cart::content('quotation'),
-            'products' => Product::all(),
-            'customers' => Customer::all(),
+            'products' => Product::where("user_id",auth()->id())->get(),
+            'customers' => Customer::where("user_id",auth()->id())->get(),
 
             // maybe?
             //'statuses' => QuotationStatus::cases()
@@ -51,6 +52,8 @@ class QuotationController extends Controller
                 'total_amount' => $request->total_amount, //* 100,
                 'status' => $request->status,
                 'note' => $request->note,
+                "uuid" => Str::uuid(),
+                "user_id" => auth()->id(),
                 'tax_amount' => Cart::instance('quotation')->tax(), //* 100,
                 'discount_amount' => Cart::instance('quotation')->discount(), //* 100,
             ]);
@@ -74,8 +77,6 @@ class QuotationController extends Controller
             Cart::instance('quotation')->destroy();
         });
 
-        //toast('Quotation Created!', 'success');
-
         return redirect()
             ->route('quotations.index')
             ->with('success', 'Quotation Created!');
@@ -86,9 +87,36 @@ class QuotationController extends Controller
 
     }
 
-    public function edit()
+    public function edit($uuid)
     {
+        $quotation = Quotation::where("user_id",auth()->id())->where('uuid', $uuid)->firstOrFail();
+        // Cart::instance('quotation')->destroy();
 
+        foreach ($quotation->quotationDetails as $quotation_detail) {
+            Cart::instance('quotation')->add([
+                'id' => $quotation_detail->product_id,
+                'name' => $quotation_detail->product_name,
+                'qty' => $quotation_detail->quantity,
+                'price' => $quotation_detail->price,
+                'weight' => 0,
+                'options' => [
+                    'code' => $quotation_detail->product_code,
+                    'unit_price' => $quotation_detail->unit_price,
+                    'sub_total' => $quotation_detail->sub_total,
+                    'product_discount' => $quotation_detail->product_discount_amount,
+                    'product_discount_type' => $quotation_detail->product_discount_type,
+                    'product_tax' => $quotation_detail->product_tax_amount,
+                ]
+            ]);
+        }
+
+        return view('quotations.edit', [
+            'quotation' => $quotation,
+            'cart' => Cart::content('quotation'),
+            'products' => Product::where("user_id",auth()->id())->get(),
+            'customers' => Customer::where("user_id",auth()->id())->get(),
+            'statuses' => QuotationStatus::cases()
+        ]);
     }
 
     public function update()

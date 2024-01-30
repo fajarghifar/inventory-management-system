@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-
+            $table->uuid();
+            $table->foreignId("user_id")->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug');
-            $table->string('code')->unique()->nullable();
+            $table->string('code');
             //$table->string('product_barcode_symbology')->nullable();
             $table->integer('quantity');
             $table->integer('buying_price')->comment('Buying Price');
@@ -31,8 +32,6 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Category::class)
                 ->nullable()
                 ->constrained()
-//                ->restrictOnDelete();
-//                ->cascadeOnDelete();
                 ->nullOnDelete();
 
             $table->foreignIdFor(\App\Models\Unit::class)->constrained()

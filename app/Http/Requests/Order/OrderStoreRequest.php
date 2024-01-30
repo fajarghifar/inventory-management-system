@@ -25,23 +25,4 @@ class OrderStoreRequest extends FormRequest
         ];
     }
 
-    public function prepareForValidation(): void
-    {
-        $this->merge([
-            'order_date' => Carbon::now()->format('Y-m-d'),
-            'order_status' => OrderStatus::PENDING->value,
-            'total_products' => Cart::count(),
-            'sub_total' => Cart::subtotal(),
-            'vat' => Cart::tax(),
-            'total' => Cart::total(),
-            'invoice_no' => IdGenerator::generate([
-                'table' => 'orders',
-                'field' => 'invoice_no',
-                'length' => 10,
-                'prefix' => 'INV-'
-            ]),
-            //'due' => ((int)Cart::total()) - ((int)$this->pay)
-            'due' => (Cart::total() - $this->pay)
-        ]);
-    }
 }

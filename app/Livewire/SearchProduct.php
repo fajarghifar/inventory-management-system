@@ -26,7 +26,7 @@ class SearchProduct extends Component
 
     public function updatedQuery()
     {
-        $this->search_results = Product::where('name', 'like', '%' . $this->query . '%')
+        $this->search_results = Product::where("user_id",auth()->id())->where('name', 'like', '%' . $this->query . '%')
             ->orWhere('code', 'like', '%' . $this->query . '%')
             ->take($this->how_many)->get();
     }

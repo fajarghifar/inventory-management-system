@@ -7,7 +7,7 @@
             <div class="card-header">
                 <div>
                     <h3 class="card-title">
-                        {{ __('Category Details') }}
+                        {{ __('Edit Category') }}
                     </h3>
                 </div>
 
@@ -24,14 +24,6 @@
                         id="name"
                         name="name"
                         :value="old('name', $category->name)"
-                        required
-                    />
-
-                    <x-input
-                        label="{{ __('Slug') }}"
-                        id="slug"
-                        name="slug"
-                        :value="old('slug', $category->slug)"
                         required
                     />
                 </div>

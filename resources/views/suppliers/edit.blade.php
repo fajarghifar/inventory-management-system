@@ -5,7 +5,7 @@
     <div class="container-xl">
         <div class="row row-cards">
 
-            <form action="{{ route('suppliers.update', $supplier) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('suppliers.update', $supplier->uuid) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('put')
                 <div class="row">
@@ -16,7 +16,7 @@
                                     {{ __('Profile Image') }}
                                 </h3>
 
-                                <img class="img-account-profile mb-2" src="{{ $supplier->photo ? asset('storage/suppliers/'.$supplier->photo) : asset('assets/img/demo/user-placeholder.svg') }}" alt="" id="image-preview" />
+                                <img class="img-account-profile mb-2" src="{{ $supplier->photo ? asset('storage/'.$supplier->photo) : asset('assets/img/demo/user-placeholder.svg') }}" alt="" id="image-preview" />
                                 <!-- Profile picture help block -->
                                 <div class="small font-italic text-muted mb-2">JPG or PNG no larger than 1 MB</div>
                                 <!-- Profile picture input -->
@@ -35,7 +35,7 @@
                             <div class="card-header">
                                 <div>
                                     <h3 class="card-title">
-                                        {{ __('Supplier Details') }}
+                                        {{ __('Edit Supplier') }}
                                     </h3>
                                 </div>
 

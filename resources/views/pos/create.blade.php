@@ -13,6 +13,9 @@
     <link type="text/css" rel="stylesheet" href="{{ asset('assets/invoice/css/style.css') }}">
 </head>
     <body>
+        @php
+            $user=auth()->user();
+        @endphp
         <div class="invoice-16 invoice-content">
             <div class="container">
                 <div class="row">
@@ -22,12 +25,12 @@
                                 <div class="row">
                                     <div class="col-lg-6 col-sm-6">
                                         <div class="logo">
-                                            <h1>Name Store</h1>
+                                            <h1>{{ $user->store_name }}</h1>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-sm-6">
                                         <div class="invoice">
-                                            <h1>Invoice # <span>123456</span></h1>
+                                            {{-- <h1>Invoice # <span>123456</span></h1> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -53,10 +56,10 @@
                                     </div>
                                     <div class="col-sm-6 text-end mb-50">
                                         <h4 class="inv-title-1">Store</h4>
-                                        <p class="inv-from-1">Name Store</p>
-                                        <p class="inv-from-1">(+62) 123 123 123</p>
-                                        <p class="inv-from-1">email@example.com</p>
-                                        <p class="inv-from-2">Cirebon, Jawa Barat, Indonesia</p>
+                                        <p class="inv-from-1">{{ $user->store_name }}</p>
+                                        <p class="inv-from-1">{{ $user->store_phone }}</p>
+                                        <p class="inv-from-1">{{ $user->store_email }}</p>
+                                        <p class="inv-from-2">{{ $user->store_address }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -173,7 +176,7 @@
                                         {{ __('Pay Now') }}
                                     </label>
 
-                                    <input type="text"
+                                    <input type="number"
                                            id="pay"
                                            name="pay"
                                            class="form-control @error('pay') is-invalid @enderror"

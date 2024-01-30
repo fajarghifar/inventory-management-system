@@ -18,13 +18,13 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path></svg>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end" style="">
-                                <a href="{{ route('purchases.edit', $purchase) }}" class="dropdown-item text-warning">
+                                <a href="{{ route('purchases.edit', $purchase->uuid) }}" class="dropdown-item text-warning">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
                                     {{ __('Edit Purchase') }}
                                 </a>
 
                                 @if ($purchase->status === \App\Enums\PurchaseStatus::PENDING)
-                                    <form action="{{ route('purchases.update', $purchase) }}" method="POST">
+                                    <form action="{{ route('purchases.update', $purchase->uuid) }}" method="POST">
                                         @csrf
                                         @method('put')
 
@@ -113,7 +113,7 @@
                                         <td class="align-middle text-center">{{ $loop->iteration  }}</td>
                                         <td class="align-middle justify-content-center text-center">
                                             <div style="max-height: 80px; max-width: 80px;">
-                                                <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
+                                                <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
                                             </div>
                                         </td>
                                         <td class="align-middle text-center">

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\SupplierType;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Supplier>
@@ -18,6 +19,8 @@ class SupplierFactory extends Factory
     public function definition(): array
     {
         return [
+            "user_id"=>1,
+            "uuid"=>Str::uuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->unique()->phoneNumber(),

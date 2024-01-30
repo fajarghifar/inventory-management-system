@@ -25,6 +25,8 @@ class Order extends Model
         'payment_type',
         'pay',
         'due',
+        "user_id",
+        "uuid"
     ];
 
     protected $casts = [
@@ -49,5 +51,15 @@ class Order extends Model
         $query->where('invoice_no', 'like', "%{$value}%")
             ->orWhere('order_status', 'like', "%{$value}%")
             ->orWhere('payment_type', 'like', "%{$value}%");
+    }
+
+     /**
+     * Get the user that owns the Category
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

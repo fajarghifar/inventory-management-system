@@ -34,7 +34,7 @@ class PurchaseTable extends Component
     public function render()
     {
         return view('livewire.tables.purchase-table', [
-            'purchases' => Purchase::query()
+            'purchases' => Purchase::where("user_id",auth()->id())
                 ->with('supplier')
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')

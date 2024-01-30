@@ -7,7 +7,8 @@
             <div class="card-header">
                 <div>
                     <h3 class="card-title">
-                        {{ __('Unit Details') }}
+                        {{ __('Edit Unit') }}
+
                     </h3>
                 </div>
 
@@ -26,14 +27,6 @@
                         id="name"
                         name="name"
                         :value="old('name', $unit->name)"
-                        required
-                    />
-
-                    <x-input
-                        label="{{ __('Slug') }}"
-                        id="slug"
-                        name="slug"
-                        :value="old('slug', $unit->slug)"
                         required
                     />
 

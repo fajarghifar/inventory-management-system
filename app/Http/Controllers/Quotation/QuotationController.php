@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Http\Requests\Quotation\StoreQuotationRequest;
+use Illuminate\Support\Facades\Request;
+use Str;
 
 class QuotationController extends Controller
 {
     public function index()
     {
-        $quotations = Quotation::with(['customer'])->get();
+        $quotations = Quotation::where("user_id",auth()->id())->count();
 
         return view('quotations.index', [
             'quotations' => $quotations
@@ -29,8 +31,8 @@ class QuotationController extends Controller
 
         return view('quotations.create', [
             'cart' => Cart::content('quotation'),
-            'products' => Product::all(),
-            'customers' => Customer::all(),
+            'products' => Product::where("user_id",auth()->id())->get(),
+            'customers' => Customer::where("user_id",auth()->id())->get(),
 
             // maybe?
             //'statuses' => QuotationStatus::cases()
@@ -51,6 +53,8 @@ class QuotationController extends Controller
                 'total_amount' => $request->total_amount, //* 100,
                 'status' => $request->status,
                 'note' => $request->note,
+                "uuid" => Str::uuid(),
+                "user_id" => auth()->id(),
                 'tax_amount' => Cart::instance('quotation')->tax(), //* 100,
                 'discount_amount' => Cart::instance('quotation')->discount(), //* 100,
             ]);
@@ -74,26 +78,19 @@ class QuotationController extends Controller
             Cart::instance('quotation')->destroy();
         });
 
-        //toast('Quotation Created!', 'success');
-
         return redirect()
             ->route('quotations.index')
             ->with('success', 'Quotation Created!');
     }
 
-    public function show()
+    public function show($uuid)
     {
+        $quotation = Quotation::where("user_id",auth()->id())->where('uuid', $uuid)->firstOrFail();
 
-    }
-
-    public function edit()
-    {
-
-    }
-
-    public function update()
-    {
-
+        return view('quotations.show', [
+            'quotation' => $quotation,
+            'quotation_details' => QuotationDetails::where('quotation_id', $quotation->id)->get()
+        ]);
     }
 
     public function destroy(Quotation $quotation)
@@ -102,5 +99,18 @@ class QuotationController extends Controller
 
         return redirect()
             ->route('quotations.index');
+    }
+
+    // complete quitaion method
+    public function update(Request $request,$uuid)
+    {
+        $quotation = Quotation::where("user_id",auth()->id())->where('uuid', $uuid)->firstOrFail();
+
+        $quotation->status = 1;
+        $quotation->save();
+
+        return redirect()
+            ->route('quotations.index')
+            ->with('success', 'Quotation Completed!');
     }
 }

@@ -102,9 +102,9 @@
                         </span>
                     </td>
                     <td class="align-middle text-center">
-                        <x-button.show class="btn-icon" route="{{ route('quotations.show', $quotation) }}"/>
-                        <x-button.edit class="btn-icon" route="{{ route('quotations.edit', $quotation) }}"/>
-                        <x-button.delete class="btn-icon" route="{{ route('quotations.destroy', $quotation) }}"/>
+                        <x-button.show class="btn-icon" route="{{ route('quotations.show', $quotation->uuid) }}"/>
+                        <x-button.edit class="btn-icon" route="{{ route('quotations.edit', $quotation->uuid) }}"/>
+                        <x-button.delete class="btn-icon" route="{{ route('quotations.destroy', $quotation->uuid) }}"/>
                     </td>
                 </tr>
             @empty

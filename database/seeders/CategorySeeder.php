@@ -17,31 +17,40 @@ class CategorySeeder extends Seeder
             [
                 'id'    => 1,
                 'name'  => 'Laptops',
-                'slug'  => 'laptops'
+                'slug'  => 'laptops',
+                "user_id" => 1,
             ],
             [
                 'id'    => 2,
                 'name'  => 'Hardware',
-                'slug'  => 'hardware'
+                'slug'  => 'hardware',
+                "user_id" => 1,
+
             ],
             [
                 'id'    => 3,
                 'name'  => 'Smartphones',
-                'slug'  => 'smartphones'
+                'slug'  => 'smartphones',
+                "user_id" => 1,
+
             ],
             [
                 'id'    => 4,
                 'name'  => 'Speakers',
-                'slug'  => 'speakers'
+                'slug'  => 'speakers',
+                "user_id" => 1,
+
             ],
             [
                 'id'    => 5,
                 'name'  => 'Software',
-                'slug'  => 'software'
+                'slug'  => 'software',
+                "user_id" => 1,
+
             ]
         ]);
 
-        $categories->each(function ($category){
+        $categories->each(function ($category) {
             Category::insert($category);
         });
     }

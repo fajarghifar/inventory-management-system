@@ -104,9 +104,9 @@
                             </span>
                         </td>
                         <td class="align-middle text-center">
-                            <x-button.show class="btn-icon" route="{{ route('purchases.show', $purchase) }}"/>
+                            <x-button.show class="btn-icon" route="{{ route('purchases.show', $purchase->uuid) }}"/>
 
-                            <x-button.edit class="btn-icon" route="{{ route('purchases.edit', $purchase) }}"/>
+                            <x-button.edit class="btn-icon" route="{{ route('purchases.edit', $purchase->uuid) }}"/>
                         </td>
                     @else
                         <td class="align-middle text-center">
@@ -115,9 +115,9 @@
                             </span>
                         </td>
                         <td class="align-middle text-center" style="width: 10%">
-                            <x-button.show class="btn-icon" route="{{ route('purchases.show', $purchase) }}"/>
-                            <x-button.edit class="btn-icon" route="{{ route('purchases.edit', $purchase) }}"/>
-                            <x-button.delete class="btn-icon" route="{{ route('purchases.delete', $purchase) }}"/>
+                            <x-button.show class="btn-icon" route="{{ route('purchases.show', $purchase->uuid) }}"/>
+                            <x-button.edit class="btn-icon" route="{{ route('purchases.edit', $purchase->uuid) }}"/>
+                            <x-button.delete class="btn-icon" onclick="return confirm('are you sure!')" route="{{ route('purchases.delete', $purchase->uuid) }}"/>
                         </td>
                     @endif
                 </tr>

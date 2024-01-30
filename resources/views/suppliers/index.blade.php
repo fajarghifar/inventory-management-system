@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="page-body">
-    @if($suppliers->isEmpty())
+    @if(!$suppliers)
         <x-empty
             title="No suppliers found"
             message="Try adjusting your search or filter to find what you're looking for."

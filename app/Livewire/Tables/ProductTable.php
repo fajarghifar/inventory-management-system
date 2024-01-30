@@ -34,7 +34,7 @@ class ProductTable extends Component
     public function render()
     {
         return view('livewire.tables.product-table', [
-            'products' => Product::query()
+            'products' => Product::where("user_id",auth()->id())
                 ->with(['category', 'unit'])
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')

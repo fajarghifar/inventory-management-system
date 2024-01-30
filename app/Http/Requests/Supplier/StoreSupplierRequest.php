@@ -24,8 +24,8 @@ class StoreSupplierRequest extends FormRequest
         return [
             'photo' => 'image|file|max:1024',
             'name' => 'required|string|max:50',
-            'email' => 'required|email|max:50|unique:suppliers,email',
-            'phone' => 'required|string|max:25|unique:suppliers,phone',
+            'email' => 'required|email|max:50',
+            'phone' => 'required|string|max:25',
             'shopname' => 'required|string|max:50',
             'type' => 'required|string|max:25',
             'account_holder' => 'max:50',

@@ -26,7 +26,7 @@ Inventory Management System with Laravel 10 and MySql.
 1. Clone Repository
 
 ```bash
-git clone https://github.com/tauseedzaman/inventory-management-system
+git clone https://github.com/fajarghifar/inventory-management-system
 ```
 
 2. Go into the repository 

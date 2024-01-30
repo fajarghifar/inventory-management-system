@@ -110,7 +110,7 @@ password
 
 If you have any ideas to make it more interesting, please send a PR or create an issue for a feature request.
 
-### if you wana contribute to this project and add some features into here are some possable features you can into this project..;)
+### if you wana contribute to this project and add some features into it, here are some possable features you can add into this project..;)
 [https://chat.openai.com/share/48776dd2-3b91-4b93-b7b5-8a728d39df4f](https://chat.openai.com/share/48776dd2-3b91-4b93-b7b5-8a728d39df4f)
 # 🤝 License
 

@@ -21,7 +21,8 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'password' => bcrypt('password'),
                 'created_at' => now(),
-                "uuid" => Str::uuid()
+                'uuid' => Str::uuid(),
+                'photo' => 'admin.jpg'
             ],
             [
                 'name' => 'quest',
@@ -29,7 +30,8 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'password' => bcrypt('password'),
                 'created_at' => now(),
-                "uuid" => Str::uuid()
+                'uuid' => Str::uuid(),
+                'photo' => 'admin.jpg'
             ],
             [
                 'name' => 'user',
@@ -37,7 +39,8 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'password' => bcrypt('password'),
                 'created_at' => now(),
-                "uuid" => Str::uuid()
+                'uuid' => Str::uuid(),
+                'photo' => 'admin.jpg'
             ]
         ]);
 

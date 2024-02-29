@@ -9,19 +9,22 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderDetails;
 use App\Models\Product;
+use App\Models\User;
+use App\Mail\StockAlert;
 use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Str;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::where("user_id", auth()->id())->count();
+        $orders = Order::where('user_id', auth()->id())->count();
 
         return view('orders.index', [
             'orders' => $orders
@@ -30,9 +33,9 @@ class OrderController extends Controller
 
     public function create()
     {
-        $products = Product::where("user_id", auth()->id())->with(['category', 'unit'])->get();
+        $products = Product::where('user_id', auth()->id())->with(['category', 'unit'])->get();
 
-        $customers = Customer::where("user_id", auth()->id())->get(['id', 'name']);
+        $customers = Customer::where('user_id', auth()->id())->get(['id', 'name']);
 
         $carts = Cart::content();
 
@@ -62,8 +65,8 @@ class OrderController extends Controller
                 'prefix' => 'INV-'
             ]),
             'due' => (Cart::total() - $request->pay),
-            "user_id" => auth()->id(),
-            "uuid" => Str::uuid(),
+            'user_id' => auth()->id(),
+            'uuid' => Str::uuid(),
         ]);
 
         // Create Order Details
@@ -91,9 +94,8 @@ class OrderController extends Controller
 
     public function show($uuid)
     {
-        $order = Order::where("uuid", $uuid)->firstOrFail();
+        $order = Order::where('uuid', $uuid)->firstOrFail();
         $order->loadMissing(['customer', 'details'])->get();
-
         return view('orders.show', [
             'order' => $order
         ]);
@@ -101,20 +103,34 @@ class OrderController extends Controller
 
     public function update($uuid, Request $request)
     {
-        $order = Order::where("uuid", $uuid)->firstOrFail();
+        $order = Order::where('uuid', $uuid)->firstOrFail();
         // TODO refactoring
 
         // Reduce the stock
         $products = OrderDetails::where('order_id', $order->id)->get();
 
+        $stockAlertProducts = [];
+
         foreach ($products as $product) {
-            Product::where('id', $product->product_id)
-                //->update(['stock' => DB::raw('stock-'.$product->quantity)]);
-                ->update(['quantity' => DB::raw('quantity-' . $product->quantity)]);
+            $productEntity = Product::where('id', $product->product_id)->first();
+            $newQty = $productEntity->quantity - $product->quantity;
+            if ($newQty < $productEntity->quantity_alert) {
+                $stockAlertProducts[] = $productEntity;
+            }
+            $productEntity->update(['quantity' => $newQty]);
         }
 
+        if (count($stockAlertProducts) > 0) {
+            $listAdmin = [];
+            foreach (User::all('email') as $admin) {
+                $listAdmin [] = $admin->email;
+            }
+            Mail::to($listAdmin)->send(new StockAlert($stockAlertProducts));
+        }
         $order->update([
-            'order_status' => OrderStatus::COMPLETE
+            'order_status' => OrderStatus::COMPLETE,
+            'due' => '0',
+            'pay' => $order->total
         ]);
 
         return redirect()
@@ -124,13 +140,13 @@ class OrderController extends Controller
 
     public function destroy($uuid)
     {
-        $order = Order::where("uuid", $uuid)->firstOrFail();
+        $order = Order::where('uuid', $uuid)->firstOrFail();
         $order->delete();
     }
 
     public function downloadInvoice($uuid)
     {
-        $order = Order::with(['customer', 'details'])->where("uuid", $uuid)->firstOrFail();
+        $order = Order::with(['customer', 'details'])->where('uuid', $uuid)->firstOrFail();
         // TODO: Need refactor
         //dd($order);
 
@@ -142,5 +158,19 @@ class OrderController extends Controller
         return view('orders.print-invoice', [
             'order' => $order,
         ]);
+    }
+
+    public function cancel(Order $order)
+    {
+        $order->update([
+            'order_status' => 2
+        ]);
+        $orders = Order::where('user_id',auth()->id())->count();
+
+        return redirect()
+            ->route('orders.index', [
+                'orders' => $orders
+            ])
+            ->with('success', 'Order has been canceled!');
     }
 }

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('discount_amount')->default(0);
             $table->integer('shipping_amount')->default(0);
             $table->integer('total_amount');
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->comment('0 - Pending / 1 - Complete / 2 - Cancel');;
             $table->text('note')->nullable();
             $table->uuid();
             $table->foreignId("user_id")->constrained()->onDelete('cascade');

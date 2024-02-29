@@ -146,7 +146,7 @@
                         <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
                             aria-label="Open user menu">
                             <span class="avatar avatar-sm shadow-none"
-                                style="background-image: url({{ Avatar::create(Auth::user()->name)->toBase64() }})">
+                                style="background-image: url({{ Auth::user()->photo ? asset('storage/profile/' . Auth::user()->photo) : asset('assets/img/illustrations/profiles/admin.jpg') }})">
                             </span>
 
                             <div class="d-none d-xl-block ps-2">
@@ -347,7 +347,7 @@
                                                 {{ __('Approval') }}
                                             </a>
                                             <a class="dropdown-item"
-                                                href="{{ route('purchases.dailyPurchaseReport') }}">
+                                                href="{{ route('purchases.purchaseReport') }}">
                                                 {{ __('Daily Purchase Report') }}
                                             </a>
                                         </div>
@@ -357,7 +357,7 @@
 
 
 
-                            <li class="nav-item {{ request()->is('quotations') ? 'active' : null }}">
+                            <li class="nav-item {{ request()->is('quotations*') ? 'active' : null }}">
                                 <a class="nav-link" href="{{ route('quotations.index') }}">
                                     <span
                                         class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->

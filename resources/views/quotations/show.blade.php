@@ -73,7 +73,7 @@
                                             <th scope="col" class="align-middle text-center">Current Stock</th>
                                             <th scope="col" class="align-middle text-center">Quantity</th>
                                             <th scope="col" class="align-middle text-center">Price</th>
-                                            <th scope="col" class="align-middle text-center">Total</th>
+                                            <th scope="col" class="align-middle text-center">Sub Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -166,9 +166,13 @@
                                                     <span class="badge bg-success-lt">
                                                         Completed
                                                     </span>
+                                                @elseif ($quotation->status->value == 0)
+                                                    <span class="badge bg-warning-lt">
+                                                        Pending
+                                                    </span>
                                                 @else
                                                     <span class="badge bg-danger-lt">
-                                                        Pending
+                                                        Cancel
                                                     </span>
                                                 @endif
                                             </td>
@@ -183,7 +187,6 @@
                             <div class="col-4 float-right my-4">
                                 <form action="{{ route('quotations.update', $quotation->uuid) }}" method="POST">
                                     @csrf
-                                    @method('PUT')
                                     <button type="submit" class="btn btn-success">
                                         <i class="bi bi-check-circle"></i>
                                         Complete Quotation

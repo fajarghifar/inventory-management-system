@@ -5,6 +5,15 @@
         <div class="page-body">
             <div class="container-xl">
                 <div class="card">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="card-header">
                         <div>
                             <h3 class="card-title">
@@ -24,7 +33,6 @@
                                     </a>
                                 </div>
                             </div>
-
                             <a href="{{ route('due.index') }}" class="btn-action">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
                             </a>
@@ -57,7 +65,6 @@
                                 >
                             </div>
 
-                            {{---
                             <div class="col">
                                 <label for="customer" class="form-label required">
                                     {{ __('Customer') }}
@@ -69,16 +76,15 @@
                                        disabled
                                 >
                             </div>
-                            ---}}
 
-                            <x-tom-select
+                            {{-- <x-tom-select
                                 label="Customers"
                                 id="customer"
                                 name="customer"
                                 placeholder="Select Customer"
                                 :value="$order->customer->id"
                                 :data="$customers"
-                            />
+                            /> --}}
 
                             <div class="col">
                                 <label for="payment_type" class="form-label required">
@@ -109,7 +115,7 @@
                                         </td>
                                         <td class="align-middle text-center">
                                             <div style="max-height: 80px; max-width: 80px;">
-                                                <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
+                                                <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
                                             </div>
                                         </td>
                                         <td class="align-middle text-center">

@@ -19,10 +19,10 @@ class DashboardController extends Controller
         $products = Product::where("user_id", auth()->id())->count();
 
         $purchases = Purchase::where("user_id", auth()->id())->count();
-        $todayPurchases = Purchase::where('date', today()->format('Y-m-d'))->count();
-        $todayProducts = Product::where('created_at', today()->format('Y-m-d'))->count();
-        $todayQuotations = Quotation::where('created_at', today()->format('Y-m-d'))->count();
-        $todayOrders = Order::where('created_at', today()->format('Y-m-d'))->count();
+        $todayPurchases = Purchase::whereDate('date', today()->format('Y-m-d'))->count();
+        $todayProducts = Product::whereDate('created_at', today()->format('Y-m-d'))->count();
+        $todayQuotations = Quotation::whereDate('created_at', today()->format('Y-m-d'))->count();
+        $todayOrders = Order::whereDate('created_at', today()->format('Y-m-d'))->count();
 
         $categories = Category::where("user_id", auth()->id())->count();
         $quotations = Quotation::where("user_id", auth()->id())->count();

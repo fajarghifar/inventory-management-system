@@ -37,21 +37,14 @@ class PosController extends Controller
 
         $validatedData = $request->validate($rules);
 
-//        Cart::add([
-//            'id'        => $validatedData['id'],
-//            'name'      => $validatedData['name'],
-//            'qty'       => 1,
-//            'price'     => $validatedData['selling_price'],
-//            'weight'    => 1,
-//            //'options' => []
-//        ]);
-
-        Cart::add($validatedData['id'],
+        Cart::add(
+            $validatedData['id'],
             $validatedData['name'],
             1,
             $validatedData['selling_price'],
             1,
-            (array)$options = null);
+            (array)$options = null
+        );
 
         return redirect()
             ->back()
@@ -61,12 +54,19 @@ class PosController extends Controller
     public function updateCartItem(Request $request, $rowId)
     {
         $rules = [
-            'quantity' => 'required|numeric',
+            'qty' => 'required|numeric',
+            'product_id' => 'numeric'
         ];
-
+        
         $validatedData = $request->validate($rules);
+        if ($validatedData['qty'] > Product::where('id', intval($validatedData['product_id']))->value('quantity')) {
+            return redirect()
+            ->back()
+            ->with('error', 'The requested quantity is not available in stock.');
+        }
+        
 
-        Cart::update($rowId, $validatedData['quantity']);
+        Cart::update($rowId, $validatedData['qty']);
 
         return redirect()
             ->back()

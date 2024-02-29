@@ -11,6 +11,15 @@
     </div>
 @endif
 
+@if (session('error'))
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <h3 class="mb-1">Oops...</h3>
+        <p>{{ session('error') }}</p>
+
+        <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+    </div>
+@endif
+
 @if ($errors->any())
     <div class="alert alert-danger alert-dismissible" role="alert">
         <h3 class="mb-1">Oops...</h3>

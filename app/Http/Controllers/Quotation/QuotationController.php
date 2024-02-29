@@ -41,6 +41,9 @@ class QuotationController extends Controller
 
     public function store(StoreQuotationRequest $request)
     {
+        if (count(Cart::instance('quotation')->content()) === 0) {
+            return redirect()->back()->with('message', 'Please search & select products!');
+        }
         DB::transaction(function () use ($request) {
             $quotation = Quotation::create([
                 'date' => $request->date,
@@ -73,6 +76,10 @@ class QuotationController extends Controller
                     'product_discount_type' => $cart_item->options->product_discount_type,
                     'product_tax_amount' => $cart_item->options->product_tax, //* 100,
                 ]);
+                //status = sent, reduce product quantity
+                if ($request->status == 1) {
+                    Product::where('id', $cart_item->id)->update(['quantity' => DB::raw('quantity-' . $cart_item->qty)]);
+                }
             }
 
             Cart::instance('quotation')->destroy();
@@ -95,18 +102,30 @@ class QuotationController extends Controller
 
     public function destroy(Quotation $quotation)
     {
-        $quotation->delete();
+        $quotation->update([
+            "status" => 2
+        ]);
+        $quotations = Quotation::where("user_id",auth()->id())->count();
 
         return redirect()
-            ->route('quotations.index');
+            ->route('quotations.index', [
+                'quotations' => $quotations
+            ]);
     }
 
-    // complete quitaion method
+    // complete quotaion method
     public function update(Request $request,$uuid)
     {
         $quotation = Quotation::where("user_id",auth()->id())->where('uuid', $uuid)->firstOrFail();
-
+        $quotation->with(['customer', 'quotationDetails'])->get();
         $quotation->status = 1;
+        // Reduce the stock
+        $quoteProducts = $quotation->quotationDetails;
+        
+        foreach ($quoteProducts as $product) {
+            Product::where('id', $product->product_id)
+            ->update(['quantity' => DB::raw('quantity-' . $product->quantity)]);
+        }
         $quotation->save();
 
         return redirect()

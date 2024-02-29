@@ -63,13 +63,110 @@
                     <label  class="small mb-1">Address</label>
                     <div class="form-control form-control-solid">{{ $purchase->supplier->address }}</div>
                 </div>
+                <div class="col-lg-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col" class="align-middle text-center">No.</th>
+                                    <th scope="col" class="align-middle text-center">Photo</th>
+                                    <th scope="col" class="align-middle text-center">Product Name</th>
+                                    <th scope="col" class="align-middle text-center">Product Code</th>
+                                    <th scope="col" class="align-middle text-center">Current Stock</th>
+                                    <th scope="col" class="align-middle text-center">Quantity</th>
+                                    <th scope="col" class="align-middle text-center">Price</th>
+                                    <th scope="col" class="align-middle text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($purchase->details as $item)
+                                    <tr>
+                                        <td class="align-middle text-center">{{ $loop->iteration }}</td>
+                                        <td class="align-middle justify-content-center text-center">
+                                            <div style="max-height: 80px; max-width: 80px;">
+                                                <img class="img-fluid"
+                                                    src="{{ $item->product->product_image ? asset('storage/' . $item->product->product_image) : asset('assets/img/products/default.webp') }}">
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ $item->product->name }}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge bg-indigo-lt">
+                                                {{ $item->product->code }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge bg-primary-lt">
+                                                {{ $item->product->quantity }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge bg-primary-lt">
+                                                {{ $item->quantity }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ number_format($item->unitcost, 2) }}
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            {{ number_format($item->total, 2) }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                {{-- created by --}}
+                                <tr>
+                                    <td class="align-middle text-end" colspan="7">
+                                        Created By
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        {{ $purchase->user->name }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="align-middle text-end" colspan="7">
+                                        Tax Percentage
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        {{ number_format($purchase->tax_percentage, 2) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="align-middle text-end" colspan="7">
+                                        Tax Amount
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        {{ number_format($purchase->tax_amount, 2) }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="align-middle text-end" colspan="7">
+                                        Status
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        @if ($purchase->status->value == 1)
+                                            <span class="badge bg-success-lt">
+                                                Approve
+                                            </span>
+                                        @elseif ($purchase->status->value == 0)
+                                            <span class="badge bg-warning-lt">
+                                                Pending
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div class="card-footer text-end">
                 @if ($purchase->status === \App\Enums\PurchaseStatus::PENDING)
                     <form action="{{ route('purchases.update', $purchase->uuid) }}" method="POST">
                         @csrf
-                        @method('put')
                         <input type="hidden" name="id" value="{{ $purchase->id }}">
 
                         <button type="submit"

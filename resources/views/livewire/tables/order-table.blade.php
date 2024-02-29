@@ -108,7 +108,7 @@
                         </td>
                         <td class="align-middle text-center">
                             <x-status dot
-                                color="{{ $order->order_status === \App\Enums\OrderStatus::COMPLETE ? 'green' : 'orange' }}"
+                                color="{{ $order->order_status === \App\Enums\OrderStatus::COMPLETE ? 'green' : ($order->order_status === \App\Enums\OrderStatus::PENDING ? 'orange' : '') }}"
                                 class="text-uppercase">
                                 {{ $order->order_status->label() }}
                             </x-status>
@@ -117,6 +117,10 @@
                             <x-button.show class="btn-icon" route="{{ route('orders.show', $order->uuid) }}" />
                             <x-button.print class="btn-icon"
                                 route="{{ route('order.downloadInvoice', $order->uuid) }}" />
+                            @if ($order->order_status === \App\Enums\OrderStatus::PENDING)
+                                <x-button.delete class="btn-icon" route="{{ route('orders.cancel', $order) }}"
+                                    onclick="return confirm('Are you sure to cancel invoice no. {{ $order->invoice_no }} ?')" />
+                            @endif
                         </td>
                     </tr>
                 @empty

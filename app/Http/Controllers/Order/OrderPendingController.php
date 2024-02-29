@@ -13,6 +13,7 @@ class OrderPendingController extends Controller
     {
         $orders = Order::where('order_status', OrderStatus::PENDING)
             ->latest()
+            ->with('customer')
             ->get();
 
         return view('orders.pending-orders', [

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Category extends Model
 {
     use HasFactory;
+    
+    public $timestamps = true;
 
     protected $guarded = [
         'id',

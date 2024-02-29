@@ -20,6 +20,7 @@
                     @csrf
                         <div class="card-body">
                             <div class="row gx-3 mb-3">
+                                @include('partials.session')
                                 <div class="col-md-4">
                                     <label for="purchase_date" class="small my-1">
                                         {{ __('Date') }}
@@ -88,9 +89,7 @@
                                 <table class="table table-striped table-bordered align-middle">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th scope="col">
-                                                {{ __('Product') }}
-                                            </th>
+                                            <th scope="col">{{ __('Product') }}</th>
                                             <th scope="col" class="text-center">{{ __('Quantity') }}</th>
                                             <th scope="col" class="text-center">{{ __('Price') }}</th>
                                             <th scope="col" class="text-center">{{ __('SubTotal') }}</th>
@@ -106,10 +105,12 @@
                                                 {{ $item->name }}
                                             </td>
                                             <td style="min-width: 170px;">
+                                                <form></form>
                                                 <form action="{{ route('pos.updateCartItem', $item->rowId) }}" method="POST">
                                                     @csrf
                                                     <div class="input-group">
                                                         <input type="number" class="form-control" name="qty" required value="{{ old('qty', $item->qty) }}">
+                                                        <input type="hidden" class="form-control" name="product_id" value="{{ $item->id }}">
 
                                                         <div class="input-group-append text-center">
                                                             <button type="submit" class="btn btn-icon btn-success border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Sumbit">
@@ -162,7 +163,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colspan="4" class="text-end">Tax</td>
+                                            <td colspan="4" class="text-end">Total</td>
                                             <td class="text-center">
                                                 {{ Cart::total() }}
                                             </td>
@@ -173,7 +174,7 @@
 
                         </div>
                         <div class="card-footer text-end">
-                            <button type="submit" class="btn btn-success add-list mx-1">
+                            <button type="submit" class="btn btn-success add-list mx-1 {{ Cart::count() > 0 ? '' : 'disabled' }}">
                                 {{ __('Create Invoice') }}
                             </button>
                         </div>

@@ -12,7 +12,6 @@
                     </div>
 
                     <div class="card-actions btn-actions">
-
                         @if ($order->order_status === \App\Enums\OrderStatus::PENDING)
                             <div class="dropdown">
                                 <a href="#" class="btn-action dropdown-toggle" data-bs-toggle="dropdown"
@@ -49,7 +48,7 @@
                                 </div>
                             </div>
                         @endif
-
+                        
                         <x-action.close route="{{ route('orders.index') }}" />
                     </div>
                 </div>
@@ -100,7 +99,7 @@
                                     <th scope="col" class="align-middle text-center">Product Code</th>
                                     <th scope="col" class="align-middle text-center">Quantity</th>
                                     <th scope="col" class="align-middle text-center">Price</th>
-                                    <th scope="col" class="align-middle text-center">Total</th>
+                                    <th scope="col" class="align-middle text-center">Sub Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -149,6 +148,16 @@
                                 <tr>
                                     <td colspan="6" class="text-end">Total</td>
                                     <td class="text-center">{{ number_format($order->total, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" class="text-end">Status</td>
+                                    <td class="text-center">
+                                        <x-status dot
+                                            color="{{ $order->order_status === \App\Enums\OrderStatus::COMPLETE ? 'green' : ($order->order_status === \App\Enums\OrderStatus::PENDING ? 'orange' : '') }}"
+                                            class="text-uppercase">
+                                            {{ $order->order_status->label() }}
+                                        </x-status>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

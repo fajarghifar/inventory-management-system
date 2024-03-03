@@ -178,19 +178,15 @@
                                             <div class="mb-3">
                                                 <label for="quantity" class="form-label">
                                                     {{ __('Quantity') }}
-                                                    <span class="text-danger">*</span>
                                                 </label>
 
-                                                <input type="number" id="quantity" name="quantity"
-                                                    class="form-control @error('quantity') is-invalid @enderror"
-                                                    min="0" value="{{ old('quantity', $product->quantity) }}"
-                                                    placeholder="0">
+                                                <input class="form-control" name="quantity" type="text" readonly value="{{ old('quantity', $product->quantity) }}"  required="true" aria-required="true" style="color: var(--tblr-secondary);background-color: var(--tblr-bg-surface-secondary); opacity: 1;"/>
 
-                                                @error('quantity')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
-                                                    </div>
-                                                @enderror
+
+                                                {{-- <input type="text" id="quantity" name="quantity"
+                                                    class="form-control"
+                                                    min="0" value="{{ old('quantity', $product->quantity) }}"
+                                                    placeholder="0" disabled > --}}
                                             </div>
                                         </div>
 

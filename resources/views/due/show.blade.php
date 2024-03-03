@@ -97,7 +97,7 @@
                                                 <img
                                                     class="img-fluid"
                                                     src="{{ $item->product->product_image
-                                                        ? asset('storage/products/'.$item->product->product_image)
+                                                        ? asset('storage/'.$item->product->product_image)
                                                         : asset('assets/img/products/default.webp') }}"
                                                 >
                                             </div>

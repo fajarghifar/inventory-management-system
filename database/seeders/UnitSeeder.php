@@ -18,19 +18,19 @@ class UnitSeeder extends Seeder
                 'name' => 'Meters',
                 'slug' => 'meters',
                 'short_code' => 'm',
-                "user_id"=>1
+                'user_id'=>1
             ],
             [
                 'name' => 'Centimeters',
                 'slug' => 'centimeters',
                 'short_code' => 'cm',
-                "user_id"=>1
+                'user_id'=>1
             ],
             [
                 'name' => 'Piece',
                 'slug' => 'piece',
                 'short_code' => 'pc',
-                "user_id"=>1
+                'user_id'=>1
             ]
         ]);
 

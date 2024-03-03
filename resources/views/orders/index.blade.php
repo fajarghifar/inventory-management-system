@@ -45,7 +45,7 @@
                                 </x-badge>
                             </x-table.td>
                             <x-table.td>
-                                <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>
+                                <x-button.show class="btn-icon" route="{{ route('orders.show', $order->uuid) }}"/>
                                 <x-button.print class="btn-icon" route="{{ route('order.downloadInvoice', $order) }}"/>
                             </x-table.td>
                         </tr>
@@ -53,7 +53,23 @@
                 </x-slot:tbody>
             </x-table.index>
             - --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <h3 class="mb-1">Success</h3>
+                        <p>{{ session('success') }}</p>
 
+                        <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                    </div>
+                @endif
                 <livewire:tables.order-table />
             </div>
         @endif

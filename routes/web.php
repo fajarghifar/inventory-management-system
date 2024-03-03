@@ -36,7 +36,10 @@ Route::get('php/', function () {
 });
 
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::check()) {
+        return redirect('/dashboard');
+    }
+    return redirect('/login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -86,6 +89,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // SHOW ORDER
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::put('/orders/update/{order}', [OrderController::class, 'update'])->name('orders.update');
+    Route::delete('/orders/cancel/{order}', [OrderController::class, 'cancel'])->name('orders.cancel');
 
     // DUES
     Route::get('due/orders/', [DueOrderController::class, 'index'])->name('due.index');
@@ -99,7 +103,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Route Purchases
     Route::get('/purchases/approved', [PurchaseController::class, 'approvedPurchases'])->name('purchases.approvedPurchases');
-    Route::get('/purchases/report', [PurchaseController::class, 'dailyPurchaseReport'])->name('purchases.dailyPurchaseReport');
+    Route::get('/purchases/report', [PurchaseController::class, 'purchaseReport'])->name('purchases.purchaseReport');
     Route::get('/purchases/report/export', [PurchaseController::class, 'getPurchaseReport'])->name('purchases.getPurchaseReport');
     Route::post('/purchases/report/export', [PurchaseController::class, 'exportPurchaseReport'])->name('purchases.exportPurchaseReport');
 
@@ -112,9 +116,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //Route::get('/purchases/edit/{purchase}', [PurchaseController::class, 'edit'])->name('purchases.edit');
     Route::get('/purchases/{purchase}/edit', [PurchaseController::class, 'edit'])->name('purchases.edit');
-
-    Route::put('/purchases/update/{purchase}', [PurchaseController::class, 'update'])->name('purchases.update');
+    Route::post('/purchases/update/{purchase}', [PurchaseController::class, 'update'])->name('purchases.update');
     Route::delete('/purchases/delete/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.delete');
+
+    // Route Quotations
+    // Route::get('/quotations/{quotation}/edit', [QuotationController::class, 'edit'])->name('quotations.edit');
+    Route::post('/quotations/complete/{quotation}', [QuotationController::class, 'update'])->name('quotations.update');
+    Route::delete('/quotations/delete/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.delete');
 });
 
 require __DIR__.'/auth.php';

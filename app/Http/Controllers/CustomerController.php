@@ -11,7 +11,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::where("user_id", auth()->id())->count();
+        $customers = Customer::where('user_id', auth()->id())->count();
 
         return view('customers.index', [
             'customers' => $customers
@@ -28,13 +28,13 @@ class CustomerController extends Controller
         /**
          * Handle upload an image
          */
-        $image = "";
+        $image = '';
         if ($request->hasFile('photo')) {
-            $image = $request->file('photo')->store("customers", "public");
+            $image = $request->file('photo')->store('customers', 'public');
         }
         Customer::create([
-            "user_id" => auth()->id(),
-            "uuid" => Str::uuid(),
+            'user_id' => auth()->id(),
+            'uuid' => Str::uuid(),
             'photo' => $image,
             'name' => $request->name,
             'email' => $request->email,
@@ -56,7 +56,7 @@ class CustomerController extends Controller
 
     public function show($uuid)
     {
-        $customer = Customer::where("uuid", $uuid)->firstOrFail();
+        $customer = Customer::where('uuid', $uuid)->firstOrFail();
         $customer->loadMissing(['quotations', 'orders'])->get();
 
         return view('customers.show', [
@@ -66,7 +66,7 @@ class CustomerController extends Controller
 
     public function edit($uuid)
     {
-        $customer = Customer::where("uuid", $uuid)->firstOrFail();
+        $customer = Customer::where('uuid', $uuid)->firstOrFail();
         return view('customers.edit', [
             'customer' => $customer
         ]);
@@ -74,7 +74,7 @@ class CustomerController extends Controller
 
     public function update(UpdateCustomerRequest $request, $uuid)
     {
-        $customer = Customer::where("uuid", $uuid)->firstOrFail();
+        $customer = Customer::where('uuid', $uuid)->firstOrFail();
 
         /**
          * Handle upload image with Storage.
@@ -84,7 +84,7 @@ class CustomerController extends Controller
             if ($customer->photo) {
                 unlink(public_path('storage/') . $customer->photo);
             }
-            $image = $request->file('photo')->store("customers", "public");
+            $image = $request->file('photo')->store('customers', 'public');
         }
 
         $customer->update([
@@ -107,9 +107,9 @@ class CustomerController extends Controller
 
     public function destroy($uuid)
     {
-        $customer = Customer::where("uuid", $uuid)->firstOrFail();
+        $customer = Customer::where('uuid', $uuid)->firstOrFail();
         if ($customer->photo) {
-            unlink(public_path('storage/customers/') . $customer->photo);
+            unlink(public_path('storage/') . $customer->photo);
         }
 
         $customer->delete();

@@ -97,9 +97,9 @@
                             {{ $product->quantity }}
                         </td>
                         <td class="align-middle text-center" style="width: 15%">
-                            <x-button.show class="btn-icon" route="{{ route('products.show', $product) }}"/>
-                            <x-button.edit class="btn-icon" route="{{ route('products.edit', $product) }}"/>
-                            <x-button.delete class="btn-icon" route="{{ route('products.destroy', $product) }}"/>
+                            <x-button.show class="btn-icon" route="{{ route('products.show', $product->uuid) }}"/>
+                            <x-button.edit class="btn-icon" route="{{ route('products.edit', $product->uuid) }}"/>
+                            <x-button.delete class="btn-icon" route="{{ route('products.destroy', $product->uuid) }}"/>
                         </td>
                     </tr>
                 @empty

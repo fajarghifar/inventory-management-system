@@ -121,7 +121,7 @@ class ProductController extends Controller
         }
 
         $product->name = $request->name;
-        $product->name = Str::slug($request->name, '-');
+        $product->slug = Str::slug($request->name, '-');
         $product->category_id = $request->category_id;
         $product->unit_id = $request->unit_id;
         $product->quantity = $request->quantity;

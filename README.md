@@ -88,7 +88,7 @@ php artisan serve
 
 ```bash
 
-admin@admin.com
+admin@gmail.com
 
 ```
 and password: 

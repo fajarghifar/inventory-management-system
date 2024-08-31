@@ -37,7 +37,7 @@
                                 required />
                             <x-input type="tel" name="store_phone" label="Store Phone" value="{{ $user->store_phone }}"
                                 required />
-                            <x-input type="email" name="store_email" label="Store Eamil" value="{{ $user->store_email }}"
+                            <x-input type="email" name="store_email" label="Store Email" value="{{ $user->store_email }}"
                                 required />
                             <x-input type="text" name="store_address" label="Store Address"
                                 value="{{ $user->store_address }}" required />

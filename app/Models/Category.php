@@ -5,13 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Category extends Model
 {
     use HasFactory;
-    
-    public $timestamps = true;
 
     protected $guarded = [
         'id',
@@ -20,8 +17,7 @@ class Category extends Model
     protected $fillable = [
         'name',
         'slug',
-        'short_code',
-        "user_id",
+        'short_code'
     ];
 
     protected $casts = [
@@ -43,15 +39,5 @@ class Category extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
-    }
-
-    /**
-     * Get the user that owns the Category
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }

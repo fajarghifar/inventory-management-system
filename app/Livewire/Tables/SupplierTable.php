@@ -10,7 +10,7 @@ class SupplierTable extends Component
 {
     use WithPagination;
 
-    public $perPage = 5;
+    public $perPage = 10;
 
     public $search = '';
 
@@ -20,8 +20,7 @@ class SupplierTable extends Component
 
     public function sortBy($field): void
     {
-        if($this->sortField === $field)
-        {
+        if ($this->sortField === $field) {
             $this->sortAsc = ! $this->sortAsc;
 
         } else {
@@ -34,11 +33,11 @@ class SupplierTable extends Component
     public function render()
     {
         return view('livewire.tables.supplier-table', [
-            'suppliers' => Supplier::where("user_id", auth()->id())
+            'suppliers' => Supplier::query()
                 ->with(['purchases'])
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
-                ->paginate($this->perPage)
+                ->paginate($this->perPage),
         ]);
     }
 }

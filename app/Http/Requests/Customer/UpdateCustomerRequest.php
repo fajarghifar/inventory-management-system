@@ -36,12 +36,14 @@ class UpdateCustomerRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                'max:50'
+                'max:50',
+                Rule::unique('customers', 'email')->ignore($this->customer)
             ],
             'phone' => [
                 'required',
                 'string',
-                'max:25'
+                'max:25',
+                Rule::unique('customers', 'phone')->ignore($this->customer),
             ],
             'account_holder' => [
                 'max:50'

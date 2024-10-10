@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
-use Str;
 
 class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::where('user_id', auth()->id())->count();
+        $customers = Customer::all();
 
         return view('customers.index', [
             'customers' => $customers
@@ -25,38 +24,29 @@ class CustomerController extends Controller
 
     public function store(StoreCustomerRequest $request)
     {
+        $customer = Customer::create($request->all());
+
         /**
          * Handle upload an image
          */
-        $image = '';
-        if ($request->hasFile('photo')) {
-            $image = $request->file('photo')->store('customers', 'public');
+        if($request->hasFile('photo'))
+        {
+            $file = $request->file('photo');
+            $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+
+            $file->storeAs('customers/', $filename, 'public');
+            $customer->update([
+                'photo' => $filename
+            ]);
         }
-        Customer::create([
-            'user_id' => auth()->id(),
-            'uuid' => Str::uuid(),
-            'photo' => $image,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'shopname' => $request->shopname,
-            'type' => $request->type,
-            'account_holder' => $request->account_holder,
-            'account_number' => $request->account_number,
-            'bank_name' => $request->bank_name,
-            'address' => $request->address,
-        ]);
-
-
 
         return redirect()
             ->route('customers.index')
             ->with('success', 'New customer has been created!');
     }
 
-    public function show($uuid)
+    public function show(Customer $customer)
     {
-        $customer = Customer::where('uuid', $uuid)->firstOrFail();
         $customer->loadMissing(['quotations', 'orders'])->get();
 
         return view('customers.show', [
@@ -64,52 +54,48 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function edit($uuid)
+    public function edit(Customer $customer)
     {
-        $customer = Customer::where('uuid', $uuid)->firstOrFail();
         return view('customers.edit', [
             'customer' => $customer
         ]);
     }
 
-    public function update(UpdateCustomerRequest $request, $uuid)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $customer = Customer::where('uuid', $uuid)->firstOrFail();
+        //
+        $customer->update($request->except('photo'));
 
-        /**
-         * Handle upload image with Storage.
-         */
-        $image = $customer->photo;
-        if ($request->hasFile('photo')) {
-            if ($customer->photo) {
-                unlink(public_path('storage/') . $customer->photo);
+        if($request->hasFile('photo')){
+
+            // Delete Old Photo
+            if($customer->photo){
+                unlink(public_path('storage/customers/') . $customer->photo);
             }
-            $image = $request->file('photo')->store('customers', 'public');
-        }
 
-        $customer->update([
-            'photo' => $image,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'shopname' => $request->shopname,
-            'type' => $request->type,
-            'account_holder' => $request->account_holder,
-            'account_number' => $request->account_number,
-            'bank_name' => $request->bank_name,
-            'address' => $request->address,
-        ]);
+            // Prepare New Photo
+            $file = $request->file('photo');
+            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+
+            // Store an image to Storage
+            $file->storeAs('customers/', $fileName, 'public');
+
+            // Save DB
+            $customer->update([
+                'photo' => $fileName
+            ]);
+        }
 
         return redirect()
             ->route('customers.index')
             ->with('success', 'Customer has been updated!');
     }
 
-    public function destroy($uuid)
+    public function destroy(Customer $customer)
     {
-        $customer = Customer::where('uuid', $uuid)->firstOrFail();
-        if ($customer->photo) {
-            unlink(public_path('storage/') . $customer->photo);
+        if($customer->photo)
+        {
+            unlink(public_path('storage/customers/') . $customer->photo);
         }
 
         $customer->delete();

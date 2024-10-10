@@ -7,7 +7,7 @@
             <div class="card-header">
                 <div>
                     <h3 class="card-title">
-                        {{ __('Create Unit') }}
+                        {{ __('Unit Details') }}
                     </h3>
                 </div>
 
@@ -21,6 +21,8 @@
                 <div class="card-body">
                     <livewire:name />
 
+                    <livewire:slug />
+
                     <x-input
                         label="{{ __('Short Code') }}"
                         id="short_code"
@@ -29,13 +31,31 @@
                         required
                     />
                 </div>
+
                 <div class="card-footer text-end">
-                    <x-button type="submit">
-                        {{ __('Create') }}
-                    </x-button>
+                    <x-button.save type="submit">
+                        {{ __('Save') }}
+                    </x-button.save>
+
+                    <x-button.back route="{{ route('units.index') }}">
+                        {{ __('Cancel') }}
+                    </x-button.back>
                 </div>
             </form>
         </div>
     </div>
 </div>
 @endsection
+
+@pushonce('page-scripts')
+<script>
+    // Slug Generator
+    const title = document.querySelector("#name");
+    const slug = document.querySelector("#slug");
+    title.addEventListener("keyup", function() {
+        let preslug = title.value;
+        preslug = preslug.replace(/ /g,"-");
+        slug.value = preslug.toLowerCase();
+    });
+</script>
+@endpushonce

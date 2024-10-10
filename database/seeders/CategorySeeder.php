@@ -18,35 +18,35 @@ class CategorySeeder extends Seeder
                 'id'    => 1,
                 'name'  => 'Laptops',
                 'slug'  => 'laptops',
-                'user_id' => 1,
+                'created_at' => now()
             ],
             [
                 'id'    => 2,
                 'name'  => 'Hardware',
                 'slug'  => 'hardware',
-                'user_id' => 1,
+                'created_at' => now()
             ],
             [
                 'id'    => 3,
                 'name'  => 'Smartphones',
                 'slug'  => 'smartphones',
-                'user_id' => 1,
+                'created_at' => now()
             ],
             [
                 'id'    => 4,
                 'name'  => 'Speakers',
                 'slug'  => 'speakers',
-                'user_id' => 1,
+                'created_at' => now()
             ],
             [
                 'id'    => 5,
                 'name'  => 'Software',
                 'slug'  => 'software',
-                'user_id' => 1,
+                'created_at' => now()
             ]
         ]);
 
-        $categories->each(function ($category) {
+        $categories->each(function ($category){
             Category::insert($category);
         });
     }

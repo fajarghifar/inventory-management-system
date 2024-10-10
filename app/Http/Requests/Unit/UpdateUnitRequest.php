@@ -23,8 +23,19 @@ class UpdateUnitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'short_code' => ['required']
+            'name' => [
+                'required',
+                Rule::unique('units')->ignore($this->unit)
+            ],
+            'slug' => [
+                'required',
+                'alpha_dash',
+                Rule::unique('units')->ignore($this->unit)
+            ],
+            'short_code' => [
+                'required',
+                Rule::unique('units')->ignore($this->unit)
+            ]
         ];
     }
 }

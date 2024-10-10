@@ -36,6 +36,10 @@
                     <x-button type="submit">
                         {{ __('Import') }}
                     </x-button>
+
+                    <x-button.back route="{{ route('products.index') }}">
+                        {{ __('Cancel') }}
+                    </x-button.back>
                 </x-slot:footer>
             </x-card>
         </form>

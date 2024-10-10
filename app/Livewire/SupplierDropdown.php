@@ -2,12 +2,10 @@
 
 namespace App\Livewire;
 
-use App\Models\Product;
 use App\Models\Supplier;
-use Livewire\Component;
-use Livewire\Attributes\Rule;
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
+use Livewire\Component;
 
 class SupplierDropdown extends Component
 {
@@ -19,15 +17,15 @@ class SupplierDropdown extends Component
 
     public function mount(Supplier $supplier)
     {
-        if (! $this->selectedSupplier === null)
-        {
-            $this->selectedSupplier = array_values($supplier->pluck( 'id')->toArray());
+        if (! $this->selectedSupplier === null) {
+            $this->selectedSupplier = array_values($supplier->pluck('id')
+                ->toArray());
         }
 
         $this->suppliers = Supplier::all()->map(function ($supplier) {
             return [
                 'label' => $supplier->name,
-                'value' => $supplier->id
+                'value' => $supplier->id,
             ];
         });
     }

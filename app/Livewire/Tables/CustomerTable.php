@@ -10,7 +10,7 @@ class CustomerTable extends Component
 {
     use WithPagination;
 
-    public $perPage = 5;
+    public $perPage = 10;
 
     public $search = '';
 
@@ -21,7 +21,8 @@ class CustomerTable extends Component
     public function sortBy($field): void
     {
         if ($this->sortField === $field) {
-            $this->sortAsc = !$this->sortAsc;
+            $this->sortAsc = ! $this->sortAsc;
+
         } else {
             $this->sortAsc = true;
         }
@@ -32,11 +33,11 @@ class CustomerTable extends Component
     public function render()
     {
         return view('livewire.tables.customer-table', [
-            'customers' => Customer::where("user_id", auth()->id())
+            'customers' => Customer::query()
                 ->with('orders', 'quotations')
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
-                ->paginate($this->perPage)
+                ->paginate($this->perPage),
         ]);
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Product;
-use Livewire\Component;
-use Livewire\Attributes\Validate;
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
 
 class PurchaseForm extends Component
 {
@@ -20,34 +20,31 @@ class PurchaseForm extends Component
 
     public function mount(): void
     {
-        $this->allProducts = Product::where("user_id",auth()->id())->get();
+        $this->allProducts = Product::all();
     }
 
     public function render(): View
     {
         $total = 0;
 
-        foreach ($this->invoiceProducts as $invoiceProduct)
-        {
-            if ($invoiceProduct['is_saved'] && $invoiceProduct['product_price'] && $invoiceProduct['quantity'])
-            {
+        foreach ($this->invoiceProducts as $invoiceProduct) {
+            if ($invoiceProduct['is_saved'] && $invoiceProduct['product_price'] && $invoiceProduct['quantity']) {
                 $total += $invoiceProduct['product_price'] * $invoiceProduct['quantity'];
             }
         }
 
         return view('livewire.purchase-form', [
             'subtotal' => $total,
-            'total' => $total * (1 + (is_numeric($this->taxes) ? $this->taxes : 0) / 100)
+            'total' => $total * (1 + (is_numeric($this->taxes) ? $this->taxes : 0) / 100),
         ]);
     }
 
     public function addProduct(): void
     {
-        foreach ($this->invoiceProducts as $key => $invoiceProduct)
-        {
-            if (!$invoiceProduct['is_saved'])
-            {
-                $this->addError('invoiceProducts.' . $key, 'This line must be saved before creating a new one.');
+        foreach ($this->invoiceProducts as $key => $invoiceProduct) {
+            if (! $invoiceProduct['is_saved']) {
+                $this->addError('invoiceProducts.'.$key, 'This line must be saved before creating a new one.');
+
                 return;
             }
         }
@@ -57,17 +54,16 @@ class PurchaseForm extends Component
             'quantity' => 1,
             'is_saved' => false,
             'product_name' => '',
-            'product_price' => 0
+            'product_price' => 0,
         ];
     }
 
     public function editProduct($index): void
     {
-        foreach ($this->invoiceProducts as $key => $invoiceProduct)
-        {
-            if (! $invoiceProduct['is_saved'])
-            {
-                $this->addError('invoiceProducts.' . $key, 'This line must be saved before editing another.');
+        foreach ($this->invoiceProducts as $key => $invoiceProduct) {
+            if (! $invoiceProduct['is_saved']) {
+                $this->addError('invoiceProducts.'.$key, 'This line must be saved before editing another.');
+
                 return;
             }
         }

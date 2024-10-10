@@ -2,14 +2,16 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Product;
 use Illuminate\Support\Collection;
+use Livewire\Component;
 
 class SearchProduct extends Component
 {
     public $query;
+
     public $search_results;
+
     public $how_many;
 
     public function mount()
@@ -26,8 +28,8 @@ class SearchProduct extends Component
 
     public function updatedQuery()
     {
-        $this->search_results = Product::where("user_id",auth()->id())->where('name', 'like', '%' . $this->query . '%')
-            ->orWhere('code', 'like', '%' . $this->query . '%')
+        $this->search_results = Product::where('name', 'like', '%'.$this->query.'%')
+            ->orWhere('code', 'like', '%'.$this->query.'%')
             ->take($this->how_many)->get();
     }
 

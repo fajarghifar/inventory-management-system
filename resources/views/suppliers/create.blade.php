@@ -29,7 +29,11 @@
                                     {{ __('Profile Image') }}
                                 </h3>
 
-                                <img class="img-account-profile rounded-circle mb-2" src="{{ asset('assets/img/demo/user-placeholder.svg') }}" alt="" id="image-preview" />
+                                <img
+                                    class="img-account-profile mb-2"
+                                    src="{{ asset('assets/img/demo/user-placeholder.svg') }}"
+                                    id="image-preview"
+                                />
 
                                 <div class="small font-italic text-muted mb-2">JPG or PNG no larger than 1 MB</div>
 
@@ -115,7 +119,7 @@
 
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="address" class="form-label required">
+                                            <label for="address" class="form-label">
                                                 {{ __('Address') }}
                                             </label>
 
@@ -135,13 +139,13 @@
                                 </div>
                             </div>
                             <div class="card-footer text-end">
-                                <button class="btn btn-primary" type="submit">
+                                <x-button.save type="submit">
                                     {{ __('Save') }}
-                                </button>
+                                </x-button.save>
 
-                                <a class="btn btn-outline-warning" href="{{ route('suppliers.index') }}">
+                                <x-button.back route="{{ route('suppliers.index') }}">
                                     {{ __('Cancel') }}
-                                </a>
+                                </x-button.back>
                             </div>
                         </div>
                     </div>

@@ -2,41 +2,48 @@
 
 namespace App\Http\Controllers\Dashboards;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Quotation;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $orders = Order::where("user_id", auth()->id())->count();
-        $products = Product::where("user_id", auth()->id())->count();
+        $orders = Order::count();
+        $completedOrders = Order::where('order_status', OrderStatus::COMPLETE)
+            ->count();
 
-        $purchases = Purchase::where("user_id", auth()->id())->count();
-        $todayPurchases = Purchase::whereDate('date', today()->format('Y-m-d'))->count();
-        $todayProducts = Product::whereDate('created_at', today()->format('Y-m-d'))->count();
-        $todayQuotations = Quotation::whereDate('created_at', today()->format('Y-m-d'))->count();
-        $todayOrders = Order::whereDate('created_at', today()->format('Y-m-d'))->count();
+        $products = Product::count();
 
-        $categories = Category::where("user_id", auth()->id())->count();
-        $quotations = Quotation::where("user_id", auth()->id())->count();
+        $purchases = Purchase::count();
+        $todayPurchases = Purchase::query()
+            //->where('status', '=', 1)
+            ->where('date', today())
+            ->get()
+            ->count();
+
+        $categories = Category::count();
+
+        $quotations = Quotation::count();
+        $todayQuotations = Quotation::query()
+            ->where('date', today()->format('Y-m-d'))
+            ->get()
+            ->count();
 
         return view('dashboard', [
             'products' => $products,
             'orders' => $orders,
+            'completedOrders' => $completedOrders,
             'purchases' => $purchases,
             'todayPurchases' => $todayPurchases,
-            'todayProducts' => $todayProducts,
-            'todayQuotations' => $todayQuotations,
-            'todayOrders' => $todayOrders,
             'categories' => $categories,
-            'quotations' => $quotations
+            'quotations' => $quotations,
+            'todayQuotations' => $todayQuotations,
         ]);
     }
 }

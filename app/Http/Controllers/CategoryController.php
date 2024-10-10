@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
-use Str;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::where("user_id", auth()->id())->count();
+        $categories = Category::all();
 
         return view('categories.index', [
             'categories' => $categories,
@@ -25,11 +24,7 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request)
     {
-        Category::create([
-            "user_id"=>auth()->id(),
-            "name" => $request->name,
-            "slug" => Str::slug($request->name)
-        ]);
+        Category::create($request->validated());
 
         return redirect()
             ->route('categories.index')
@@ -52,10 +47,7 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $category->update([
-            "name" => $request->name,
-            "slug" => Str::slug($request->name)
-        ]);
+        $category->update($request->all());
 
         return redirect()
             ->route('categories.index')

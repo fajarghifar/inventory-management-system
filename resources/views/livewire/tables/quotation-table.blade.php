@@ -62,15 +62,15 @@
                     </a>
                 </th>
                 <th scope="col" class="align-middle text-center">
-                    <a wire:click.prevent="sortBy('total_amount')" href="#" role="button">
+                    <a wire:click.prevent="sortBy('total')" href="#" role="button">
                         {{ __('Total amount') }}
                         @include('inclues._sort-icon', ['field' => 'total_amount'])
                     </a>
                 </th>
                 <th scope="col" class="align-middle text-center">
-                    <a wire:click.prevent="sortBy('status')" href="#" role="button">
+                    <a wire:click.prevent="sortBy('order_status')" href="#" role="button">
                         {{ __('Status') }}
-                        @include('inclues._sort-icon', ['field' => 'status'])
+                        @include('inclues._sort-icon', ['field' => 'order_status'])
                     </a>
                 </th>
                 <th scope="col" class="align-middle text-center">
@@ -97,18 +97,14 @@
                         {{ Number::currency($quotation->total_amount, 'EUR') }}
                     </td>
                     <td class="align-middle text-center">
-                        {{-- <span class="badge {{ $quotation->status === \App\Enums\QuotationStatus::PENDING ? 'bg-orange' : 'bg-green' }} text-white text-uppercase"> --}}
-                        <span class="badge {{ $quotation->status === \App\Enums\QuotationStatus::PENDING ? 'bg-orange' : ($quotation->status === \App\Enums\QuotationStatus::SENT ? 'bg-green' : 'bg-black') }} text-white text-uppercase">
+                        <span class="badge {{ $quotation->status === \App\Enums\QuotationStatus::PENDING ? 'bg-orange' : 'bg-green' }} text-white text-uppercase">
                             {{ $quotation->status->label() }}
                         </span>
                     </td>
                     <td class="align-middle text-center">
-                        <x-button.show class="btn-icon" route="{{ route('quotations.show', $quotation->uuid) }}"/>
-                        @if ($quotation->status === \App\Enums\QuotationStatus::PENDING)
-                            {{-- <x-button.edit class="btn-icon" route="{{ route('quotations.edit', $quotation->uuid) }}"/> --}}
-                            <x-button.complete class="btn-icon" route="{{ route('quotations.update', $quotation->uuid) }}" onclick="return confirm('Are you sure to complete quotation no. {{ $quotation->reference }}?')"/>
-                            <x-button.delete class="btn-icon" route="{{ route('quotations.destroy', $quotation) }}" onclick="return confirm('Are you sure to cancel Quotation NO. {{ $quotation->reference }}?')"/>
-                        @endif
+                        <x-button.show class="btn-icon" route="{{ route('quotations.show', $quotation) }}"/>
+                        <x-button.edit class="btn-icon" route="{{ route('quotations.edit', $quotation) }}"/>
+                        <x-button.delete class="btn-icon" route="{{ route('quotations.destroy', $quotation) }}"/>
                     </td>
                 </tr>
             @empty

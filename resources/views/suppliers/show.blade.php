@@ -6,7 +6,7 @@
         <div class="row g-2 align-items-center mb-3">
             <div class="col">
                 <h2 class="page-title">
-                    {{ $supplier->name }}
+                    {{ __('Edit Supplier') }}
                 </h2>
             </div>
         </div>
@@ -14,6 +14,7 @@
         @include('partials._breadcrumbs', ['model' => $supplier])
     </div>
 </div>
+
 <div class="page-body">
     <div class="container-xl">
         <div class="row row-cards">
@@ -24,11 +25,11 @@
                             {{ __('Profile Image') }}
                         </h3>
 
-                        <img id="image-preview"
-                             class="img-account-profile mb-2"
-                             src="{{ $supplier->photo ? asset('storage/' . $supplier->photo) : asset('assets/img/demo/user-placeholder.svg') }}"
-                             alt=""
-                        >
+                        <img
+                            class="img-account-profile mb-2"
+                            src="{{ $supplier->photo ? asset('storage/suppliers/' . $supplier->photo) : asset('assets/img/demo/user-placeholder.svg') }}"
+                            id="image-preview"
+                        />
                     </div>
                 </div>
             </div>
@@ -90,13 +91,12 @@
                     </div>
 
                     <div class="card-footer text-end">
-                        <a class="btn btn-info" href="{{ route('suppliers.index') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
-                            {{ __('Back') }}
-                        </a>
-                        <x-button.edit class="btn btn-outline-warning" route="{{ route('suppliers.edit', $supplier->uuid) }}">
+                        <x-button.edit route="{{ route('suppliers.edit', $supplier) }}">
                             {{ __('Edit') }}
                         </x-button.edit>
+                        <x-button.back route="{{ route('suppliers.index') }}">
+                            {{ __('Back') }}
+                        </x-button.back>
                     </div>
                 </div>
             </div>

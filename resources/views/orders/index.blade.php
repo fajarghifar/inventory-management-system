@@ -1,24 +1,28 @@
 @extends('layouts.tabler')
 
 @section('content')
-    <div class="page-body">
-        @if (!$orders)
-            <x-empty title="No orders found" message="Try adjusting your search or filter to find what you're looking for."
-                button_label="{{ __('Add your first Order') }}" button_route="{{ route('orders.create') }}" />
-        @else
-            <div class="container-xl">
-                {{--        <x-card> --}}
-                {{--            <x-slot:header> --}}
-                {{--                <x-slot:title> --}}
-                {{--                    {{ __('Orders') }} --}}
-                {{--                </x-slot:title> --}}
+<div class="page-body">
+    @if($orders->isEmpty())
+    <x-empty
+        title="No orders found"
+        message="Try adjusting your search or filter to find what you're looking for."
+        button_label="{{ __('Add your first Order') }}"
+        button_route="{{ route('orders.create') }}"
+    />
+    @else
+    <div class="container-xl">
+{{--        <x-card>--}}
+{{--            <x-slot:header>--}}
+{{--                <x-slot:title>--}}
+{{--                    {{ __('Orders') }}--}}
+{{--                </x-slot:title>--}}
 
-                {{--                <x-slot:actions> --}}
-                {{--                    <x-action.create route="{{ route('orders.create') }}" /> --}}
-                {{--                </x-slot:actions> --}}
-                {{--            </x-slot:header> --}}
+{{--                <x-slot:actions>--}}
+{{--                    <x-action.create route="{{ route('orders.create') }}" />--}}
+{{--                </x-slot:actions>--}}
+{{--            </x-slot:header>--}}
 
-                {{-- -
+            {{---
             <x-table.index>
                 <x-slot:th>
                     <x-table.th>{{ __('No.') }}</x-table.th>
@@ -45,33 +49,17 @@
                                 </x-badge>
                             </x-table.td>
                             <x-table.td>
-                                <x-button.show class="btn-icon" route="{{ route('orders.show', $order->uuid) }}"/>
+                                <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>
                                 <x-button.print class="btn-icon" route="{{ route('order.downloadInvoice', $order) }}"/>
                             </x-table.td>
                         </tr>
                     @endforeach
                 </x-slot:tbody>
             </x-table.index>
-            - --}}
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible" role="alert">
-                        <h3 class="mb-1">Success</h3>
-                        <p>{{ session('success') }}</p>
+            ---}}
 
-                        <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-                    </div>
-                @endif
-                <livewire:tables.order-table />
-            </div>
-        @endif
+        <livewire:tables.order-table />
     </div>
+   @endif
+</div>
 @endsection

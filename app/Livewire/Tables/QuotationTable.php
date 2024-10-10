@@ -10,7 +10,7 @@ class QuotationTable extends Component
 {
     use WithPagination;
 
-    public $perPage = 5;
+    public $perPage = 10;
 
     public $search = '';
 
@@ -20,8 +20,7 @@ class QuotationTable extends Component
 
     public function sortBy($field): void
     {
-        if($this->sortField === $field)
-        {
+        if ($this->sortField === $field) {
             $this->sortAsc = ! $this->sortAsc;
 
         } else {
@@ -34,11 +33,11 @@ class QuotationTable extends Component
     public function render()
     {
         return view('livewire.tables.quotation-table', [
-            'quotations' => Quotation::where("user_id",auth()->id())
+            'quotations' => Quotation::query()
                 ->with(['quotationDetails', 'customer'])
                 ->search($this->search)
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
-                ->paginate()
+                ->paginate(),
         ]);
     }
 }

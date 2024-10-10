@@ -2,7 +2,7 @@
     'route'
 ])
 
-<x-button {{ $attributes->class(['btn btn-outline-warning']) }} route="{{ $route }}">
+<x-button {{ $attributes->class(['btn btn-warning']) }} route="{{ $route }}">
     <x-icon.printer/>
 
     {{ $slot }}

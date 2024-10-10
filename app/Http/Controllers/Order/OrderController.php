@@ -9,68 +9,40 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderDetails;
 use App\Models\Product;
-use App\Models\User;
-use App\Mail\StockAlert;
 use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Str;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::where('user_id', auth()->id())->count();
+        $orders = Order::latest()->get();
 
         return view('orders.index', [
-            'orders' => $orders
+            'orders' => $orders,
         ]);
     }
 
     public function create()
     {
-        $products = Product::where('user_id', auth()->id())->with(['category', 'unit'])->get();
-
-        $customers = Customer::where('user_id', auth()->id())->get(['id', 'name']);
-
-        $carts = Cart::content();
+        Cart::instance('order')
+            ->destroy();
 
         return view('orders.create', [
-            'products' => $products,
-            'customers' => $customers,
-            'carts' => $carts,
+            'carts' => Cart::content(),
+            'customers' => Customer::all(['id', 'name']),
+            'products' => Product::with(['category', 'unit'])->get(),
         ]);
     }
 
     public function store(OrderStoreRequest $request)
     {
-        $order = Order::create([
-            'customer_id' => $request->customer_id,
-            'payment_type' => $request->payment_type,
-            'pay' => $request->pay,
-            'order_date' => Carbon::now()->format('Y-m-d'),
-            'order_status' => OrderStatus::PENDING->value,
-            'total_products' => Cart::count(),
-            'sub_total' => Cart::subtotal(),
-            'vat' => Cart::tax(),
-            'total' => Cart::total(),
-            'invoice_no' => IdGenerator::generate([
-                'table' => 'orders',
-                'field' => 'invoice_no',
-                'length' => 10,
-                'prefix' => 'INV-'
-            ]),
-            'due' => (Cart::total() - $request->pay),
-            'user_id' => auth()->id(),
-            'uuid' => Str::uuid(),
-        ]);
+        $order = Order::create($request->all());
 
         // Create Order Details
-        $contents = Cart::content();
+        $contents = Cart::instance('order')->content();
         $oDetails = [];
 
         foreach ($contents as $content) {
@@ -92,45 +64,30 @@ class OrderController extends Controller
             ->with('success', 'Order has been created!');
     }
 
-    public function show($uuid)
+    public function show(Order $order)
     {
-        $order = Order::where('uuid', $uuid)->firstOrFail();
         $order->loadMissing(['customer', 'details'])->get();
+
         return view('orders.show', [
-            'order' => $order
+            'order' => $order,
         ]);
     }
 
-    public function update($uuid, Request $request)
+    public function update(Order $order, Request $request)
     {
-        $order = Order::where('uuid', $uuid)->firstOrFail();
         // TODO refactoring
 
         // Reduce the stock
-        $products = OrderDetails::where('order_id', $order->id)->get();
-
-        $stockAlertProducts = [];
+        $products = OrderDetails::where('order_id', $order)->get();
 
         foreach ($products as $product) {
-            $productEntity = Product::where('id', $product->product_id)->first();
-            $newQty = $productEntity->quantity - $product->quantity;
-            if ($newQty < $productEntity->quantity_alert) {
-                $stockAlertProducts[] = $productEntity;
-            }
-            $productEntity->update(['quantity' => $newQty]);
+            Product::where('id', $product->product_id)
+                    //->update(['stock' => DB::raw('stock-'.$product->quantity)]);
+                ->update(['quantity' => DB::raw('quantity-'.$product->quantity)]);
         }
 
-        if (count($stockAlertProducts) > 0) {
-            $listAdmin = [];
-            foreach (User::all('email') as $admin) {
-                $listAdmin [] = $admin->email;
-            }
-            Mail::to($listAdmin)->send(new StockAlert($stockAlertProducts));
-        }
         $order->update([
             'order_status' => OrderStatus::COMPLETE,
-            'due' => '0',
-            'pay' => $order->total
         ]);
 
         return redirect()
@@ -138,39 +95,23 @@ class OrderController extends Controller
             ->with('success', 'Order has been completed!');
     }
 
-    public function destroy($uuid)
+    public function destroy(Order $order)
     {
-        $order = Order::where('uuid', $uuid)->firstOrFail();
         $order->delete();
     }
 
-    public function downloadInvoice($uuid)
+    public function downloadInvoice($order)
     {
-        $order = Order::with(['customer', 'details'])->where('uuid', $uuid)->firstOrFail();
         // TODO: Need refactor
         //dd($order);
 
         //$order = Order::with('customer')->where('id', $order_id)->first();
-        // $order = Order::
-        //     ->where('id', $order)
-        //     ->first();
+        $order = Order::with(['customer', 'details'])
+            ->where('id', $order)
+            ->first();
 
         return view('orders.print-invoice', [
             'order' => $order,
         ]);
-    }
-
-    public function cancel(Order $order)
-    {
-        $order->update([
-            'order_status' => 2
-        ]);
-        $orders = Order::where('user_id',auth()->id())->count();
-
-        return redirect()
-            ->route('orders.index', [
-                'orders' => $orders
-            ])
-            ->with('success', 'Order has been canceled!');
     }
 }

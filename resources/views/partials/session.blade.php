@@ -1,21 +1,13 @@
-    @if (session()->has('success'))
-        <div class="col-12">
-            <div class="alert alert-success " role="alert">
-                <div class="alert-icon-content">
-                    <div class="alert-icon-content">
-                        {{ session('success') }}
-                    </div>
-                </div>
-            </div>
+<div class="container-xl px-4 mt-n4">
+    @session('success')
+    <div class="alert alert-success alert-icon" role="alert">
+        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="alert-icon-aside">
+            <i class="far fa-flag"></i>
         </div>
-    @elseif (session()->has('error'))
-        <div class="col-12">
-            <div class="alert alert-danger" role="alert">
-                <div class="alert-icon-content">
-                    <div class="alert-icon-content">
-                        {{ session('error') }}
-                    </div>
-                </div>
-            </div>
+        <div class="alert-icon-content">
+            {{ session('success') }}
         </div>
-    @endif
+    </div>
+    @endsession
+</div>

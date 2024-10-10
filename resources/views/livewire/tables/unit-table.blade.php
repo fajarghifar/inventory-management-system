@@ -41,7 +41,7 @@
             <thead class="thead-light">
             <tr>
                 <th class="align-middle text-center w-1">
-                    {{ __('ID') }}
+                    {{ __('No.') }}
                 </th>
                 <th scope="col" class="align-middle text-center">
                     <a wire:click.prevent="sortBy('name')" href="#" role="button">
@@ -69,19 +69,19 @@
             <tbody>
             @forelse ($units as $unit)
                 <tr>
-                    <td class="align-middle text-center" style="width: 10%">
-                        {{ $loop->index }}
-                    </td>
                     <td class="align-middle text-center">
+                        {{ ($units->currentPage() - 1) * $units->perPage() + $loop->iteration }}
+                    </td>
+                    <td class="align-middle">
                         {{ $unit->name }}
                     </td>
-                    <td class="align-middle text-center d-none d-sm-table-cell">
+                    <td class="align-middle">
                         {{ $unit->slug }}
                     </td>
-                    <td class="align-middle text-center" style="width: 15%">
+                    <td class="align-middle text-center">
                         {{ $unit->short_code }}
                     </td>
-                    <td class="align-middle text-center" style="width: 15%">
+                    <td class="align-middle text-center" style="width: 10%">
                         <x-button.show class="btn-icon" route="{{ route('units.show', $unit) }}"/>
                         <x-button.edit class="btn-icon" route="{{ route('units.edit', $unit) }}"/>
                         <x-button.delete class="btn-icon" route="{{ route('units.destroy', $unit) }}"/>

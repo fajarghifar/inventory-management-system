@@ -18,7 +18,6 @@
                         <input type="hidden" name="invoiceProducts[{{$index}}][product_id]" value="{{ $invoiceProduct['product_id'] }}">
 
                         {{ $invoiceProduct['product_name'] }}
-
                     @else
 
                         <select wire:model.live="invoiceProducts.{{$index}}.product_id"

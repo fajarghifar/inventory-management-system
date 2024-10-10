@@ -6,7 +6,6 @@ use App\Models\Product;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Str;
 
 class ProductSeeder extends Seeder
 {
@@ -26,9 +25,6 @@ class ProductSeeder extends Seeder
                 'notes' => null,
                 'category_id' => 3,
                 'unit_id' => 3,
-                'user_id'=>1,
-                'uuid'=>Str::uuid(),
-                'product_image' => 'assets/img/products/ip14.png'
             ],
             [
                 'name' => 'ASUS Laptop',
@@ -43,9 +39,6 @@ class ProductSeeder extends Seeder
                 'notes' => null,
                 'category_id' => 1,
                 'unit_id' => 3,
-                'user_id'=>1,
-                'uuid'=>Str::uuid(),
-                'product_image' => 'assets/img/products/ip14.png'
             ],
             [
                 'name' => 'Logitech Keyboard',
@@ -60,9 +53,6 @@ class ProductSeeder extends Seeder
                 'notes' => null,
                 'category_id' => 2,
                 'unit_id' => 3,
-                'user_id'=>1,
-                'uuid'=>Str::uuid(),
-                'product_image' => 'assets/img/products/keyboard.jpg'
             ],
             [
                 'name' => 'Logitech Speakers',
@@ -77,9 +67,6 @@ class ProductSeeder extends Seeder
                 'notes' => null,
                 'category_id' => 4,
                 'unit_id' => 3,
-                'user_id'=>1,
-                'uuid'=>Str::uuid(),
-                'product_image' => 'assets/img/products/speaker.png'
             ],
             [
                 'name' => 'AutoCAD v7.0',
@@ -94,9 +81,6 @@ class ProductSeeder extends Seeder
                 'notes' => null,
                 'category_id' => 5,
                 'unit_id' => 3,
-                'user_id'=>1,
-                'uuid'=>Str::uuid(),
-                'product_image' => 'assets/img/products/autocard.png'
             ]
         ]);
 

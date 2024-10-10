@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Unit;
 use App\Http\Requests\Unit\StoreUnitRequest;
 use App\Http\Requests\Unit\UpdateUnitRequest;
-use Str;
 
 class UnitController extends Controller
 {
     public function index()
     {
-        $units = Unit::where("user_id", auth()->id())->select(['id', 'name', 'slug', 'short_code'])
+        $units = Unit::query()
+            ->select(['id', 'name', 'slug', 'short_code'])
             ->get();
 
         return view('units.index', [
@@ -35,12 +35,7 @@ class UnitController extends Controller
 
     public function store(StoreUnitRequest $request)
     {
-        Unit::create([
-            "user_id" => auth()->id(),
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'short_code' => $request->short_code,
-        ]);
+        Unit::create($request->validated());
 
         return redirect()
             ->route('units.index')
@@ -54,13 +49,9 @@ class UnitController extends Controller
         ]);
     }
 
-    public function update(UpdateUnitRequest $request, $slug)
+    public function update(UpdateUnitRequest $request, Unit $unit)
     {
-        $unit = Unit::where(["user_id" => auth()->id(), "slug" => $slug])->firstOrFail();
-        $unit->name = $request->name;
-        $unit->slug = Str::slug($request->name);
-        $unit->short_code = $request->short_code;
-        $unit->save();
+        $unit->update($request->all());
 
         return redirect()
             ->route('units.index')

@@ -1,6 +1,20 @@
 @extends('layouts.tabler')
 
 @section('content')
+<div class="page-header d-print-none">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col">
+                <h2 class="page-title">
+                    {{ __('Create Product') }}
+                </h2>
+            </div>
+        </div>
+
+        @include('partials._breadcrumbs')
+    </div>
+</div>
+
 <div class="page-body">
     <div class="container-xl">
         <x-alert/>
@@ -17,7 +31,11 @@
                                     {{ __('Product Image') }}
                                 </h3>
 
-                                <img class="img-account-profile mb-2" src="{{ asset('assets/img/products/default.webp') }}" alt="" id="image-preview" />
+                                <img
+                                    class="img-account-profile mb-2"
+                                    src="{{ asset('assets/img/products/default.webp') }}"
+                                    id="image-preview"
+                                />
 
                                 <div class="small font-italic text-muted mb-2">
                                     JPG or PNG no larger than 2 MB
@@ -70,7 +88,7 @@
                                     <div class="col-sm-6 col-md-6">
                                         <div class="mb-3">
                                             <label for="category_id" class="form-label">
-                                                Product category
+                                                Product Category
                                                 <span class="text-danger">*</span>
                                             </label>
 
@@ -251,9 +269,9 @@
                                     {{ __('Save') }}
                                 </x-button.save>
 
-                                <a class="btn btn-warning" href="{{ url()->previous() }}">
+                                <x-button.back route="{{ route('products.index') }}">
                                     {{ __('Cancel') }}
-                                </a>
+                                </x-button.back>
                             </div>
                         </div>
                     </div>

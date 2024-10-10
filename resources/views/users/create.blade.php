@@ -29,30 +29,29 @@
                                     {{ __('User Image') }}
                                 </h3>
 
-                                <div class="card-body text-center">
-                                    <img class="img-account-profile rounded-circle mb-2"
-                                         src="{{ asset('assets/img/demo/user-placeholder.svg') }}"
-                                         alt=""
-                                         id="image-preview"
-                                    >
-                                    <div class="small font-italic text-muted mb-2">
-                                        JPG or PNG no larger than 1 MB
-                                    </div>
+                                <img class="img-account-profile mb-2"
+                                     src="{{ asset('assets/img/demo/user-placeholder.svg') }}"
+                                     alt=""
+                                     id="image-preview"
+                                >
 
-                                    <input type="file"
-                                           id="image"
-                                           name="photo"
-                                           accept="image/*"
-                                           onchange="previewImage();"
-                                           class="form-control @error('photo') is-invalid @enderror"
-                                    >
-
-                                    @error('photo')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
+                                <div class="small font-italic text-muted mb-2">
+                                    JPG or PNG no larger than 1 MB
                                 </div>
+
+                                <input type="file"
+                                       id="image"
+                                       name="photo"
+                                       accept="image/*"
+                                       onchange="previewImage();"
+                                       class="form-control @error('photo') is-invalid @enderror"
+                                >
+
+                                @error('photo')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -173,13 +172,13 @@
                             </div>
 
                             <div class="card-footer text-end">
-                                <button class="btn btn-primary" type="submit">
-                                    {{ __('Create') }}
-                                </button>
+                                <x-button.save type="submit">
+                                    {{ __('Save') }}
+                                </x-button.save>
 
-                                <a class="btn btn-outline-warning" href="{{ route('users.index') }}">
+                                <x-button.back route="{{ route('users.index') }}">
                                     {{ __('Cancel') }}
-                                </a>
+                                </x-button.back>
                             </div>
                         </div>
                     </div>

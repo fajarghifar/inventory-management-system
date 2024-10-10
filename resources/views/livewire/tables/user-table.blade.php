@@ -41,13 +41,7 @@
             <thead class="thead-light">
             <tr>
                 <th class="align-middle text-center w-1">
-                    <a wire:click.prevent="sortBy('id')" href="#" role="button">
-                        {{ __('ID') }}
-                        @include('inclues._sort-icon', ['field' => 'id'])
-                    </a>
-                </th>
-                <th scope="col" class="align-middle text-center">
-                    {{ __('Photo') }}
+                    {{ __('No.') }}
                 </th>
                 <th scope="col" class="align-middle text-center">
                     <a wire:click.prevent="sortBy('name')" href="#" role="button">
@@ -62,12 +56,6 @@
                     </a>
                 </th>
                 <th scope="col" class="align-middle text-center">
-                    <a wire:click.prevent="sortBy('created_at')" href="#" role="button">
-                        {{ __('Created at') }}
-                        @include('inclues._sort-icon', ['field' => 'created_at'])
-                    </a>
-                </th>
-                <th scope="col" class="align-middle text-center">
                     {{ __('Action') }}
                 </th>
             </tr>
@@ -75,20 +63,14 @@
             <tbody>
             @forelse ($users as $user)
                 <tr>
-                    <td class="align-middle text-center" style="width: 10%">
-                        {{ $user->id }}
-                    </td>
-                    <td class="align-middle text-center d-none d-sm-table-cell">
-                        {{ $user->photo }}
-                    </td>
                     <td class="align-middle text-center">
+                        {{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}
+                    </td>
+                    <td class="align-middle">
                         {{ $user->name }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle">
                         {{ $user->email }}
-                    </td>
-                    <td class="align-middle text-center d-none d-sm-table-cell" style="width: 15%">
-                        {{ $user->created_at->format('d-m-Y') }}
                     </td>
                     <td class="align-middle text-center" style="width: 15%">
                         <x-button.show class="btn-icon" route="{{ route('users.show', $user) }}"/>

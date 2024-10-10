@@ -7,8 +7,7 @@
             <div class="card-header">
                 <div>
                     <h3 class="card-title">
-                        {{ __('Edit Unit') }}
-
+                        {{ __('Unit Details') }}
                     </h3>
                 </div>
 
@@ -31,6 +30,14 @@
                     />
 
                     <x-input
+                        label="{{ __('Slug') }}"
+                        id="slug"
+                        name="slug"
+                        :value="old('slug', $unit->slug)"
+                        required
+                    />
+
+                    <x-input
                         label="{{ __('Short Code') }}"
                         id="short_code"
                         name="short_code"
@@ -39,9 +46,13 @@
                     />
                 </div>
                 <div class="card-footer text-end">
-                    <x-button type="submit">
+                    <x-button.save type="submit">
                         {{ __('Update') }}
-                    </x-button>
+                    </x-button.save>
+
+                    <x-button.back route="{{ route('units.index') }}">
+                        {{ __('Cancel') }}
+                    </x-button.back>
                 </div>
             </form>
         </div>

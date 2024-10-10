@@ -19,7 +19,7 @@
 </header>
 
 <div class="container-xl px-2 mt-n10">
-    <form action="{{ route('purchases.getPurchaseReport') }}" method="POST">
+    <form action="{{ route('purchases.getReportPurchase') }}" method="POST">
         @csrf
         <div class="row">
 

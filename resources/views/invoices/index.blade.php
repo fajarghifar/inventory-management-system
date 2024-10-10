@@ -77,7 +77,18 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+                                {{---
                                 @foreach ($carts as $item)
+                                    <tr>
+                                        <td class="text-center">{{ $item->name }}</td>
+                                        <td class="text-center">{{ $item->price }}</td>
+                                        <td class="text-center">{{ $item->qty }}</td>
+                                        <td class="text-center">{{ $item->subtotal }}</td>
+                                    </tr>
+                                @endforeach
+                                ---}}
+
+                                @foreach (Cart::instance('order')->content() as $item)
                                     <tr>
                                         <td class="text-center">{{ $item->name }}</td>
                                         <td class="text-center">{{ $item->price }}</td>
@@ -119,12 +130,13 @@
 
                 <!-- BEGIN: Invoice Button -->
                 <div class="invoice-btn-section clearfix d-print-none">
-                    <a class="btn btn-lg btn-primary" href="{{ route('pos.index') }}">
-                        Back
+{{--                    <a class="btn btn-lg btn-primary" href="{{ route('pos.index') }}">--}}
+                    <a class="btn btn-lg btn-primary" href="{{ route('orders.index') }}">
+                        {{ __('Back') }}
                     </a>
 
                     <button class="btn btn-lg btn-download" type="button" data-bs-toggle="modal" data-bs-target="#modal">
-                        Pay Now
+                        {{ __('Pay Now') }}
                     </button>
                 </div>
             </div>
@@ -172,8 +184,12 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-lg btn-danger" type="button" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-lg btn-download" type="submit">Pay</button>
+                    <button class="btn btn-lg btn-danger" type="button" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button class="btn btn-lg btn-download" type="submit">
+                        Pay
+                    </button>
                 </div>
             </form>
         </div>

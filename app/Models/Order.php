@@ -6,9 +6,12 @@ use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
+    use HasFactory;
+
     protected $guarded = [
         'id',
     ];
@@ -25,8 +28,6 @@ class Order extends Model
         'payment_type',
         'pay',
         'due',
-        "user_id",
-        "uuid"
     ];
 
     protected $casts = [
@@ -51,15 +52,5 @@ class Order extends Model
         $query->where('invoice_no', 'like', "%{$value}%")
             ->orWhere('order_status', 'like', "%{$value}%")
             ->orWhere('payment_type', 'like', "%{$value}%");
-    }
-
-     /**
-     * Get the user that owns the Category
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }

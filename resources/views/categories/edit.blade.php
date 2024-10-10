@@ -7,7 +7,7 @@
             <div class="card-header">
                 <div>
                     <h3 class="card-title">
-                        {{ __('Edit Category') }}
+                        {{ __('Category Details') }}
                     </h3>
                 </div>
 
@@ -26,11 +26,23 @@
                         :value="old('name', $category->name)"
                         required
                     />
+
+                    <x-input
+                        label="{{ __('Slug') }}"
+                        id="slug"
+                        name="slug"
+                        :value="old('slug', $category->slug)"
+                        required
+                    />
                 </div>
                 <div class="card-footer text-end">
                     <x-button type="submit">
                         {{ __('Update') }}
                     </x-button>
+
+                    <x-button.back route="{{ route('categories.index') }}">
+                        {{ __('Cancel') }}
+                    </x-button.back>
                 </div>
             </form>
         </div>

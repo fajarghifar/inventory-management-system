@@ -40,11 +40,8 @@
         <table wire:loading.remove class="table table-bordered card-table table-vcenter text-nowrap datatable">
             <thead class="thead-light">
             <tr>
-                <th scope="col" class="align-middle text-center">
-                    <a wire:click.prevent="sortBy('id')" href="#" role="button">
-                        {{ __('Id') }}
-                        @include('inclues._sort-icon', ['field' => 'id'])
-                    </a>
+                <th class="align-middle text-center w-1">
+                    {{ __('No.') }}
                 </th>
                 <th scope="col" class="align-middle text-center">
                     <a wire:click.prevent="sortBy('name')" href="#" role="button">
@@ -59,12 +56,6 @@
                     </a>
                 </th>
                 <th scope="col" class="align-middle text-center">
-                    <a wire:click.prevent="sortBy('created_at')" href="#" role="button">
-                        {{ __('Created at') }}
-                        @include('inclues._sort-icon', ['field' => 'Created_at'])
-                    </a>
-                </th>
-                <th scope="col" class="align-middle text-center">
                     {{ __('Action') }}
                 </th>
             </tr>
@@ -73,25 +64,18 @@
             @forelse ($customers as $customer)
                 <tr>
                     <td class="align-middle text-center">
-                        {{ $loop->index }}
+                        {{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle">
                         {{ $customer->name }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle">
                         {{ $customer->email }}
                     </td>
-                    <td class="align-middle text-center">
-                        {{ $customer->created_at->diffForHumans() }}
-                    </td>
-                    <td class="align-middle text-center">
-                        <x-button.show class="btn-icon" route="{{ route('customers.show', $customer->uuid) }}"/>
-                        <x-button.edit class="btn-icon" route="{{ route('customers.edit', $customer->uuid) }}"/>
-                        <x-button.delete 
-                            class="btn-icon" 
-                            route="{{ route('customers.destroy', $customer->uuid) }}" 
-                            onclick="return confirm('Are you sure to remove {{ $customer->name }} ?')"
-                        />
+                    <td class="align-middle text-center" style="width: 10%">
+                        <x-button.show class="btn-icon" route="{{ route('customers.show', $customer) }}"/>
+                        <x-button.edit class="btn-icon" route="{{ route('customers.edit', $customer) }}"/>
+                        <x-button.delete class="btn-icon" route="{{ route('customers.destroy', $customer) }}"/>
                     </td>
                 </tr>
             @empty

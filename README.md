@@ -1,118 +1,114 @@
-## ✨ Inventory Management System
+# ✨ Inventory Management System
 
-Inventory Management System with Laravel 10 and MySql.
+A robust Inventory Management System built with **Laravel 10** and **MySQL**, designed to streamline your inventory tracking, sales, and purchasing processes.
 
-![Dashboard](https://user-images.githubusercontent.com/71541409/236858603-89e4be74-0a8b-4b4b-98b0-24e66ec5602d.png)
+![Dashboard](https://github.com/user-attachments/assets/1df45f1d-aaed-4299-9b90-35e7f47dc7ea)
 
-## 💀 Design Database
-![Diagram Class](https://github.com/fajarghifar/inventory-management-system/assets/71541409/0c7d4163-96f5-4724-8741-4615e52ecf98)
+## 🗂️ Database Design
+The system is structured using a clear and efficient database schema:
 
-## 😎 Features
-- POS
-- Orders
+![Database Diagram](https://github.com/fajarghifar/inventory-management-system/assets/71541409/0c7d4163-96f5-4724-8741-4615e52ecf98)
+
+## 🌟 Key Features
+
+- **POS (Point of Sale)**
+- **Orders**
   - Pending Orders
   - Complete Orders
-  - Pending Due
-- Purchases
+  - Pending Payments
+- **Purchases**
   - All Purchases
-  - Approval Purchases
-  - Purchase Report
-- Products
-- Customers
-- Suppliers
+  - Approval Process
+  - Purchase Reports
+- **Products Management**
+- **Customer Records**
+- **Supplier Management**
 
-## 🚀 How to Use
+## 🚀 Quick Start
 
-1. Clone Repository
+Follow these steps to set up the project locally:
 
-```bash
-git clone https://github.com/fajarghifar/inventory-management-system
-```
+1. **Clone the repository:**
 
-2. Go into the repository 
+    ```bash
+    git clone https://github.com/fajarghifar/inventory-management-system
+    ```
 
-```bash
-cd inventory-management-system
-```
+2. **Navigate to the project folder:**
 
-3. Install Packages 
+    ```bash
+    cd inventory-management-system
+    ```
 
-```bash
-composer install
-```
+3. **Install PHP dependencies:**
 
+    ```bash
+    composer install
+    ```
 
-4. Copy `.env` file 
+4. **Copy `.env` configuration:**
 
-```bash
+    ```bash
+    cp .env.example .env
+    ```
 
-cp .env.example .env
+5. **Generate application key:**
 
-```
+    ```bash
+    php artisan key:generate
+    ```
 
-5. Generate app key 
+6. **Configure the database in the `.env` file** with your local credentials.
 
-```bash
-php artisan key:generate
-```
+7. **Run database migrations and seed sample data:**
 
-6. Setting up your database credentials in your `.env` file.
-7. Seed Database: 
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
 
-```bash
+8. **Link storage for media files:**
 
-php artisan migrate:fresh --seed
+    ```bash
+    php artisan storage:link
+    ```
 
-```
-8. Create Storage Link
+9. **Install JavaScript and CSS dependencies:**
 
-```bash
-php artisan storage:link
-```
+    ```bash
+    npm install && npm run dev
+    ```
 
-9. Install NPM dependencies 
+10. **Start the Laravel development server:**
 
-```bash
+    ```bash
+    php artisan serve
+    ```
 
-npm install && npm run dev
+11. **Login using the default admin credentials:**
 
-```
-10. Run 
+    - **Email:** `admin@admin.com`
+    - **Password:** `password`
 
-```bash
+## 🔧 Configuration
 
-php artisan serve
+### Configuring Cart Settings:
 
-```
-11. Try login with email: 
+- To customize tax rates, number formatting, and more, open `./config/cart.php`.
+- For more details, check out the [hardevine/shoppingcart](https://packagist.org/packages/hardevine/shoppingcart) package.
 
-```bash
+## 💡 Contributing
 
-admin@admin.com
+Have ideas to improve the system? Feel free to:
 
-```
-and password: 
+- Submit a **Pull Request (PR)**
+- Create an **Issue** for feature requests or bugs
 
-```bash
+## 📄 License
 
-password
+Licensed under the [MIT License](LICENSE).
 
-```
+---
 
-## 🚀 Config
+> Find me on [GitHub](https://github.com/fajarghifar) &nbsp;&middot;&nbsp; [YouTube](https://www.youtube.com/@fajarghifar) &nbsp;&middot;&nbsp; [Instagram](https://instagram.com/fajarghifar) &nbsp;&middot;&nbsp; [LinkedIn](https://www.linkedin.com/in/fajarghifar/)
 
-1. **Config Chart**
-
-    Open file `./config/cart.php`. You can set a tax, format number, etc.
-    > For More details, visit this link [hardevine/shoppingcart](https://packagist.org/packages/hardevine/shoppingcart).
-
-## 📝 Contributing
-
-If you have any ideas to make it more interesting, please send a PR or create an issue for a feature request.
-
-# 🤝 License
-
-### [MIT](LICENSE)
-
-> Github [@fajarghifar](https://github.com/fajarghifar) &nbsp;&middot;&nbsp;
-> Instagram [@fajarghifar](https://instagram.com/fajarghifar)
+---

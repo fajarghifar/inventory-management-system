@@ -1,22 +1,9 @@
 @extends('layouts.tabler')
 
 @section('content')
-<header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
-    <div class="container-xl px-4">
-        <div class="page-header-content">
-            <div class="row align-items-center justify-content-between pt-3">
-                <div class="col-auto mb-3">
-                    <h1 class="page-header-title">
-                        <div class="page-header-icon"><i data-feather="user"></i></div>
-                        Account Settings - Settings
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
 <div class="container-xl px-4 mt-4">
+    <x-alert/>
+
     <nav class="nav nav-borders">
         <a class="nav-link ms-0" href="{{ route('profile.edit') }}">Profile</a>
         <a class="nav-link active" href="{{ route('profile.settings') }}">Settings</a>
@@ -91,7 +78,3 @@
     </div>
 </div>
 @endsection
-
-@push('page-scripts')
-    <script src="{{ asset('assets/js/img-preview.js') }}"></script>
-@endpush

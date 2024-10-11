@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="page-header d-print-none">
-        <div class="container-xl">
+        <div class="container-xl mb-3">
             <div class="row g-2 align-items-center mb-3">
                 <div class="col">
                     <h2 class="page-title">
@@ -53,6 +53,10 @@
                                         <tr>
                                             <td>Email address</td>
                                             <td>{{ $user->email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Username</td>
+                                            <td>{{ $user->username }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

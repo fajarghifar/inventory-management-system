@@ -62,6 +62,8 @@
                                         <div class="col-md-12">
                                             <x-input name="name" :value="old('name', $user->name)" required="true"/>
 
+                                            <x-input name="username" :value="old('username', $user->username)" required="true"/>
+
                                             <x-input name="email" :value="old('name', $user->email)" label="Email address" required="true"/>
                                         </div>
                                     </div>

@@ -65,108 +65,21 @@
 
                                 <div class="row row-cards">
                                     <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label for="name" class="form-label">
-                                                {{ __('Name') }}
-                                                <span class="text-danger">*</span>
-                                            </label>
 
-                                            <input type="text"
-                                                   id="name"
-                                                   name="name"
-                                                   class="form-control @error('name') is-invalid @enderror"
-                                                   value="{{ old('name') }}"
-                                            >
+                                        <x-input name="name" :value="old('name')" required="true"/>
 
-                                            @error('name')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                            @enderror
-                                        </div>
+                                        <x-input name="email" :value="old('email')" required="true"/>
 
+                                        <x-input name="username" :value="old('username')" required="true"/>
 
-                                        <div class="mb-3">
-                                            <label for="email" class="form-label">
-                                                {{ __('Email address') }}
-                                                <span class="text-danger">*</span>
-                                            </label>
-
-                                            <input type="text"
-                                                   id="email"
-                                                   name="email"
-                                                   class="form-control @error('email') is-invalid @enderror"
-                                                   value="{{ old('email') }}"
-                                            >
-
-                                            @error('email')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                            @enderror
-                                        </div>
-
-                                        {{---
-                                        <div class="mb-3">
-                                            <label for="username" class="form-label">
-                                                {{ __('Username') }}
-                                                <span class="text-danger">*</span>
-                                            </label>
-
-                                            <input type="text"
-                                                   id="username"
-                                                   name="username"
-                                                   class="form-control @error('username') is-invalid @enderror"
-                                                   value="{{ old('username') }}"
-                                            >
-
-                                            @error('username')
-                                            <div class="invalid-feedback">
-                                                {{ $message }}
-                                            </div>
-                                            @enderror
-                                        </div>
-                                        ---}}
                                     </div>
 
-
                                     <div class="col-sm-6 col-md-6">
-                                        <label for="password" class="form-label">
-                                            {{ __('Password') }}
-                                            <span class="text-danger">*</span>
-                                        </label>
-
-                                        <input type="password"
-                                               id="password"
-                                               name="password"
-                                               class="form-control @error('password') is-invalid @enderror"
-                                        >
-
-                                        @error('password')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
+                                        <x-input type="password" name="password"/>
                                     </div>
 
-
                                     <div class="col-sm-6 col-md-6">
-                                        <label for="password_confirmation" class="form-label">
-                                            {{ __('Password confirmation') }}
-                                            <span class="text-danger">*</span>
-                                        </label>
-
-                                        <input type="password"
-                                               id="password_confirmation"
-                                               name="password_confirmation"
-                                               class="form-control @error('password_confirmation') is-invalid @enderror"
-                                        >
-
-                                        @error('password_confirmation')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
+                                        <x-input type="password" name="password_confirmation" label="Password Confirmation"/>
                                     </div>
                                 </div>
                             </div>

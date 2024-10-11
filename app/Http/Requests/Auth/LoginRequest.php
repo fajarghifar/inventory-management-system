@@ -46,12 +46,12 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
-//            throw ValidationException::withMessages([
-//                $this->email  => trans('auth.failed'),
-//            ]);
+            throw ValidationException::withMessages([
+                $this->email => trans('auth.failed'),
+            ]);
         }
 
-        //RateLimiter::clear($this->throttleKey());
+        RateLimiter::clear($this->throttleKey());
     }
 
     /**
@@ -70,7 +70,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'username' => trans('auth.throttle', [
+            'email' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -79,17 +79,11 @@ class LoginRequest extends FormRequest
 
     /**
      * Get the rate limiting throttle key for the request.
+     *
+     * @return string
      */
-    public function throttleKey(): string
+    public function throttleKey()
     {
-        return Str::transliterate(Str::lower($this->input('username')).'|'.$this->ip());
+        return Str::lower($this->input('email')) . '|' . $this->ip();
     }
-
-//    protected function prepareForValidation()
-//    {
-//        $this->inputType = filter_var($this->input('input_type'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-//        $this->merge([
-//            $this->inputType => $this->input('input_type')
-//        ]);
-//    }
 }

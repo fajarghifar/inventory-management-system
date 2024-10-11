@@ -6,66 +6,17 @@
 
     <div class="card-body">
         <h2 class="card-title text-center mb-4">Create new account</h2>
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" name="name" id="name"
-                   class="form-control @error('name') is-invalid @enderror"
-                   value="{{ old('name') }}"
-                   placeholder="Enter name"
-            >
 
-            @error('name')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email address</label>
-            <input type="email" name="email" id="email"
-                   class="form-control @error('email') is-invalid @enderror"
-                   value="{{ old('email') }}"
-                   placeholder="Enter email"
-            >
+        <x-input name="name" :value="old('name')" placeholder="Your name" required="true"/>
 
-            @error('email')
-                <div class="invalid-feedback">
-                    {{ $message }}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <div class="input-group input-group-flat">
-                <input type="password" name="password" id="password"
-                       class="form-control @error('password') is-invalid @enderror"
-                       placeholder="Password"
-                       autocomplete="off"
-                >
+        <x-input name="email" :value="old('email')" placeholder="your@email.com" required="true"/>
 
-                @error('password')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
-        <div class="mb-3">
-            <label for="password_confirmation" class="form-label">Confirm Password</label>
-            <div class="input-group input-group-flat">
-                <input type="password" name="password_confirmation" id="password_confirmation"
-                       class="form-control @error('password') is-invalid @enderror"
-                       placeholder="Password Confirmation"
-                       autocomplete="off"
-                >
+        <x-input name="username" :value="old('username')" placeholder="Your username" required="true"/>
 
-                @error('password')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
-        </div>
+        <x-input name="password" :value="old('password')" placeholder="Password" required="true"/>
+
+        <x-input name="password_confirmation" :value="old('password_confirmation')" placeholder="Password confirmation" required="true" label="Password Confirmation"/>
+
         <div class="mb-3">
             <label class="form-check">
                 <input type="checkbox" name="terms-of-service" id="terms-of-service"
@@ -77,13 +28,15 @@
                 </span>
             </label>
         </div>
+
         <div class="form-footer">
-            <button type="submit" class="btn btn-primary w-100">
-                Create new account
-            </button>
+            <x-button type="submit" class="w-100">
+                {{ __('Create new account') }}
+            </x-button>
         </div>
     </div>
 </form>
+
 <div class="text-center text-secondary mt-3">
     Already have account? <a href="{{ route('login') }}" tabindex="-1">
         Sign in

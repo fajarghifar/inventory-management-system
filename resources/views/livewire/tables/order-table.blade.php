@@ -93,7 +93,7 @@
                     <td class="align-middle text-center">
                         {{ $order->invoice_no }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle">
                         {{ $order->customer->name }}
                     </td>
                     <td class="align-middle text-center">
@@ -112,7 +112,7 @@
                             {{ $order->order_status->label() }}
                         </x-status>
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" style="width: 5%">
                         <x-button.show class="btn-icon" route="{{ route('orders.show', $order) }}"/>
                         <x-button.print class="btn-icon" route="{{ route('order.downloadInvoice', $order) }}"/>
                     </td>

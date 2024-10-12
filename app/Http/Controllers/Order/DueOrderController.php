@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Order;
 
-use App\Models\Customer;
+use App\Models\User;
 use App\Models\Order;
+use App\Models\Product;
+use App\Models\Customer;
+use App\Models\OrderDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class DueOrderController extends Controller
 {
@@ -60,6 +64,33 @@ class DueOrderController extends Controller
             'due' => $paidDue,
             'pay' => $paidPay
         ]);
+
+        // no more due
+        if ($paidDue == 0) {
+            $order->update([
+                'order_status' => 1
+            ]);
+            $products = OrderDetails::where('order_id', $order->id)->get();
+
+            $stockAlertProducts = [];
+
+            foreach ($products as $product) {
+                $productEntity = Product::where('id', $product->product_id)->first();
+                $newQty = $productEntity->quantity - $product->quantity;
+                if ($newQty < $productEntity->quantity_alert) {
+                    $stockAlertProducts[] = $productEntity;
+                }
+                $productEntity->update(['quantity' => $newQty]);
+            }
+
+            if (count($stockAlertProducts) > 0) {
+                $listAdmin = [];
+                foreach (User::all('email') as $admin) {
+                    $listAdmin[] = $admin->email;
+                }
+                Mail::to($listAdmin)->send(new StockAlert($stockAlertProducts));
+            }
+        }
 
         return redirect()
             ->route('due.index')

@@ -52,7 +52,7 @@
 
                             <input type="text" id="date"
                                    class="form-control"
-                                   value="{{ $purchase->date->format('d-m-Y') }}"
+                                   value="{{ $purchase->purchase_date ? $purchase->purchase_date->format('d-m-Y') : '' }}"
                                    disabled
                             >
                         </div>

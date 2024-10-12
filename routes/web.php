@@ -3,12 +3,10 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Dashboards\DashboardController;
-use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\Order\DueOrderController;
 use App\Http\Controllers\Order\OrderCompleteController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\OrderPendingController;
-use App\Http\Controllers\PosController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ProductExportController;
 use App\Http\Controllers\Product\ProductImportController;
@@ -64,15 +62,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('products/export/', [ProductExportController::class, 'create'])->name('products.export.store');
     Route::resource('/products', ProductController::class);
 
-    // Route POS
-    Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
-    Route::post('/pos/cart/add', [PosController::class, 'addCartItem'])->name('pos.addCartItem');
-    Route::post('/pos/cart/update/{rowId}', [PosController::class, 'updateCartItem'])->name('pos.updateCartItem');
-    Route::delete('/pos/cart/delete/{rowId}', [PosController::class, 'deleteCartItem'])->name('pos.deleteCartItem');
-
-    //Route::post('/pos/invoice', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
-    Route::post('invoice/create/', [InvoiceController::class, 'create'])->name('invoice.create');
-
     // Route Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/pending', OrderPendingController::class)->name('orders.pending');
@@ -105,14 +94,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
     Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
 
-    //Route::get('/purchases/show/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
     Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
-
-    //Route::get('/purchases/edit/{purchase}', [PurchaseController::class, 'edit'])->name('purchases.edit');
     Route::get('/purchases/{purchase}/edit', [PurchaseController::class, 'edit'])->name('purchases.edit');
-
-    Route::put('/purchases/update/{purchase}', [PurchaseController::class, 'update'])->name('purchases.update');
-    Route::delete('/purchases/delete/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.delete');
+    Route::put('/purchases/{purchase}/edit', [PurchaseController::class, 'update'])->name('purchases.update');
+    Route::delete('/purchases/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.delete');
 });
 
 require __DIR__.'/auth.php';

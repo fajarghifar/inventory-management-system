@@ -46,7 +46,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="small mb-1">Order Date</label>
-                        <div class="form-control form-control-solid">{{ $purchase->date }}</div>
+                        <div class="form-control form-control-solid">{{ $purchase->purchase_date ? $purchase->purchase_date->format('d-m-Y') : 'N/A' }}</div>
                     </div>
                 </div>
                 <div class="row gx-3 mb-3">

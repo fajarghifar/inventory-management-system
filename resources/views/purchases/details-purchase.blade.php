@@ -47,7 +47,7 @@
                         <!-- Form Group (order date) -->
                         <div class="col-md-6">
                             <label class="small mb-1">Order Date</label>
-                            <div class="form-control form-control-solid">{{ $purchase->purchase_date }}</div>
+                            <div class="form-control form-control-solid">{{ $purchase->purchase_date ? $purchase->purchase_date->format('d-m-Y') : 'N/A' }}</div>
                         </div>
                     </div>
                     <div class="row gx-3 mb-3">
@@ -64,11 +64,11 @@
                     <div class="row gx-3 mb-3">
                         <div class="col-md-6">
                             <label class="small mb-1">Created By</label>
-                            <div class="form-control form-control-solid">{{ $purchase->user_created->name }}</div>
+                            <div class="form-control form-control-solid">{{ $purchase->createdBy ? $purchase->createdBy->name : '-' }}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="small mb-1">Updated By</label>
-                            <div class="form-control form-control-solid">{{ $purchase->user_updated ? $purchase->user_updated->name : '-' }}</div>
+                            <div class="form-control form-control-solid">{{ $purchase->updatedBy ? $purchase->updatedBy->name : '-' }}</div>
                         </div>
                     </div>
 
@@ -78,7 +78,7 @@
                     </div>
 
                     @if ($purchase->purchase_status == 0)
-                    <form action="{{ route('purchases.updatePurchase') }}" method="POST">
+                    <form action="{{ route('purchases.update', $purchase) }}" method="POST">
                         @csrf
                         @method('put')
                         <input type="hidden" name="id" value="{{ $purchase->id }}">
@@ -116,21 +116,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($purchaseDetails as $item)
+                                    @foreach ($products as $product)
                                     <tr>
                                         <td scope="row">{{ $loop->iteration  }}</td>
                                         <td scope="row">
                                             <div style="max-height: 80px; max-width: 80px;">
-                                                <img class="img-fluid"  src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/img/products/default.webp') }}">
+                                                <img class="img-fluid"  src="{{ $product->product->product_image ? asset('storage/products/'.$product->product->product_image) : asset('assets/img/products/default.webp') }}">
                                             </div>
                                         </td>
-                                        <td scope="row">{{ $item->product->product_name }}</td>
-                                        <td scope="row">{{ $item->product->product_code }}</td>
-                                        <td scope="row"><span class="btn btn-warning">{{ $item->product->stock }}</span></td>
-                                        <td scope="row"><span class="btn btn-success">{{ $item->quantity }}</span></td>
-                                        <td scope="row">{{ $item->unitcost }}</td>
+                                        <td scope="row">{{ $product->product->product_name }}</td>
+                                        <td scope="row">{{ $product->product->product_code }}</td>
+                                        <td scope="row"><span class="btn btn-warning">{{ $product->product->stock }}</span></td>
+                                        <td scope="row"><span class="btn btn-success">{{ $product->quantity }}</span></td>
+                                        <td scope="row">{{ $product->unitcost }}</td>
                                         <td scope="row">
-                                            <span  class="btn btn-primary">{{ $item->total }}</span>
+                                            <span  class="btn btn-primary">{{ $product->total }}</span>
                                         </td>
                                     </tr>
                                     @endforeach

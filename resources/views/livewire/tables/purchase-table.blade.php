@@ -87,7 +87,7 @@
                     <td class="align-middle text-center">
                         {{ $purchase->purchase_no }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle">
                         {{ $purchase->supplier->name }}
                     </td>
                     <td class="align-middle text-center">
@@ -114,7 +114,7 @@
                                 {{ __('PENDING') }}
                             </span>
                         </td>
-                        <td class="align-middle text-center" style="width: 10%">
+                        <td class="align-middle text-center" style="width: 5%">
                             <x-button.show class="btn-icon" route="{{ route('purchases.show', $purchase) }}"/>
                             <x-button.edit class="btn-icon" route="{{ route('purchases.edit', $purchase) }}"/>
                             <x-button.delete class="btn-icon" route="{{ route('purchases.delete', $purchase) }}"/>

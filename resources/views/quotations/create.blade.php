@@ -57,12 +57,7 @@
                                             <span class="text-danger">*</span>
                                         </label>
 
-    {{--                                    <input class="form-control form-control-solid example-date-input @error('date') is-invalid @enderror"--}}
-    {{--                                           name="purchase_date" id="date" type="date" value="{{ old('purchase_date') }}"--}}
-    {{--                                    >--}}
-                                        <input class="form-control @error('date') is-invalid @enderror"
-                                               name="date" id="date" type="date" value="{{ now()->format('Y-m-d')  }}"
-                                        >
+                                        <input class="form-control @error('date') is-invalid @enderror" name="date" id="date" type="date" value="{{ old('purchase_date', now()->format('Y-m-d'))}}" required>
 
                                         @error('date')
                                             <div class="invalid-feedback">
@@ -102,13 +97,6 @@
                                             <span class="text-danger">*</span>
                                         </label>
 
-                                        {{---
-                                        <select class="form-select" name="status" id="status" required>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Sent">Sent</option>
-                                        </select>
-                                        ---}}
-
                                         <select class="form-select" name="status" id="status" required>
                                             @foreach(\App\Enums\QuotationStatus::cases() as $status)
                                             <option value="{{ $status->value  }}">
@@ -124,11 +112,11 @@
                                         </label>
 
                                         <input type="text"
-                                               id="reference"
-                                               name="reference"
-                                               class="form-control"
-                                               value="QT"
-                                               readonly
+                                                id="reference"
+                                                name="reference"
+                                                class="form-control"
+                                                value="QT"
+                                                readonly
                                         >
 
                                         @error('reference')

@@ -38,11 +38,13 @@ class PurchaseController extends Controller
 
     public function show(Purchase $purchase)
     {
-        // N+1 Problem if load 'createdBy', 'updatedBy',
-        $purchase->loadMissing(['supplier', 'details'])->get();
+        $purchase->loadMissing(['supplier', 'details', 'createdBy', 'updatedBy'])->get();
 
-        return view('purchases.show', [
+        $products = PurchaseDetails::where('purchase_id', $purchase->id)->get();
+
+        return view('purchases.details-purchase', [
             'purchase' => $purchase,
+            'products' => $products
         ]);
     }
 
@@ -128,7 +130,7 @@ class PurchaseController extends Controller
             //->where('purchase_status', 1)
             ->where('date', today()->format('Y-m-d'))->get();
 
-        return view('purchases.details-purchase', [
+        return view('purchases.daily-report', [
             'purchases' => $purchases,
         ]);
     }
@@ -153,10 +155,13 @@ class PurchaseController extends Controller
         $purchases = DB::table('purchase_details')
             ->join('products', 'purchase_details.product_id', '=', 'products.id')
             ->join('purchases', 'purchase_details.purchase_id', '=', 'purchases.id')
+            ->join('users', 'users.id', '=', 'purchases.created_by')
             ->whereBetween('purchases.purchase_date', [$sDate, $eDate])
             ->where('purchases.purchase_status', '1')
-            ->select('purchases.purchase_no', 'purchases.purchase_date', 'purchases.supplier_id', 'products.code', 'products.name', 'purchase_details.quantity', 'purchase_details.unitcost', 'purchase_details.total')
+            ->select('purchases.purchase_no', 'purchases.purchase_date', 'purchases.supplier_id', 'products.code', 'products.name', 'purchase_details.quantity', 'purchase_details.unitcost', 'purchase_details.total', 'users.name as created_by')
             ->get();
+
+        dd($purchases);
 
         $purchase_array[] = [
             'Date',
@@ -167,6 +172,7 @@ class PurchaseController extends Controller
             'Quantity',
             'Unitcost',
             'Total',
+            'Created By'
         ];
 
         foreach ($purchases as $purchase) {

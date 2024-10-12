@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Order;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\Customer;
 use App\Enums\OrderStatus;
-use App\Models\OrderDetails;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
-use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Http\Requests\Order\OrderStoreRequest;
+use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderDetails;
+use App\Models\Product;
+use Carbon\Carbon;
+use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -80,31 +79,14 @@ class OrderController extends Controller
 
         // Reduce the stock
         $products = OrderDetails::where('order_id', $order)->get();
-        $stockAlertProducts = [];
 
         foreach ($products as $product) {
-            $productEntity = Product::where('id', $product->product_id)->first();
-            $newQty = $productEntity->quantity - $product->quantity;
-
-            if ($newQty < $productEntity->quantity_alert) {
-                $stockAlertProducts[] = $productEntity;
-            }
-
-            $productEntity->update(['quantity' => $newQty]);
-        }
-
-        if (count($stockAlertProducts) > 0) {
-            $listAdmin = [];
-            foreach (User::all('email') as $admin) {
-                $listAdmin[] = $admin->email;
-            }
-            Mail::to($listAdmin)->send(new StockAlert($stockAlertProducts));
+            Product::where('id', $product->product_id)
+                ->update(['quantity' => DB::raw('quantity-' . $product->quantity)]);
         }
 
         $order->update([
             'order_status' => OrderStatus::COMPLETE,
-            'due' => '0',
-            'pay' => $order->total
         ]);
 
         return redirect()
@@ -119,10 +101,6 @@ class OrderController extends Controller
 
     public function downloadInvoice($order)
     {
-        // TODO: Need refactor
-        //dd($order);
-
-        //$order = Order::with('customer')->where('id', $order_id)->first();
         $order = Order::with(['customer', 'details'])
             ->where('id', $order)
             ->first();
@@ -131,19 +109,4 @@ class OrderController extends Controller
             'order' => $order,
         ]);
     }
-
-    public function cancel(Order $order)
-    {
-        $order->update([
-            'order_status' => 2
-        ]);
-        $orders = Order::where('user_id', auth()->id())->count();
-
-        return redirect()
-            ->route('orders.index', [
-                'orders' => $orders
-            ])
-            ->with('success', 'Order has been canceled!');
-    }
-
 }

@@ -36,11 +36,10 @@
                                         </label>
 
                                         <input name="date" id="date" type="date"
-                                               class="form-control example-date-input
-
-                                           @error('date') is-invalid @enderror"
-                                               value="{{ old('date') ?? now()->format('Y-m-d') }}"
-                                               required
+                                                class="form-control example-date-input
+                                                @error('date') is-invalid @enderror"
+                                                value="{{ old('date') ?? now()->format('Y-m-d') }}"
+                                                required
                                         >
 
                                         @error('date')
@@ -50,7 +49,6 @@
                                         @enderror
                                     </div>
 
-                                    {{--- value="{{ $customer->id }}" @selected( old('customer_id') === $customer->id ---}}
                                     <x-tom-select
                                         label="Customers"
                                         id="customer_id"
@@ -65,10 +63,10 @@
                                         </label>
 
                                         <input type="text" class="form-control"
-                                               id="reference"
-                                               name="reference"
-                                               value="ORDR"
-                                               readonly
+                                                id="reference"
+                                                name="reference"
+                                                value="ORDR"
+                                                readonly
                                         >
 
                                         @error('reference')

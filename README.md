@@ -131,11 +131,12 @@ docker push inert/laravel-app:"tagname"
 "In case you delete the MySQL Docker container by mistake"
 
 **To export the database from the Docker container and save it to your desktop:**
+Note: Change the path to your own.
 
 powershell
 
 ```bash
-docker exec inventory-management-system-mysql-1 mysqldump -u root -p'examplepassword' inventory_management_system > "$HOME\Desktop\backup.sql"
+docker exec mysql-db mysqldump -u root -p'examplepassword' inventory_management_system > "C:\Users\User\Desktop\backup.sql"
 ```
 
 **To import the database from the desktop back into the Docker container:**
@@ -143,7 +144,32 @@ docker exec inventory-management-system-mysql-1 mysqldump -u root -p'examplepass
 powershell
 
 ```bash
-Get-Content "$HOME\Desktop\backup.sql" | docker exec -i inventory-management-system-mysql-1 mysql -u root -p'examplepassword' inventory_management_system
+Get-Content "C:\Users\User\Desktop\backup.sql" | docker exec -i mysql-db mysql -u root -p'examplepassword' inventory_management_system
+```
+
+⚡ **To clean the database, remove example data, and create a new admin with a fresh database, run:**
+
+```bash
+docker exec -it laravel-app bash
+```
+
+```bash
+php artisan migrate:fresh
+```
+
+```bash
+php artisan tinker
+```
+
+```bash
+use App\Models\User;
+User::create([
+    'name' => 'Super Admin',                // edit this
+    'username' => 'name',
+    'email' => 'email@email.al',            // edit this
+    'password' => bcrypt('password'),       // edit this
+    'role' => 'admin',
+]);
 ```
 
 ## 🔧 Configuration

@@ -45,6 +45,14 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
+        $existingProduct = Product::where('code', $request->get('code'))->first();
+        
+        if ($existingProduct) {
+            $newCode = $this->generateUniqueCode();
+            
+            $request->merge(['code' => $newCode]);
+        }
+
         $product = Product::create($request->all());
 
         /**
@@ -62,7 +70,16 @@ class ProductController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Product has been created!');
+            ->with('success', 'Product has been created with code: ' . $product->code);
+    }
+
+    private function generateUniqueCode()
+    {
+        do {
+            $code = 'PC' . strtoupper(uniqid());
+        } while (Product::where('code', $code)->exists());
+
+        return $code;
     }
 
     public function show(Product $product)

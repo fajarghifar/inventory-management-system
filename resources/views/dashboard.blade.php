@@ -34,6 +34,7 @@
                 <div class="col-12">
                     <div class="row row-cards">
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('products.store') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -53,8 +54,10 @@
                                     </div>
                                 </div>
                             </div>
+                            </a>
                         </div>
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('orders.index') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -74,8 +77,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </a>
                         </div>
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('purchases.store') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -95,8 +100,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </a>
                         </div>
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('quotations.index') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -116,6 +123,7 @@
                                     </div>
                                 </div>
                             </div>
+                            </a>
                         </div>
                     </div>
                 </div>

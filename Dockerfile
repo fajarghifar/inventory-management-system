@@ -19,7 +19,5 @@ RUN apt-get update && apt-get upgrade -y \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 COPY . .
 RUN composer install --no-interaction
-RUN php artisan storage:link
 RUN npm install
 EXPOSE 8000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

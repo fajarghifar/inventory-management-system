@@ -85,6 +85,14 @@
                             @include('inclues._sort-icon', ['field' => 'quantity'])
                         </a>
                     </th>
+
+                    <th scope="col" class="align-middle text-center">
+                        <a wire:click.prevent="sortBy('quantity_alert')" href="#" role="button">
+                            {{ __('Quantity Alert') }}
+                            @include('inclues._sort-icon', ['field' => 'quantity_alert'])
+                        </a>
+                    </th>
+
                     <th scope="col" class="align-middle text-center">
                         {{ __('Action') }}
                     </th>
@@ -107,6 +115,14 @@
                     </td>
                     <td class="align-middle text-center">
                         {{ $product->quantity }}
+                    </td>
+                    <td class="align-middle text-center"
+                        style="background: 
+                            @if($product->quantity_alert >= $product->quantity)  #f8d7da ;
+                            @elseif($product->quantity_alert == $product->quantity - 1 || $product->quantity_alert == $product->quantity - 2) #fff70063;));
+                            @else transparent;
+                            @endif">
+                        {{ $product->quantity_alert }}
                     </td>
                     <td class="align-middle text-center" style="width: 10%">
                         <x-button.show class="btn-icon" route="{{ route('products.show', $product) }}"/>

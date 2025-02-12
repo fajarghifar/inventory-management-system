@@ -94,12 +94,15 @@ Follow these steps to set up the project locally:
 
 With Docker, you can easily start both the app and MySQL database without needing to install anything locally.
 
-In the docker-compose.yml file, you’ll find the configuration for MySQL.
+In the _docker-compose.yml_ file, you’ll find the configuration for MySQL.
 
-Note: The app uses the environment variables from .env.example.docker. If you want to change any configurations in this environment file, create a new .env file, make your changes, and then rebuild the Docker image.
+_Note: The app uses the environment variables from .env.example.docker. If you want to change any configurations in this environment file, create a new .env file, make your changes, and then rebuild the Docker image._
 
 **To pull and run the Docker images:**
-This command will pull the mysql:5.7 and inert/laravel-app images and start the containers:
+
+This command will pull the _mysql:5.7_ and _inert/laravel-app_ images and start the containers:
+
+_Note: You don't need to have the repository on your local machine, you just need the docker-compose.yml file and run:_
 
 ```bash
 docker-compose up -d
@@ -108,7 +111,10 @@ docker-compose up -d
 Once the containers are up, the app will be available at http://localhost:8000/.
 
 **To build the Docker image after code changes:**
+
 If you’ve made changes to the code and want to update the Docker image, use the following command:
+
+_Note: This command will reset your database. Make sure to back it up._
 
 ```bash
 docker build -t inert/laravel-app .
@@ -131,6 +137,7 @@ docker push inert/laravel-app:"tagname"
 "In case you delete the MySQL Docker container by mistake"
 
 **To export the database from the Docker container and save it to your desktop:**
+
 Note: Change the path to your own.
 
 powershell

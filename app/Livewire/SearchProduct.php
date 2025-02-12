@@ -30,7 +30,6 @@ class SearchProduct extends Component
     {
         $this->search_results = Product::where('name', 'like', '%'.$this->query.'%')
             ->orWhere('code', 'like', '%'.$this->query.'%')
-            ->orWhere('description', 'like', '%'.$this->query.'%')
             ->orWhereHas('category', function ($q) {
                 $q->where('name', 'like', '%'.$this->query.'%');
             })

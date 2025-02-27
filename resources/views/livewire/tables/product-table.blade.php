@@ -117,13 +117,24 @@
                         {{ $product->quantity }}
                     </td>
                     <td class="align-middle text-center"
-                        style="background: 
-                            @if($product->quantity_alert >= $product->quantity)  #f8d7da ;
-                            @elseif($product->quantity_alert == $product->quantity - 1 || $product->quantity_alert == $product->quantity - 2) #fff70063;));
-                            @else transparent;
-                            @endif">
+                        x-data="{ bgColor: 'transparent' }"
+                        x-effect="bgColor = getBgColor({{ $product->quantity }}, {{ $product->quantity_alert }})"
+                        :style="'background: ' + bgColor"
+                    >
                         {{ $product->quantity_alert }}
                     </td>
+
+                    <script>
+                        function getBgColor(quantity, quantity_alert) {
+                            if (quantity_alert >= quantity) {
+                                return '#f8d7da'; // Red
+                            } else if (quantity_alert === quantity - 1 || quantity_alert === quantity - 2) {
+                                return '#fff70063'; // Yellow
+                            } 
+                            return 'transparent';
+                        }
+                    </script>
+
                     <td class="align-middle text-center" style="width: 10%">
                         <x-button.show class="btn-icon" route="{{ route('products.show', $product) }}"/>
                         <x-button.edit class="btn-icon" route="{{ route('products.edit', $product) }}"/>
@@ -152,3 +163,4 @@
         </ul>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>

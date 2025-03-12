@@ -45,24 +45,53 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->all());
-
-        /**
-         * Handle upload image
-         */
-        if ($request->hasFile('product_image')) {
-            $file = $request->file('product_image');
-            $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-
-            $file->storeAs('products/', $filename, 'public');
-            $product->update([
-                'product_image' => $filename
-            ]);
+        $existingProduct = Product::where('code', $request->get('code'))->first();
+        
+        if ($existingProduct) {
+            $newCode = $this->generateUniqueCode();
+            
+            $request->merge(['code' => $newCode]);
         }
 
-        return redirect()
-            ->back()
-            ->with('success', 'Product has been created!');
+        try {
+            $product = Product::create($request->all());
+
+            /**
+             * Handle image upload
+             */
+            if ($request->hasFile('product_image')) {
+                $file = $request->file('product_image');
+                $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
+
+                // Validate file before uploading
+                if ($file->isValid()) {
+                    $file->storeAs('products/', $filename, 'public');
+                    $product->update([
+                        'product_image' => $filename
+                    ]);
+                } else {
+                    return back()->withErrors(['product_image' => 'Invalid image file']);
+                }
+            }
+
+            return redirect()
+                ->back()
+                ->with('success', 'Product has been created with code: ' . $product->code);
+
+        } catch (\Exception $e) {
+            // Handle any unexpected errors
+            return back()->withErrors(['error' => 'Something went wrong while creating the product']);
+        }
+    }
+
+    // Helper method to generate a unique product code
+    private function generateUniqueCode()
+    {
+        do {
+            $code = 'PC' . strtoupper(uniqid());
+        } while (Product::where('code', $code)->exists()); 
+
+        return $code;
     }
 
     public function show(Product $product)
@@ -93,19 +122,19 @@ class ProductController extends Controller
 
         if ($request->hasFile('product_image')) {
 
-            // Delete Old Photo
+            // Delete old image if exists
             if ($product->product_image) {
-                unlink(public_path('storage/products/') . $product->product_image);
+                \Storage::disk('public')->delete('products/' . $product->product_image);
             }
 
-            // Prepare New Photo
+            // Prepare new image
             $file = $request->file('product_image');
             $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
 
-            // Store an image to Storage
+            // Store new image to public storage
             $file->storeAs('products/', $fileName, 'public');
 
-            // Save DB
+            // Save new image name to database
             $product->update([
                 'product_image' => $fileName
             ]);
@@ -122,7 +151,7 @@ class ProductController extends Controller
          * Delete photo if exists.
          */
         if ($product->product_image) {
-            unlink(public_path('storage/products/') . $product->product_image);
+            \Storage::disk('public')->delete('products/' . $product->product_image);
         }
 
         $product->delete();

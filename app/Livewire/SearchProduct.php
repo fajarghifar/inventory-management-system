@@ -30,7 +30,11 @@ class SearchProduct extends Component
     {
         $this->search_results = Product::where('name', 'like', '%'.$this->query.'%')
             ->orWhere('code', 'like', '%'.$this->query.'%')
-            ->take($this->how_many)->get();
+            ->orWhereHas('category', function ($q) {
+                $q->where('name', 'like', '%'.$this->query.'%');
+            })
+            ->take($this->how_many)
+            ->get();
     }
 
     public function loadMore()

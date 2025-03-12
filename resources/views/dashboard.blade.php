@@ -14,7 +14,14 @@
                 </div>
                 <!-- Page title actions -->
                 <div class="col-auto ms-auto d-print-none">
-                    <div class="btn-list">
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('products.create') }}" class="btn btn-primary d-none d-sm-inline-block">
+                            <x-icon.plus/>
+                            Add new Product
+                        </a>
+                        <a href="{{ route('products.create') }}" class="btn btn-primary d-sm-none btn-icon" aria-label="Create new report">
+                            <x-icon.plus/>
+                        </a>
                         <a href="{{ route('orders.create') }}" class="btn btn-primary d-none d-sm-inline-block">
                             <x-icon.plus/>
                             Create new order
@@ -34,6 +41,7 @@
                 <div class="col-12">
                     <div class="row row-cards">
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('products.store') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -53,8 +61,10 @@
                                     </div>
                                 </div>
                             </div>
+                            </a>
                         </div>
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('orders.index') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -74,8 +84,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </a>
                         </div>
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('purchases.store') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -95,8 +107,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </a>
                         </div>
                         <div class="col-sm-6 col-lg-3">
+                            <a href="{{ route('quotations.index') }}" class="text-decoration-none">
                             <div class="card card-sm">
                                 <div class="card-body">
                                     <div class="row align-items-center">
@@ -116,6 +130,7 @@
                                     </div>
                                 </div>
                             </div>
+                            </a>
                         </div>
                     </div>
                 </div>

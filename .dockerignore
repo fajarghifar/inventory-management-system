@@ -1,0 +1,9 @@
+**/node_modules/
+.git
+npm-debug.log
+.coverage
+.coverage.*
+.aws
+package-lock.json
+.env.example
+.env.example.docker

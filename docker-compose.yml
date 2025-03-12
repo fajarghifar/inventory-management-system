@@ -1,0 +1,43 @@
+services:
+    mysql:
+        image: mysql:5.7
+        container_name: mysql-db
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: examplepassword
+            MYSQL_DATABASE: inventory_management_system
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+        networks:
+            - laravel_network
+
+    app:
+        image: inert/laravel-app
+        container_name: laravel-app
+        restart: always
+        ports:
+            - "8000:8000"
+        depends_on:
+            - mysql
+        environment:
+            - DB_HOST=mysql
+            - DB_PORT=3306
+            - DB_DATABASE=inventory_management_system
+            - DB_USERNAME=root
+            - DB_PASSWORD=examplepassword
+        networks:
+            - laravel_network
+        command: >
+            bash -c "
+                php artisan migrate &&
+                php artisan storage:link &&
+                php artisan serve --host=0.0.0.0 --port=8000
+            "
+
+volumes:
+    mysql_data:
+
+networks:
+    laravel_network:

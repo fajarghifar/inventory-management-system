@@ -69,7 +69,7 @@
                                     <tr>
                                         <td>Unit</td>
                                         <td>
-                                            <a href="{{ route('categories.show', $product->unit) }}" class="badge bg-blue-lt">
+                                            <a href="{{ route('units.show', $product->unit) }}" class="badge bg-blue-lt">
                                                 {{ $product->unit->short_code }}
                                             </a>
                                         </td>

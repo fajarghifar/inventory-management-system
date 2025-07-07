@@ -1,26 +1,27 @@
-{{---
-<nav class="mt-4 rounded" aria-label="breadcrumb">
-    <ol class="breadcrumb px-3 py-2 rounded mb-0">
-        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-        <li class="breadcrumb-item active">Categories</li>
-
-        @foreach(request()->breadcrumbs()->segments() as $segment)
-            <li class="breadcrumb-item">
-                <a href="{{ $segment->url() }}">
-                    {{ optional($segment->model())->title ?: $segment->name() }}
-                </a>
-            </li>
-        @endforeach
-    </ol>
-</nav>
----}}
-
 <ol class="breadcrumb breadcrumb-arrows" aria-label="breadcrumbs">
-    @foreach(request()->breadcrumbs()->segments() as $segment)
-        <li class="breadcrumb-item">
-            <a href="{{ $segment->url() }}">
-                {{ optional($segment->model())->title ?: $segment->name() }}
-            </a>
+    <!-- Always show Dashboard link -->
+    <li class="breadcrumb-item">
+        <a href="{{ route('dashboard') }}">Dashboard</a>
+    </li>
+    
+    <!-- Dynamic breadcrumbs based on current route -->
+    @php
+        $segments = request()->segments();
+        $url = '';
+    @endphp
+
+    @foreach($segments as $segment)
+        @php
+            $url .= "/$segment";
+            $name = ucfirst(str_replace('-', ' ', $segment));
+        @endphp
+
+        <li class="breadcrumb-item {{ $loop->last ? 'active' : '' }}">
+            @if(!$loop->last)
+                <a href="{{ $url }}">{{ $name }}</a>
+            @else
+                {{ $name }}
+            @endif
         </li>
     @endforeach
 </ol>

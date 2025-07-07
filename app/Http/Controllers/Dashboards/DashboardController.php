@@ -2,42 +2,47 @@
 
 namespace App\Http\Controllers\Dashboards;
 
-use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Purchase;
+use App\Models\Category;
 use App\Models\Quotation;
+use App\Enums\OrderStatus;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        // Count all orders
         $orders = Order::count();
-        $completedOrders = Order::where('order_status', OrderStatus::COMPLETE)
-            ->count();
 
+        // Count only completed orders
+        $completedOrders = Order::where('order_status', OrderStatus::COMPLETE)->count();
+
+        // Count all products
         $products = Product::count();
 
+        // Count all purchases
         $purchases = Purchase::count();
-        $todayPurchases = Purchase::query()
-            ->where('date', today())
-            ->get()
-            ->count();
 
+        // Count today’s purchases
+        $todayPurchases = Purchase::whereDate('date', today())->count();
+
+        // Count categories
         $categories = Category::count();
 
+        // Count all quotations
         $quotations = Quotation::count();
-        $todayQuotations = Quotation::query()
-            ->where('date', today()->format('Y-m-d'))
-            ->get()
-            ->count();
 
+        // Count today’s quotations
+        $todayQuotations = Quotation::whereDate('date', today())->count();
+
+        // Return the data to the dashboard view
         return view('dashboard', [
-            'products' => $products,
             'orders' => $orders,
             'completedOrders' => $completedOrders,
+            'products' => $products,
             'purchases' => $purchases,
             'todayPurchases' => $todayPurchases,
             'categories' => $categories,

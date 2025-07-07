@@ -18,12 +18,8 @@ class CustomerFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->unique()->phoneNumber(),
+            'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
-            'account_holder' => fake()->name(),
-            'account_number' => fake()->randomNumber(8, true),
-            'bank_name' => fake()->randomElement(['BRI', 'BNI', 'BCA', 'BSI', 'Mandiri']),
         ];
     }
 }

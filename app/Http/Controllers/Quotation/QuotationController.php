@@ -9,7 +9,7 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Quotation;
 use App\Models\QuotationDetails;
-use Gloudemans\Shoppingcart\Facades\Cart;
+use Darryldecode\Cart\Facades\CartFacade as Cart;
 use Illuminate\Support\Facades\DB;
 
 class QuotationController extends Controller
@@ -25,22 +25,21 @@ class QuotationController extends Controller
 
     public function create()
     {
-        Cart::instance('quotation')
-            ->destroy();
+        Cart::clear(); // clear cart for current session
 
         return view('quotations.create', [
-            'cart' => Cart::content('quotation'),
+            'cart' => Cart::getContent(), // fetch all items
             'products' => Product::all(),
             'customers' => Customer::all(),
-
-            // maybe?
-            //'statuses' => QuotationStatus::cases()
+            // 'statuses' => QuotationStatus::cases()
         ]);
     }
 
     public function store(StoreQuotationRequest $request)
     {
         DB::transaction(function () use ($request) {
+            $cartItems = Cart::getContent();
+
             $quotation = Quotation::create([
                 'date' => $request->date,
                 'reference' => $request->reference,
@@ -48,34 +47,32 @@ class QuotationController extends Controller
                 'customer_name' => Customer::findOrFail($request->customer_id)->name,
                 'tax_percentage' => $request->tax_percentage,
                 'discount_percentage' => $request->discount_percentage,
-                'shipping_amount' => $request->shipping_amount, //* 100,
-                'total_amount' => $request->total_amount, //* 100,
+                'shipping_amount' => $request->shipping_amount,
+                'total_amount' => $request->total_amount,
                 'status' => $request->status,
                 'note' => $request->note,
-                'tax_amount' => Cart::instance('quotation')->tax(), //* 100,
-                'discount_amount' => Cart::instance('quotation')->discount(), //* 100,
+                'tax_amount' => 0, // You can calculate if needed
+                'discount_amount' => 0, // You can calculate if needed
             ]);
 
-            foreach (Cart::instance('quotation')->content() as $cart_item) {
+            foreach ($cartItems as $item) {
                 QuotationDetails::create([
                     'quotation_id' => $quotation->id,
-                    'product_id' => $cart_item->id,
-                    'product_name' => $cart_item->name,
-                    'product_code' => $cart_item->options->code,
-                    'quantity' => $cart_item->qty,
-                    'price' => $cart_item->price, //* 100,
-                    'unit_price' => $cart_item->options->unit_price, //* 100,
-                    'sub_total' => $cart_item->options->sub_total, //* 100,
-                    'product_discount_amount' => $cart_item->options->product_discount, //* 100,
-                    'product_discount_type' => $cart_item->options->product_discount_type,
-                    'product_tax_amount' => $cart_item->options->product_tax, //* 100,
+                    'product_id' => $item->id,
+                    'product_name' => $item->name,
+                    'product_code' => $item->attributes->code ?? '',
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'unit_price' => $item->attributes->unit_price ?? $item->price,
+                    'sub_total' => $item->getPriceSum(),
+                    'product_discount_amount' => $item->attributes->product_discount ?? 0,
+                    'product_discount_type' => $item->attributes->product_discount_type ?? null,
+                    'product_tax_amount' => $item->attributes->product_tax ?? 0,
                 ]);
             }
 
-            Cart::instance('quotation')->destroy();
+            Cart::clear();
         });
-
-        //toast('Quotation Created!', 'success');
 
         return redirect()
             ->route('quotations.index')
@@ -84,17 +81,17 @@ class QuotationController extends Controller
 
     public function show()
     {
-
+        //
     }
 
     public function edit()
     {
-
+        //
     }
 
     public function update()
     {
-
+        //
     }
 
     public function destroy(Quotation $quotation)
@@ -102,6 +99,7 @@ class QuotationController extends Controller
         $quotation->delete();
 
         return redirect()
-            ->route('quotations.index');
+            ->route('quotations.index')
+            ->with('success', 'Quotation Deleted!');
     }
 }

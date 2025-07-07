@@ -10,7 +10,7 @@ use App\Models\Order;
 use App\Models\OrderDetails;
 use App\Models\Product;
 use Carbon\Carbon;
-use Gloudemans\Shoppingcart\Facades\Cart;
+use Darryldecode\Cart\Facades\CartFacade as Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,11 +27,10 @@ class OrderController extends Controller
 
     public function create()
     {
-        Cart::instance('order')
-            ->destroy();
+        Cart::clear(); // ✅ Replaces Cart::instance('order')->destroy()
 
         return view('orders.create', [
-            'carts' => Cart::content(),
+            'carts' => Cart::getContent(), // ✅ Replaces Cart::content()
             'customers' => Customer::all(['id', 'name']),
             'products' => Product::with(['category', 'unit'])->get(),
         ]);
@@ -41,23 +40,25 @@ class OrderController extends Controller
     {
         $order = Order::create($request->all());
 
-        // Create Order Details
-        $contents = Cart::instance('order')->content();
-        $oDetails = [];
+        // ✅ Create Order Details from Cart
+        $contents = Cart::getContent();
+        $orderDetails = [];
 
-        foreach ($contents as $content) {
-            $oDetails['order_id'] = $order['id'];
-            $oDetails['product_id'] = $content->id;
-            $oDetails['quantity'] = $content->qty;
-            $oDetails['unitcost'] = $content->price;
-            $oDetails['total'] = $content->subtotal;
-            $oDetails['created_at'] = Carbon::now();
-
-            OrderDetails::insert($oDetails);
+        foreach ($contents as $item) {
+            $orderDetails[] = [
+                'order_id'   => $order->id,
+                'product_id' => $item->id,
+                'quantity'   => $item->quantity,
+                'unitcost'   => $item->price,
+                'total'      => $item->getPriceSum(), // price * quantity
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
         }
 
-        // Delete Cart Sopping History
-        Cart::destroy();
+        OrderDetails::insert($orderDetails);
+
+        Cart::clear(); // ✅ Clear cart after order
 
         return redirect()
             ->route('orders.index')
@@ -66,7 +67,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->loadMissing(['customer', 'details'])->get();
+        $order->loadMissing(['customer', 'details']);
 
         return view('orders.show', [
             'order' => $order,
@@ -75,14 +76,14 @@ class OrderController extends Controller
 
     public function update(Order $order, Request $request)
     {
-        // TODO refactoring
-
-        // Reduce the stock
-        $products = OrderDetails::where('order_id', $order)->get();
+        // Reduce stock of ordered products
+        $products = OrderDetails::where('order_id', $order->id)->get();
 
         foreach ($products as $product) {
             Product::where('id', $product->product_id)
-                ->update(['quantity' => DB::raw('quantity-' . $product->quantity)]);
+                ->update([
+                    'quantity' => DB::raw('quantity - ' . $product->quantity),
+                ]);
         }
 
         $order->update([
@@ -97,13 +98,15 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $order->delete();
+
+        return redirect()
+            ->route('orders.index')
+            ->with('success', 'Order has been deleted!');
     }
 
-    public function downloadInvoice($order)
+    public function downloadInvoice($orderId)
     {
-        $order = Order::with(['customer', 'details'])
-            ->where('id', $order)
-            ->first();
+        $order = Order::with(['customer', 'details'])->findOrFail($orderId);
 
         return view('orders.print-invoice', [
             'order' => $order,

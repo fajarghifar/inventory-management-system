@@ -4,27 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class AddUnitIdToProductsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::create('units', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->string('slug')->unique();
-            $table->string('short_code')->nullable();
-            $table->timestamps();
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreignId('unit_id')
+                ->nullable()
+                ->after('category_id')
+                ->constrained()
+                ->onDelete('SET NULL');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('units');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropForeign(['unit_id']);
+            $table->dropColumn('unit_id');
+        });
     }
-};
+}

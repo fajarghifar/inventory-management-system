@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Product;
-use Gloudemans\Shoppingcart\Facades\Cart;
+use Darryldecode\Cart\Facades\CartFacade as Cart; // ✅ correct facade
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Validate;
@@ -13,23 +13,18 @@ class OrderForm extends Component
 {
     public $cart_instance;
 
-    private $product;
+    #[Validate('required', message: 'Please select products')]
+    public Collection $allProducts;
 
-    #[Validate('Required')]
+    #[Validate('required')]
     public int $taxes = 0;
 
     public array $invoiceProducts = [];
 
-    #[Validate('required', message: 'Please select products')]
-    public Collection $allProducts;
-
     public function mount($cartInstance): void
     {
         $this->cart_instance = $cartInstance;
-
         $this->allProducts = Product::all();
-
-        //$cart_items = Cart::instance($this->cart_instance)->content();
     }
 
     public function render(): View
@@ -42,7 +37,7 @@ class OrderForm extends Component
             }
         }
 
-        $cart_items = Cart::instance($this->cart_instance)->content();
+        $cart_items = Cart::getContent(); // ✅ no instance() in darryldecode/cart
 
         return view('livewire.order-form', [
             'subtotal' => $total,
@@ -56,7 +51,6 @@ class OrderForm extends Component
         foreach ($this->invoiceProducts as $key => $invoiceProduct) {
             if (! $invoiceProduct['is_saved']) {
                 $this->addError('invoiceProducts.'.$key, 'This line must be saved before creating a new one.');
-
                 return;
             }
         }
@@ -75,7 +69,6 @@ class OrderForm extends Component
         foreach ($this->invoiceProducts as $key => $invoiceProduct) {
             if (! $invoiceProduct['is_saved']) {
                 $this->addError('invoiceProducts.'.$key, 'This line must be saved before editing another.');
-
                 return;
             }
         }
@@ -87,48 +80,53 @@ class OrderForm extends Component
     {
         $this->resetErrorBag();
 
-        $product = $this->allProducts
-            ->find($this->invoiceProducts[$index]['product_id']);
+        $product = $this->allProducts->find($this->invoiceProducts[$index]['product_id']);
+
+        if (!$product) {
+            $this->addError('invoiceProducts.'.$index, 'Invalid product selected.');
+            return;
+        }
 
         $this->invoiceProducts[$index]['product_name'] = $product->name;
         $this->invoiceProducts[$index]['product_price'] = $product->buying_price;
         $this->invoiceProducts[$index]['is_saved'] = true;
 
-        //
-        $cart = Cart::instance($this->cart_instance);
-
-        $exists = $cart->search(function ($cartItem) use ($product) {
-            return $cartItem->id === $product['id'];
+        // ✅ Check if item already in cart
+        $exists = Cart::getContent()->filter(function ($item) use ($product) {
+            return $item->id == $product->id;
         });
 
         if ($exists->isNotEmpty()) {
-            session()->flash('message', 'Product exists in the cart!');
-
-            // not working correctly
-            //unset($this->invoiceProducts[$index]);
-
+            session()->flash('message', 'Product already exists in the cart!');
             return;
         }
 
-        $cart->add([
-            'id' => $product['id'],
-            'name' => $product['name'],
-            'price' => $product['buying_price'],
-            'qty' => $this->invoiceProducts[$index]['quantity'], //form field
-            'weight' => 1,
-            'options' => [
-                'code' => $product['code'],
+        // ✅ Add to cart
+        Cart::add([
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->buying_price,
+            'quantity' => $this->invoiceProducts[$index]['quantity'],
+            'attributes' => [
+                'code' => $product->code,
             ],
+            'associatedModel' => Product::class
         ]);
     }
 
     public function removeProduct($index): void
     {
-        unset($this->invoiceProducts[$index]);
+        if (isset($this->invoiceProducts[$index])) {
+            // Remove from array
+            unset($this->invoiceProducts[$index]);
+            $this->invoiceProducts = array_values($this->invoiceProducts);
+        }
 
-        $this->invoiceProducts = array_values($this->invoiceProducts);
+        // Optional: If removing from cart also
+        $product = $this->allProducts->find($this->invoiceProducts[$index]['product_id'] ?? null);
 
-        //
-        //Cart::instance($this->cart_instance)->remove($index);
+        if ($product) {
+            Cart::remove($product->id);
+        }
     }
 }

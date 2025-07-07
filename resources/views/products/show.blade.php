@@ -6,7 +6,7 @@
         <div class="row g-2 align-items-center mb-3">
             <div class="col">
                 <h2 class="page-title">
-                    {{ __('Edit Product') }}
+                    {{ __('Product Details') }}
                 </h2>
             </div>
         </div>
@@ -27,7 +27,18 @@
                                 {{ __('Product Image') }}
                             </h3>
 
-                            <img class="img-account-profile mb-2" src="{{ asset('assets/img/products/default.webp') }}" alt="" id="image-preview" />
+                            {{-- Fixed image display --}}
+                            @if($product->product_image)
+                                <img class="img-account-profile mb-2" 
+                                     src="{{ asset('storage/products/' . $product->product_image) }}" 
+                                     alt="{{ $product->name }}"
+                                     id="image-preview" />
+                            @else
+                                <img class="img-account-profile mb-2" 
+                                     src="{{ asset('assets/img/products/default.webp') }}" 
+                                     alt="Default product image"
+                                     id="image-preview" />
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -53,10 +64,6 @@
                                     <tr>
                                         <td><span class="text-secondary">Code</span></td>
                                         <td>{{ $product->code }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Barcode</td>
-                                        <td>{!! $barcode !!}</td>
                                     </tr>
                                     <tr>
                                         <td>Category</td>
@@ -90,11 +97,11 @@
 
                                     <tr>
                                         <td>Buying Price</td>
-                                        <td>{{ $product->buying_price }}</td>
+                                        <td>{{ number_format($product->buying_price, 2) }}</td>
                                     </tr>
                                     <tr>
                                         <td>Selling Price</td>
-                                        <td>{{ $product->selling_price }}</td>
+                                        <td>{{ number_format($product->selling_price, 2) }}</td>
                                     </tr>
                                     <tr>
                                         <td>Tax</td>
@@ -106,7 +113,9 @@
                                     </tr>
                                     <tr>
                                         <td>Tax Type</td>
-                                        <td>{{ $product->tax_type->label() }}</td>
+                                        <td>
+                                            {{ $product->tax_type === 0 ? 'Exclusive' : 'Inclusive' }}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>{{ __('Notes') }}</td>

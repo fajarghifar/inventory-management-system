@@ -4,19 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Invoice\StoreInvoiceRequest;
 use App\Models\Customer;
-use Gloudemans\Shoppingcart\Facades\Cart;
+use Darryldecode\Cart\Facades\CartFacade as Cart;
 
 class InvoiceController extends Controller
 {
-    public function create(StoreInvoiceRequest $request, Customer $customer)
+    public function create(StoreInvoiceRequest $request)
     {
-        $customer = Customer::query()
-            ->where('id', $request->get('customer_id'))
-            ->first();
+        // Fetch the customer by ID from the request
+        $customer = Customer::findOrFail($request->get('customer_id'));
 
+        // Get cart contents using Darryldecode for the logged-in user
+        $carts = Cart::session(auth()->id())->getContent();
+
+        // Return the invoice view with customer and cart data
         return view('invoices.index', [
             'customer' => $customer,
-            'carts' => Cart::instance('order')->content(),
+            'carts'    => $carts,
         ]);
     }
 }

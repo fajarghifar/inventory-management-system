@@ -9,7 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Unit;
 use Illuminate\Http\Request;
-use Picqer\Barcode\BarcodeGeneratorHTML;
+use Picqer\Barcode\BarcodeGeneratorHTML; // ✅ Make sure this class is installed via Composer
 
 class ProductController extends Controller
 {
@@ -46,59 +46,45 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $existingProduct = Product::where('code', $request->get('code'))->first();
-        
+
         if ($existingProduct) {
             $newCode = $this->generateUniqueCode();
-            
             $request->merge(['code' => $newCode]);
         }
 
         try {
             $product = Product::create($request->all());
 
-            /**
-             * Handle image upload
-             */
             if ($request->hasFile('product_image')) {
                 $file = $request->file('product_image');
                 $filename = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
 
-                // Validate file before uploading
                 if ($file->isValid()) {
                     $file->storeAs('products/', $filename, 'public');
-                    $product->update([
-                        'product_image' => $filename
-                    ]);
+                    $product->update(['product_image' => $filename]);
                 } else {
                     return back()->withErrors(['product_image' => 'Invalid image file']);
                 }
             }
 
-            return redirect()
-                ->back()
-                ->with('success', 'Product has been created with code: ' . $product->code);
-
+            return redirect()->back()->with('success', 'Product has been created with code: ' . $product->code);
         } catch (\Exception $e) {
-            // Handle any unexpected errors
             return back()->withErrors(['error' => 'Something went wrong while creating the product']);
         }
     }
 
-    // Helper method to generate a unique product code
     private function generateUniqueCode()
     {
         do {
             $code = 'PC' . strtoupper(uniqid());
-        } while (Product::where('code', $code)->exists()); 
+        } while (Product::where('code', $code)->exists());
 
         return $code;
     }
 
     public function show(Product $product)
     {
-        // Generate a barcode
         $generator = new BarcodeGeneratorHTML();
-
         $barcode = $generator->getBarcode($product->code, $generator::TYPE_CODE_128);
 
         return view('products.show', [
@@ -121,43 +107,27 @@ class ProductController extends Controller
         $product->update($request->except('product_image'));
 
         if ($request->hasFile('product_image')) {
-
-            // Delete old image if exists
             if ($product->product_image) {
                 \Storage::disk('public')->delete('products/' . $product->product_image);
             }
 
-            // Prepare new image
             $file = $request->file('product_image');
             $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
-
-            // Store new image to public storage
             $file->storeAs('products/', $fileName, 'public');
-
-            // Save new image name to database
-            $product->update([
-                'product_image' => $fileName
-            ]);
+            $product->update(['product_image' => $fileName]);
         }
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Product has been updated!');
+        return redirect()->route('products.index')->with('success', 'Product has been updated!');
     }
 
     public function destroy(Product $product)
     {
-        /**
-         * Delete photo if exists.
-         */
         if ($product->product_image) {
             \Storage::disk('public')->delete('products/' . $product->product_image);
         }
 
         $product->delete();
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Product has been deleted!');
+        return redirect()->route('products.index')->with('success', 'Product has been deleted!');
     }
 }

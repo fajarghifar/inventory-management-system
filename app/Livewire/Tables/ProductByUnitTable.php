@@ -11,21 +11,15 @@ class ProductByUnitTable extends Component
     use WithPagination;
 
     public $perPage = 5;
-
     public $search = '';
-
     public $sortField = 'name';
-
     public $sortAsc = true;
-
     public $unit = null;
 
     public function sortBy($field): void
     {
-        if($this->sortField === $field)
-        {
-            $this->sortAsc = ! $this->sortAsc;
-
+        if($this->sortField === $field) {
+            $this->sortAsc = !$this->sortAsc;
         } else {
             $this->sortAsc = true;
         }
@@ -40,9 +34,18 @@ class ProductByUnitTable extends Component
 
     public function render()
     {
+        $query = Product::where('unit_id', $this->unit->id);
+
+        // Add search functionality
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%'.$this->search.'%')
+                  ->orWhere('code', 'like', '%'.$this->search.'%');
+            });
+        }
+
         return view('livewire.tables.product-by-unit-table', [
-            'products' => Product::where('unit_id', $this->unit->id)
-                ->search($this->search)
+            'products' => $query
                 ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
                 ->paginate($this->perPage)
         ]);

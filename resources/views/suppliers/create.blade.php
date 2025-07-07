@@ -96,11 +96,11 @@
 
                                         <select class="form-select @error('bank_name') is-invalid @enderror" id="bank_name" name="bank_name">
                                             <option selected="" disabled="">Select a bank:</option>
-                                            <option value="BRI" @if(old('bank_name') == 'BRI')selected="selected"@endif>BRI</option>
-                                            <option value="BNI" @if(old('bank_name') == 'BNI')selected="selected"@endif>BNI</option>
-                                            <option value="BCA" @if(old('bank_name') == 'BCA')selected="selected"@endif>BCA</option>
-                                            <option value="BSI" @if(old('bank_name') == 'BSI')selected="selected"@endif>BSI</option>
-                                            <option value="Mandiri" @if(old('bank_name') == 'Mandiri')selected="selected"@endif>Mandiri</option>
+                                            <option value="HBL" @if(old('bank_name') == 'HBL')selected="selected"@endif>HBL</option>
+                                            <option value="UBL" @if(old('bank_name') == 'UBL')selected="selected"@endif>UBL</option>
+                                            <option value="Meezan" @if(old('bank_name') == 'Meezan')selected="selected"@endif>Meezan</option>
+                                            <option value="Allied Bank" @if(old('bank_name') == 'Allied Bank')selected="selected"@endif>Allied Bank</option>
+                                            <option value="MCB" @if(old('bank_name') == 'MCB')selected="selected"@endif>MCB</option>
                                         </select>
                                         @error('bank_name')
                                         <div class="invalid-feedback">

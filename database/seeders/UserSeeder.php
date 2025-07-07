@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -13,32 +13,13 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = collect([
+        User::updateOrCreate(
+            ['email' => 'mdrakibulhaider.int@gmail.com'],
             [
                 'name' => 'Admin',
-                'email' => 'admin@admin.com',
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
-                'created_at' => now()
-            ],
-            [
-                'name' => 'quest',
-                'email' => 'quest@quest.com',
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
-                'created_at' => now()
-            ],
-            [
-                'name' => 'user',
-                'email' => 'user@user.com',
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
-                'created_at' => now()
+                'username' => 'admin', // ✅ Added this line
+                'password' => Hash::make('123456'),
             ]
-        ]);
-
-        $users->each(function ($user){
-            User::insert($user);
-        });
+        );
     }
 }

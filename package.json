@@ -1,17 +1,13 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build"
     },
     "devDependencies": {
-        "@tabler/core": "^1.0.0-beta24",
-        "autoprefixer": "^10.4.20",
-        "axios": "^1.7.9",
-        "laravel-vite-plugin": "^1.1.1",
-        "postcss": "^8.5.1",
-        "tailwindcss": "^3.4.17",
-        "vite": "^6.0.9",
-        "vite-plugin-static-copy": "^2.2.0"
+        "axios": "^1.6.4",
+        "laravel-vite-plugin": "^1.0.0",
+        "vite": "^5.0.0"
     }
 }

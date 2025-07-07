@@ -2,53 +2,74 @@
 
 namespace App\Http\Requests\Product;
 
-use Illuminate\Support\Str;
 use Illuminate\Foundation\Http\FormRequest;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
+use Illuminate\Support\Str;
+use App\Helpers\IdGenerator;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
-     */
     public function rules(): array
     {
         return [
-            'product_image'     => 'image|file|max:2048',
-            'name'              => 'required|string',
-            'slug'              => 'required|unique:products',
-            'category_id'       => 'required|integer',
-            'unit_id'           => 'required|integer',
-            'quantity'          => 'required|integer',
-            'buying_price'      => 'required|integer',
-            'selling_price'     => 'required|integer',
-            'quantity_alert'    => 'required|integer',
-            'tax'               => 'nullable|numeric',
-            'tax_type'          => 'nullable|integer',
-            'notes'             => 'nullable|max:1000'
+            'product_image'     => 'nullable|image|file|max:2048',
+            'name'              => 'required|string|max:255',
+            'slug'              => [
+                'required',
+                Rule::unique('products')->ignore($this->product),
+            ],
+            'category_id'       => 'required|integer|exists:categories,id',
+            'unit_id'           => 'required|integer|exists:units,id',
+            'quantity'          => 'required|integer|min:0',
+            'buying_price'      => 'required|numeric|min:0',
+            'selling_price'     => 'required|numeric|min:0|gt:buying_price',
+            'quantity_alert'    => 'required|integer|min:0',
+            'tax'               => 'nullable|numeric|min:0|max:100',
+            'tax_type'          => 'nullable|integer|in:0,1',
+            'notes'             => 'nullable|string|max:1000',
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'slug' => Str::slug($this->name, '-'),
-            'code' => IdGenerator::generate([
-                'table' => 'products',
-                'field' => 'code',
-                'length' => 4,
-                'prefix' => 'PC'
-            ])
+        $slug = Str::slug($this->name, '-');
+
+        $code = IdGenerator::generate([
+            'table' => 'products',
+            'field' => 'code',
+            'length' => 4,
+            'prefix' => 'PC'
         ]);
+
+        $this->merge([
+            'slug' => $slug,
+            'code' => $code
+        ]);
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'category_id' => 'category',
+            'unit_id' => 'unit',
+            'quantity_alert' => 'alert quantity',
+            'buying_price' => 'purchase price',
+            'selling_price' => 'sale price',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'slug.unique' => 'A product with this name already exists',
+            'selling_price.gt' => 'Selling price must be greater than buying price',
+            'category_id.exists' => 'The selected category is invalid',
+            'unit_id.exists' => 'The selected unit is invalid',
+        ];
     }
 }

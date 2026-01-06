@@ -14,6 +14,7 @@
 
         <!-- Vite Resources -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
 
         <style>
             body { font-family: 'Inter', sans-serif; }
@@ -52,11 +53,11 @@
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto bg-gray-50 flex flex-col">
-                <div class="py-8 flex-1">
+                <div class="py-6 flex-1">
                     <div class="px-4 sm:px-6 lg:px-8">
                         <!-- Page Header -->
                         @if (isset($header))
-                            <div class="mb-8">
+                            <div class="mb-4">
                                 {{ $header }}
                             </div>
                         @endif
@@ -72,5 +73,7 @@
 
         </div>
 
+    @livewireScripts
+    <x-toast />
     </body>
 </html>

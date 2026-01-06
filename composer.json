@@ -9,7 +9,9 @@
         "php": "^8.2",
         "blade-ui-kit/blade-heroicons": "^2.6",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "openspout/openspout": "^4.0",
+        "power-components/livewire-powergrid": "^6.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

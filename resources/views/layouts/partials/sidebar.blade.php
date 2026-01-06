@@ -118,8 +118,8 @@
                 </x-nav-link>
             </x-nav-group>
 
-            <x-nav-link href="#" :active="false" icon="users" title="Users">
-                Users
+            <x-nav-link href="{{ route('customers.index') }}" :active="request()->routeIs('customers.*')" icon="users" title="Customers">
+                Customers
             </x-nav-link>
 
             <x-nav-link href="#" :active="false" icon="cog" title="Settings">

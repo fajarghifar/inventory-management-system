@@ -23,6 +23,8 @@
                 <x-heroicon-o-cube class="w-5 h-5" />
             @elseif ($icon === 'cog')
                 <x-heroicon-o-cog-6-tooth class="w-5 h-5" />
+            @elseif ($icon === 'truck')
+                <x-heroicon-o-truck class="w-5 h-5" />
             @else
                 {{ $icon }}
             @endif

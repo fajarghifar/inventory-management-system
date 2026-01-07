@@ -122,6 +122,10 @@
                 Customers
             </x-nav-link>
 
+            <x-nav-link href="{{ route('suppliers.index') }}" :active="request()->routeIs('suppliers.*')" icon="truck" title="Suppliers">
+                Suppliers
+            </x-nav-link>
+
             <x-nav-link href="#" :active="false" icon="cog" title="Settings">
                 Settings
             </x-nav-link>

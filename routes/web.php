@@ -20,6 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::view('suppliers', 'suppliers.index')->name('suppliers.index');
     Route::view('units', 'units.index')->name('units.index');
     Route::view('categories', 'categories.index')->name('categories.index');
+    Route::view('products', 'products.index')->name('products.index');
 });
 
 require __DIR__.'/auth.php';

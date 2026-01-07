@@ -106,8 +106,8 @@
             </x-nav-link>
 
             <!-- Inventory Group -->
-            <x-nav-group label="Inventory" icon="cube" :active="request()->routeIs('products.*') || request()->routeIs('categories.*')">
-                <x-nav-link href="#" :active="false">
+            <x-nav-group label="Inventory" icon="cube" :active="request()->routeIs(['products.*', 'categories.*', 'units.*'])">
+                <x-nav-link href="{{ route('products.index') }}" :active="request()->routeIs('products.*')">
                     -> Product List
                 </x-nav-link>
                 <x-nav-link href="{{ route('categories.index') }}" :active="request()->routeIs('categories.*')">

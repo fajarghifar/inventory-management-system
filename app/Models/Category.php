@@ -49,4 +49,9 @@ class Category extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

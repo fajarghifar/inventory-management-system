@@ -81,9 +81,9 @@
                 </div>
 
                 <div class="py-1">
-                    <a href="#" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors" role="menuitem" tabindex="-1">
+                    <a href="{{ route('profile.index') }}" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors" role="menuitem" tabindex="-1">
                         <x-heroicon-o-user class="mr-3 h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
-                        Your Profile
+                        {{ __('Profile') }}
                     </a>
 
                     <a href="#" class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors" role="menuitem" tabindex="-1">

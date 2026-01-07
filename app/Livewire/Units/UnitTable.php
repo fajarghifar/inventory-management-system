@@ -18,6 +18,8 @@ final class UnitTable extends PowerGridComponent
     use WithExport;
 
     public string $tableName = 'unit-table';
+    public string $sortField = 'created_at';
+    public string $sortDirection = 'desc';
 
     public function setUp(): array
     {

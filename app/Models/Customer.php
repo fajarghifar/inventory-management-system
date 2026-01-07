@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * App\Models\Customer
  *
  * @property int $id
  * @property string $name
- * @property string $email
+ * @property string|null $email
  * @property string|null $phone
  * @property string|null $address
  * @property string|null $notes

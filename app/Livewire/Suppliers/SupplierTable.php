@@ -17,6 +17,8 @@ final class SupplierTable extends PowerGridComponent
     use WithExport;
 
     public string $tableName = 'supplier-table';
+    public string $sortField = 'created_at';
+    public string $sortDirection = 'desc';
 
     public function setUp(): array
     {

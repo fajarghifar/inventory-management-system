@@ -1,10 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\SupplierController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,9 +16,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('customers', CustomerController::class)->only(['index']);
-    Route::resource('suppliers', SupplierController::class)->only(['index']);
-    Route::resource('units', UnitController::class)->only(['index']);
+    Route::view('customers', 'customers.index')->name('customers.index');
+    Route::view('suppliers', 'suppliers.index')->name('suppliers.index');
+    Route::view('units', 'units.index')->name('units.index');
+    Route::view('categories', 'categories.index')->name('categories.index');
 });
 
 require __DIR__.'/auth.php';

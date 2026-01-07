@@ -6,19 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * App\Models\Supplier
+ * App\Models\Category
  *
  * @property int $id
  * @property string $name
- * @property string $contact_person
- * @property string|null $email
- * @property string|null $phone
- * @property string|null $address
- * @property string|null $notes
+ * @property string $slug
+ * @property string|null $description
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
-class Supplier extends Model
+class Category extends Model
 {
     use HasFactory;
 
@@ -27,7 +24,7 @@ class Supplier extends Model
      *
      * @var string
      */
-    protected $table = 'suppliers';
+    protected $table = 'categories';
 
     /**
      * The attributes that are mass assignable.
@@ -36,11 +33,8 @@ class Supplier extends Model
      */
     protected $fillable = [
         'name',
-        'contact_person',
-        'email',
-        'phone',
-        'address',
-        'notes',
+        'slug',
+        'description',
     ];
 
     /**
@@ -49,10 +43,9 @@ class Supplier extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'email' => 'string',
         'name' => 'string',
-        'contact_person' => 'string',
-        'phone' => 'string',
+        'slug' => 'string',
+        'description' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

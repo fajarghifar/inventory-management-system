@@ -110,7 +110,7 @@
                 <x-nav-link href="#" :active="false">
                     -> Product List
                 </x-nav-link>
-                <x-nav-link href="#" :active="false">
+                <x-nav-link href="{{ route('categories.index') }}" :active="request()->routeIs('categories.*')">
                     -> Categories
                 </x-nav-link>
                 <x-nav-link href="{{ route('units.index') }}" :active="request()->routeIs('units.*')">

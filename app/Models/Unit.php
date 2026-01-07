@@ -5,6 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * App\Models\Unit
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $symbol
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Unit extends Model
 {
     use HasFactory;
@@ -24,5 +33,17 @@ class Unit extends Model
     protected $fillable = [
         'name',
         'symbol',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'name' => 'string',
+        'symbol' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 }

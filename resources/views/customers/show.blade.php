@@ -8,79 +8,61 @@
     <div>
         <div class="max-w-full mx-auto">
             <!-- Details Card -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 space-y-6">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl border border-gray-100">
+                <div class="p-6 md:p-8 bg-white/50 space-y-8">
 
-                    <!-- Name -->
-                    <div class="space-y-1">
-                        <label class="text-sm font-medium leading-none text-gray-500">
-                            {{ __('Name') }}
-                        </label>
-                        <p class="text-base font-medium text-slate-900">{{ $customer->name }}</p>
-                    </div>
+                    <header class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">{{ $customer->name }}</h3>
+                                <p class="text-sm text-gray-500">Customer Profile</p>
+                            </div>
+                            <div class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-medium border border-slate-200">
+                                ID: #{{ $customer->id }}
+                            </div>
+                    </header>
 
-                    <!-- Grid: Email & Phone -->
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         <!-- Email -->
-                        <div class="space-y-1">
-                            <label class="text-sm font-medium leading-none text-gray-500">
-                                {{ __('Email') }}
-                            </label>
-                            <p class="text-sm text-slate-900">{{ $customer->email }}</p>
-                        </div>
+                        <x-detail-item label="{{ __('Email') }}" value="{{ $customer->email }}">
+                            <x-heroicon-o-envelope class="w-4 h-4 text-gray-400" />
+                        </x-detail-item>
 
                         <!-- Phone -->
+                        <x-detail-item label="{{ __('Phone') }}" value="{{ $customer->phone ?? '-' }}">
+                            <x-heroicon-o-phone class="w-4 h-4 text-gray-400" />
+                        </x-detail-item>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-6 space-y-6">
+                        <!-- Address -->
+                        <x-detail-item label="{{ __('Address') }}" value="{{ $customer->address ?? '-' }}" />
+
+                        <!-- Notes -->
                         <div class="space-y-1">
                             <label class="text-sm font-medium leading-none text-gray-500">
-                                {{ __('Phone') }}
+                                {{ __('Notes') }}
                             </label>
-                            <p class="text-sm text-slate-900">{{ $customer->phone ?? '-' }}</p>
+                            <div class="bg-gray-50 p-3 rounded-md border border-gray-100">
+                                <p class="text-sm text-slate-700 italic leading-relaxed">{{ $customer->notes ?? 'No additional notes.' }}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Address -->
-                    <div class="space-y-1">
-                        <label class="text-sm font-medium leading-none text-gray-500">
-                            {{ __('Address') }}
-                        </label>
-                        <p class="text-sm text-slate-900 whitespace-pre-line">{{ $customer->address ?? '-' }}</p>
-                    </div>
-
-                    <!-- Notes -->
-                    <div class="space-y-1">
-                        <label class="text-sm font-medium leading-none text-gray-500">
-                            {{ __('Notes') }}
-                        </label>
-                        <p class="text-sm text-slate-900 whitespace-pre-line">{{ $customer->notes ?? '-' }}</p>
-                    </div>
-
-                    <!-- Timestamps -->
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 pt-4 border-t border-gray-100">
-                        <div class="space-y-1">
-                            <label class="text-xs font-medium leading-none text-gray-400">
-                                {{ __('Registered At') }}
-                            </label>
-                            <p class="text-xs text-slate-500">{{ $customer->created_at->format('d M Y H:i') }}</p>
-                        </div>
-                         <div class="space-y-1">
-                            <label class="text-xs font-medium leading-none text-gray-400">
-                                {{ __('Last Updated') }}
-                            </label>
-                            <p class="text-xs text-slate-500">{{ $customer->updated_at->format('d M Y H:i') }}</p>
+                        <!-- Timestamps -->
+                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 pt-2">
+                            <x-detail-item label="{{ __('Registered At') }}" value="{{ $customer->created_at->format('d M Y H:i') }}" />
+                            <x-detail-item label="{{ __('Last Updated') }}" value="{{ $customer->updated_at->format('d M Y H:i') }}" />
                         </div>
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100">
-                         <a href="{{ route('customers.index') }}" class="inline-flex items-center justify-center h-10 px-4 py-2 text-sm font-medium transition-colors bg-white border border-gray-200 rounded-md text-slate-900 hover:bg-gray-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2">
+                    <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-100">
+                        <x-button variant="secondary" href="{{ route('customers.index') }}">
                             {{ __('Back to List') }}
-                        </a>
-                        <a href="{{ route('customers.edit', $customer) }}" class="inline-flex items-center justify-center h-10 px-4 py-2 text-sm font-medium text-white transition-colors bg-slate-900 rounded-md hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                            </svg>
+                        </x-button>
+                        <x-button href="{{ route('customers.edit', $customer) }}">
+                            <x-heroicon-o-pencil-square class="w-4 h-4 mr-2" />
                             {{ __('Edit Customer') }}
-                        </a>
+                        </x-button>
                     </div>
 
                 </div>

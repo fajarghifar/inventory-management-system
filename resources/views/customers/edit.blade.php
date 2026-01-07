@@ -15,65 +15,54 @@
                         @method('PUT')
 
                         <!-- Name -->
-                        <div class="space-y-2">
-                            <label for="name" class="text-sm font-medium leading-none text-gray-700">
-                                {{ __('Name') }} <span class="text-red-500">*</span>
-                            </label>
-                            <input id="name" type="text" name="name" value="{{ old('name', $customer->name) }}" required autofocus
-                                class="flex w-full h-10 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                            @error('name') <p class="text-sm font-medium text-red-500">{{ $message }}</p> @enderror
-                        </div>
+                        <x-form-input
+                            name="name"
+                            label="{{ __('Name') }}"
+                            :value="$customer->name"
+                            required
+                            autofocus
+                        />
 
                         <!-- Grid: Email & Phone -->
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             <!-- Email -->
-                            <div class="space-y-2">
-                                <label for="email" class="text-sm font-medium leading-none text-gray-700">
-                                    {{ __('Email') }} <span class="text-red-500">*</span>
-                                </label>
-                                <input id="email" type="email" name="email" value="{{ old('email', $customer->email) }}" required
-                                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                                @error('email') <p class="text-sm font-medium text-red-500">{{ $message }}</p> @enderror
-                            </div>
+                            <x-form-input
+                                type="email"
+                                name="email"
+                                label="{{ __('Email') }}"
+                                :value="$customer->email"
+                                required
+                            />
 
                             <!-- Phone -->
-                            <div class="space-y-2">
-                                <label for="phone" class="text-sm font-medium leading-none text-gray-700">
-                                    {{ __('Phone') }}
-                                </label>
-                                <input id="phone" type="text" name="phone" value="{{ old('phone', $customer->phone) }}"
-                                    class="flex w-full h-10 px-3 py-2 text-sm bg-white border border-gray-300 rounded-md ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                                @error('phone') <p class="text-sm font-medium text-red-500">{{ $message }}</p> @enderror
-                            </div>
+                            <x-form-input
+                                name="phone"
+                                label="{{ __('Phone') }}"
+                                :value="$customer->phone"
+                            />
                         </div>
 
                         <!-- Address -->
-                        <div class="space-y-2">
-                            <label for="address" class="text-sm font-medium leading-none text-gray-700">
-                                {{ __('Address') }}
-                            </label>
-                            <textarea id="address" name="address" rows="3"
-                                class="flex w-full min-h-[80px] px-3 py-2 text-sm bg-white border border-gray-300 rounded-md ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">{{ old('address', $customer->address) }}</textarea>
-                            @error('address') <p class="text-sm font-medium text-red-500">{{ $message }}</p> @enderror
-                        </div>
+                        <x-form-textarea
+                            name="address"
+                            label="{{ __('Address') }}"
+                            :value="$customer->address"
+                        />
 
-                         <!-- Notes -->
-                         <div class="space-y-2">
-                            <label for="notes" class="text-sm font-medium leading-none text-gray-700">
-                                {{ __('Notes') }}
-                            </label>
-                            <textarea id="notes" name="notes" rows="3"
-                                class="flex w-full min-h-[80px] px-3 py-2 text-sm bg-white border border-gray-300 rounded-md ring-offset-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">{{ old('notes', $customer->notes) }}</textarea>
-                            @error('notes') <p class="text-sm font-medium text-red-500">{{ $message }}</p> @enderror
-                        </div>
+                        <!-- Notes -->
+                        <x-form-textarea
+                            name="notes"
+                            label="{{ __('Notes') }}"
+                            :value="$customer->notes"
+                        />
 
-                        <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100">
-                             <a href="{{ route('customers.index') }}" class="inline-flex items-center justify-center h-10 px-4 py-2 text-sm font-medium transition-colors bg-white border border-gray-200 rounded-md text-slate-900 hover:bg-gray-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2">
+                        <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-100">
+                            <x-button variant="secondary" href="{{ route('customers.index') }}">
                                 {{ __('Cancel') }}
-                            </a>
-                            <button type="submit" class="inline-flex items-center justify-center h-10 px-4 py-2 text-sm font-medium text-white transition-colors bg-slate-900 rounded-md hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2">
+                            </x-button>
+                            <x-button>
                                 {{ __('Update Customer') }}
-                            </button>
+                            </x-button>
                         </div>
                     </form>
                 </div>

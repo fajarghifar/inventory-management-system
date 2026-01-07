@@ -24,17 +24,17 @@
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
 
-            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-gray-50 hover:bg-gray-900/90 h-10 px-4 py-2 w-full shadow-sm">
+            <x-button class="w-full">
                 Resend Verification Email
-            </button>
+            </x-button>
         </form>
 
         <!-- Log Out Form -->
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 hover:text-gray-900 h-10 px-4 py-2 w-full text-gray-900">
+            <x-button variant="secondary" class="w-full">
                 Log Out
-            </button>
+            </x-button>
         </form>
     </div>
 

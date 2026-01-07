@@ -23,50 +23,31 @@
             @csrf
 
             <!-- Username Field -->
-            <div class="space-y-2">
-                <label for="username" class="text-sm font-medium leading-none text-gray-900">
-                    Username
-                </label>
-                <input
-                    id="username"
-                    class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                    type="text"
-                    name="username"
-                    value="{{ old('username') }}"
-                    required
-                    autofocus
-                    autocomplete="username"
-                    placeholder="Enter your username"
-                />
-                @error('username')
-                    <p class="text-sm font-medium text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-form-input
+                name="username"
+                label="Username"
+                :value="old('username')"
+                required
+                autofocus
+                autocomplete="username"
+                placeholder="Enter your username"
+            />
 
             <!-- Password Field -->
-            <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                    <label for="password" class="text-sm font-medium leading-none text-gray-900">
-                        Password
-                    </label>
-                    <!-- Forgot Password Link -->
+            <x-form-input
+                type="password"
+                name="password"
+                label="Password"
+                required
+                autocomplete="current-password"
+                placeholder="••••••••"
+            >
+                <x-slot name="cornerHint">
                     <a href="{{ route('password.request') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 underline-offset-4 hover:underline transition-colors">
                         Forgot password?
                     </a>
-                </div>
-                <input
-                    id="password"
-                    class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
-                    type="password"
-                    name="password"
-                    required
-                    autocomplete="current-password"
-                    placeholder="••••••••"
-                />
-                @error('password')
-                    <p class="text-sm font-medium text-red-500">{{ $message }}</p>
-                @enderror
-            </div>
+                </x-slot>
+            </x-form-input>
 
             <!-- Remember Me Checkbox -->
             <div class="flex items-center space-x-2">
@@ -82,9 +63,9 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-gray-50 hover:bg-gray-900/90 h-10 px-4 py-2 w-full shadow-sm mt-2">
+            <x-button class="w-full mt-2">
                 Sign In
-            </button>
+            </x-button>
         </form>
     </div>
 

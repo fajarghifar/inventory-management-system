@@ -26,7 +26,7 @@
     <div class="flex items-center gap-x-4 lg:gap-x-6">
 
         <!-- Notification Bell -->
-        <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative group transition-colors focus:outline-none">
+        <button type="button" class="-m-2.5 p-2.5 text-slate-500 hover:text-slate-800 relative group transition-colors focus:outline-none">
             <span class="sr-only">View notifications</span>
             <x-heroicon-o-bell class="h-6 w-6 transition-transform group-hover:scale-110" aria-hidden="true" />
 
@@ -45,17 +45,16 @@
                 <span class="sr-only">Open user menu</span>
 
                 <!-- Avatar with Gradient -->
-                <div class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-semibold shadow-sm ring-2 ring-white">
+                <div class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 border border-slate-200 text-slate-600 font-semibold shadow-sm ring-1 ring-slate-950/5">
                     {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 2)) }}
                 </div>
 
                 <!-- Name & Meta Info -->
                 <span class="hidden lg:flex lg:items-center">
                     <div class="ml-4 flex flex-col items-start text-sm">
-                        <span class="font-semibold leading-none text-gray-900">{{ Auth::user()->name }}</span>
-                        <span class="text-xs text-gray-500 mt-0.5">Administrator</span>
+                        <span class="font-semibold leading-none text-slate-900">{{ Auth::user()->name }}</span>
                     </div>
-                    <x-heroicon-o-chevron-down class="ml-2 h-4 w-4 text-gray-400 transition-transform duration-200" ::class="open ? 'rotate-180' : ''" aria-hidden="true" />
+                    <x-heroicon-o-chevron-down class="ml-2 h-4 w-4 text-slate-400 transition-transform duration-200" ::class="open ? 'rotate-180' : ''" aria-hidden="true" />
                 </span>
             </button>
 
@@ -76,8 +75,8 @@
 
                 <!-- Menu Header -->
                 <div class="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                     <p class="text-sm font-medium text-gray-900">Signed in as</p>
-                     <p class="text-xs text-gray-500 truncate mt-0.5">{{ Auth::user()->username ?? 'admin' }}</p>
+                    <p class="text-sm font-medium text-gray-900">Signed in as</p>
+                    <p class="text-xs text-gray-500 truncate mt-0.5">{{ Auth::user()->username }}</p>
                 </div>
 
                 <div class="py-1">

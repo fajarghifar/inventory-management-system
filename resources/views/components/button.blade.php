@@ -11,6 +11,9 @@
         'primary' => 'bg-slate-900 text-white hover:bg-slate-800',
         'secondary' => 'bg-white border border-gray-200 text-slate-700 hover:bg-gray-50 hover:text-slate-900',
         'danger' => 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+        'success' => 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
+        'warning' => 'bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-500',
+        'info' => 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
         'ghost' => 'bg-transparent text-slate-700 hover:bg-slate-100',
     ];
 

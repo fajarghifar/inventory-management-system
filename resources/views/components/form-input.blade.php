@@ -1,5 +1,5 @@
 @props([
-    'name',
+    'name' => null,
     'label' => null,
     'type' => 'text',
     'value' => '',
@@ -25,10 +25,10 @@
         </div>
     @endif
     <input
-        id="{{ $name }}"
+        id="{{ $name ?? $attributes->get('id') }}"
         type="{{ $type }}"
         name="{{ $name }}"
-        value="{{ old($name, $value) }}"
+        value="{{ $name ? old($name, $value) : $value }}"
         placeholder="{{ $placeholder }}"
         @if($required) required @endif
         @if($disabled) disabled @endif

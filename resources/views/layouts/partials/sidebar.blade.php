@@ -45,7 +45,7 @@
             <x-nav-link href="#" :active="false">
                 -> Categories
             </x-nav-link>
-            <x-nav-link href="#" :active="false">
+            <x-nav-link href="{{ route('units.index') }}" :active="request()->routeIs('units.*')">
                 -> Units
             </x-nav-link>
         </x-nav-group>
@@ -113,7 +113,7 @@
                 <x-nav-link href="#" :active="false">
                     -> Categories
                 </x-nav-link>
-                <x-nav-link href="#" :active="false">
+                <x-nav-link href="{{ route('units.index') }}" :active="request()->routeIs('units.*')">
                     -> Units
                 </x-nav-link>
             </x-nav-group>

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
@@ -20,6 +21,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('customers', CustomerController::class)->only(['index']);
     Route::resource('suppliers', SupplierController::class)->only(['index']);
+    Route::resource('units', UnitController::class)->only(['index']);
 });
 
 require __DIR__.'/auth.php';

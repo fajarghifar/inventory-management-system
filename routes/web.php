@@ -18,8 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('customers', CustomerController::class);
-    Route::resource('suppliers', SupplierController::class);
+    Route::resource('customers', CustomerController::class)->only(['index']);
+    Route::resource('suppliers', SupplierController::class)->only(['index']);
 });
 
 require __DIR__.'/auth.php';

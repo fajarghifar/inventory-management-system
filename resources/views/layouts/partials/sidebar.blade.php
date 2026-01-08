@@ -54,6 +54,16 @@
             Users
         </x-nav-link>
 
+        <!-- Purchases Group -->
+        <x-nav-group label="Purchases" icon="shopping-cart" :active="request()->routeIs('purchases.*') || request()->routeIs('suppliers.*')">
+            <x-nav-link href="{{ route('purchases.index') }}" :active="request()->routeIs('purchases.*')">
+                Purchases
+            </x-nav-link>
+            <x-nav-link href="{{ route('suppliers.index') }}" :active="request()->routeIs('suppliers.*')">
+                Suppliers
+            </x-nav-link>
+        </x-nav-group>
+
         <x-nav-link href="#" :active="false" icon="cog">
             Settings
         </x-nav-link>
@@ -72,10 +82,10 @@
 
         <!-- Logo (Visible only when Expanded) -->
         <div class="flex items-center overflow-hidden" x-show="!sidebarCollapsed">
-            <div class="flex-shrink-0 bg-indigo-600 rounded-lg p-1">
+            <div class="flex-shrink-0 bg-slate-900 rounded-lg p-1">
                 <x-heroicon-o-cube-transparent class="w-6 h-6 text-white" />
             </div>
-            <span class="ml-3 text-xl font-bold tracking-tight text-gray-900 truncate"
+            <span class="ml-3 text-xl font-bold tracking-tight text-slate-900 truncate"
                   x-transition:enter="transition ease-out duration-100 delay-100"
                   x-transition:enter-start="opacity-0"
                   x-transition:enter-end="opacity-100">
@@ -122,9 +132,15 @@
                 Customers
             </x-nav-link>
 
-            <x-nav-link href="{{ route('suppliers.index') }}" :active="request()->routeIs('suppliers.*')" icon="truck" title="Suppliers">
-                Suppliers
-            </x-nav-link>
+            <!-- Purchases Group -->
+            <x-nav-group label="Purchases" icon="shopping-cart" :active="request()->routeIs(['purchases.*', 'suppliers.*'])">
+                <x-nav-link href="{{ route('purchases.index') }}" :active="request()->routeIs('purchases.*')">
+                    -> Purchases
+                </x-nav-link>
+                <x-nav-link href="{{ route('suppliers.index') }}" :active="request()->routeIs('suppliers.*')">
+                    -> Suppliers
+                </x-nav-link>
+            </x-nav-group>
 
             <x-nav-link href="#" :active="false" icon="cog" title="Settings">
                 Settings

@@ -108,8 +108,9 @@ class ProductService
     {
         DB::transaction(function () use ($product) {
             try {
-                // Future check: prevent delete if product has transaction history/stocks movement
-                // if ($product->transactions()->exists()) { throw new Exception("Cannot delete product with existing transactions."); }
+                if ($product->purchaseDetails()->exists()) {
+                    throw new Exception('Cannot delete product because it is associated with purchase records.');
+                }
 
                 Log::info('Attempting to delete product', ['id' => $product->id]);
 

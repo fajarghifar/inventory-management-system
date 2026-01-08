@@ -97,6 +97,10 @@ class SupplierService
             try {
                 Log::info('Attempting to delete supplier', ['id' => $supplier->id]);
 
+                if ($supplier->purchases()->exists()) {
+                    throw new Exception('Cannot delete supplier because there are purchases associated with this supplier.');
+                }
+
                 $supplier->delete();
 
                 Log::info('Supplier deleted successfully', ['id' => $supplier->id]);

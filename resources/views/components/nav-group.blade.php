@@ -17,7 +17,7 @@
         @if ($icon)
             <div class="flex-shrink-0 transition-colors duration-200"
                  :class="expanded ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-500'">
-                 @if ($icon === 'home')
+                @if ($icon === 'home')
                     <x-heroicon-o-home class="w-5 h-5" />
                 @elseif ($icon === 'users')
                     <x-heroicon-o-users class="w-5 h-5" />
@@ -25,6 +25,10 @@
                     <x-heroicon-o-cube class="w-5 h-5" />
                 @elseif ($icon === 'cog')
                     <x-heroicon-o-cog-6-tooth class="w-5 h-5" />
+                @elseif ($icon === 'shopping-cart')
+                    <x-heroicon-o-shopping-cart class="w-5 h-5" />
+                @elseif ($icon === 'truck')
+                    <x-heroicon-o-truck class="w-5 h-5" />
                 @else
                     {{ $icon }}
                 @endif

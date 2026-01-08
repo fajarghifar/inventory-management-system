@@ -107,7 +107,7 @@ final class ProductTable extends PowerGridComponent
                 ->bodyAttribute('text-right'),
 
             Column::make('Margin', 'margin_formatted')
-                ->bodyAttribute('text-right text-indigo-600 font-bold'),
+                ->bodyAttribute('text-right text-indigo-600'),
 
             Column::make('Qty', 'quantity')
                 ->sortable()

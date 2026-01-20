@@ -2,23 +2,30 @@
 
 namespace App\Livewire\Units;
 
+use Exception;
 use App\Models\Unit;
-use App\Services\UnitService;
+use App\DTOs\UnitData;
 use Livewire\Component;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Rule;
+use App\Services\UnitService;
 
 class UnitForm extends Component
 {
     public ?Unit $unit = null;
 
-    #[Rule('required|string|max:50|unique:units,name,except,id')]
     public string $name = '';
 
-    #[Rule('required|string|max:10|unique:units,symbol,except,id')]
     public string $symbol = '';
 
     public bool $isEditing = false;
+
+    protected function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:50', 'unique:units,name,' . ($this->unit?->id)],
+            'symbol' => ['required', 'string', 'max:10', 'unique:units,symbol,' . ($this->unit?->id)],
+        ];
+    }
 
     public function render()
     {
@@ -26,7 +33,7 @@ class UnitForm extends Component
     }
 
     #[On('create-unit')]
-    public function create()
+    public function create(): void
     {
         $this->reset();
         $this->isEditing = false;
@@ -34,7 +41,7 @@ class UnitForm extends Component
     }
 
     #[On('edit-unit')]
-    public function edit(Unit $unit)
+    public function edit(Unit $unit): void
     {
         $this->resetValidation();
         $this->unit = $unit;
@@ -45,19 +52,18 @@ class UnitForm extends Component
         $this->dispatch('open-modal', name: 'unit-modal');
     }
 
-    public function save(UnitService $service)
+    public function save(UnitService $service): void
     {
-        $validated = $this->validate([
-            'name' => 'required|string|max:50|unique:units,name,' . ($this->unit?->id),
-            'symbol' => 'required|string|max:10|unique:units,symbol,' . ($this->unit?->id),
-        ]);
+        $validated = $this->validate($this->rules());
 
         try {
+            $unitData = UnitData::fromArray($validated);
+
             if ($this->isEditing && $this->unit) {
-                $service->updateUnit($this->unit, $validated);
+                $service->updateUnit($this->unit, $unitData);
                 $message = 'Unit updated successfully.';
             } else {
-                $service->createUnit($validated);
+                $service->createUnit($unitData);
                 $message = 'Unit created successfully.';
             }
 
@@ -67,7 +73,7 @@ class UnitForm extends Component
             $this->dispatch('toast', message: $message, type: 'success');
             $this->reset();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
         }
     }

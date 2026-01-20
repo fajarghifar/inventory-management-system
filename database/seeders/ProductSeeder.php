@@ -93,7 +93,7 @@ class ProductSeeder extends Seeder
                     Product::create([
                         'category_id' => $category->id,
                         'unit_id' => $unit->id,
-                        'sku' => strtoupper(\Illuminate\Support\Str::random(3) . '-' . rand(1000, 9999) . '-' . \Illuminate\Support\Str::random(4)),
+                        'sku' => 'P.' . date('ymd') . '.' . strtoupper(\Illuminate\Support\Str::random(4)),
                         'name' => $item['name'],
                         'description' => 'High quality ' . $item['name'] . ' with official warranty.',
                         'purchase_price' => $item['price'] * 0.7,

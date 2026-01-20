@@ -2,46 +2,37 @@
 
 namespace App\Livewire\Products;
 
+use Exception;
 use App\Models\Unit;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
+use App\DTOs\ProductData;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Rule;
 use App\Services\ProductService;
 
 class ProductForm extends Component
 {
     public ?Product $product = null;
 
-    #[Rule('required|exists:categories,id')]
     public int $category_id = 0;
 
-    #[Rule('required|exists:units,id')]
     public int $unit_id = 0;
 
-    #[Rule('nullable|string|max:50|unique:products,sku,except,id')]
     public string $sku = '';
 
-    #[Rule('required|string|max:150')]
     public string $name = '';
 
-    #[Rule('nullable|string')]
     public string $description = '';
 
-    #[Rule('required|integer|min:0')]
     public int $purchase_price = 0;
 
-    #[Rule('required|integer|min:0')]
     public int $selling_price = 0;
 
-    #[Rule('required|integer|min:0')]
     public int $quantity = 0;
 
-    #[Rule('required|integer|min:0')]
     public int $min_stock = 0;
 
-    #[Rule('boolean')]
     public bool $is_active = true;
 
     public bool $isEditing = false;
@@ -50,14 +41,30 @@ class ProductForm extends Component
     public $categories;
     public $units;
 
-    public function mount()
+    protected function rules(): array
+    {
+        return [
+            'category_id' => ['required', 'exists:categories,id'],
+            'unit_id' => ['required', 'exists:units,id'],
+            'sku' => ['nullable', 'string', 'max:50', 'unique:products,sku,' . ($this->product?->id)],
+            'name' => ['required', 'string', 'max:150'],
+            'description' => ['nullable', 'string'],
+            'purchase_price' => ['required', 'integer', 'min:0'],
+            'selling_price' => ['required', 'integer', 'min:0'],
+            'quantity' => ['required', 'integer', 'min:0'],
+            'min_stock' => ['required', 'integer', 'min:0'],
+            'is_active' => ['boolean'],
+        ];
+    }
+
+    public function mount(): void
     {
         $this->categories = collect();
         $this->units = collect();
         $this->loadDependencies();
     }
 
-    public function loadDependencies()
+    public function loadDependencies(): void
     {
         $this->categories = Category::orderBy('name')->get();
         $this->units = Unit::orderBy('name')->get();
@@ -77,7 +84,7 @@ class ProductForm extends Component
     }
 
     #[On('create-product')]
-    public function create()
+    public function create(): void
     {
         $this->reset(['product', 'sku', 'name', 'description', 'purchase_price', 'selling_price', 'quantity', 'min_stock']);
         // Reset IDs to first available or 0?
@@ -90,7 +97,7 @@ class ProductForm extends Component
     }
 
     #[On('edit-product')]
-    public function edit(Product $product)
+    public function edit(Product $product): void
     {
         $this->resetValidation();
         $this->product = $product;
@@ -111,27 +118,18 @@ class ProductForm extends Component
         $this->dispatch('open-modal', name: 'product-modal');
     }
 
-    public function save(ProductService $service)
+    public function save(ProductService $service): void
     {
-        $validated = $this->validate([
-            'category_id' => 'required|exists:categories,id',
-            'unit_id' => 'required|exists:units,id',
-            'sku' => 'nullable|string|max:50|unique:products,sku,' . ($this->product?->id),
-            'name' => 'required|string|max:150',
-            'description' => 'nullable|string',
-            'purchase_price' => 'required|integer|min:0',
-            'selling_price' => 'required|integer|min:0',
-            'quantity' => 'required|integer|min:0',
-            'min_stock' => 'required|integer|min:0',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $this->validate($this->rules());
 
         try {
+            $productData = ProductData::fromArray($validated);
+
             if ($this->isEditing && $this->product) {
-                $service->updateProduct($this->product, $validated);
+                $service->updateProduct($this->product, $productData);
                 $message = 'Product updated successfully.';
             } else {
-                $service->createProduct($validated);
+                $service->createProduct($productData);
                 $message = 'Product created successfully.';
             }
 
@@ -143,7 +141,7 @@ class ProductForm extends Component
             $this->reset(['product', 'sku', 'name', 'description', 'purchase_price', 'selling_price', 'quantity', 'min_stock']);
             $this->isEditing = false;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
         }
     }

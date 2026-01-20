@@ -12,7 +12,7 @@
                     required
                     wire:model="sku"
                     readonly
-                    class="bg-gray-100 cursor-not-allowed"
+                    class="bg-gray-100 cursor-not-allowed text-gray-500"
                 />
                 @else
                     <!-- SKU Auto Generated -->
@@ -110,26 +110,15 @@
 
                 <!-- Is Active -->
                 <div class="flex items-center h-full pt-6">
-                    <label for="is_active" class="flex items-center cursor-pointer">
-                        <div class="relative">
-                            <input type="checkbox" id="is_active" wire:model="is_active" class="sr-only">
-                            <div class="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
-                            <div class="dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition"></div>
-                        </div>
-                        <div class="ml-3 text-gray-700 font-medium dark:text-gray-300">
-                            Active Product
-                        </div>
+                     <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" wire:model="is_active" class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <span class="ms-3 text-sm font-medium text-gray-700">Active</span>
                     </label>
-                    <style>
-                        input:checked ~ .dot {
-                            transform: translateX(100%);
-                            background-color: #4ade80;
-                        }
-                    </style>
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                 <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'product-modal' })">
                     Cancel
                 </x-button>

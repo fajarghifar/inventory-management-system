@@ -11,15 +11,14 @@
         </div>
     </x-slot>
 
-    <div>
-        <div class="max-w-full mx-auto">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <livewire:categories.category-table />
-                </div>
+    <div class="max-w-full mx-auto">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900">
+                <livewire:categories.category-table />
             </div>
         </div>
     </div>
+
     <livewire:categories.category-form />
     <livewire:categories.category-detail />
 </x-app-layout>

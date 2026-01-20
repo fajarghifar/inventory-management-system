@@ -19,7 +19,7 @@
                 wire:model="symbol"
             />
 
-            <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                 <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'unit-modal' })">
                     Cancel
                 </x-button>

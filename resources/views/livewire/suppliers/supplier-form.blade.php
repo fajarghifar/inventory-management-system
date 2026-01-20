@@ -30,7 +30,6 @@
                     name="email"
                     label="Email"
                     placeholder="supplier@example.com"
-                    required
                     wire:model="email"
                 />
 
@@ -59,7 +58,7 @@
                 wire:model="notes"
             />
 
-            <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                 <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'supplier-modal' })">
                     Cancel
                 </x-button>

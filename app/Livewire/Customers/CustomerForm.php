@@ -2,32 +2,39 @@
 
 namespace App\Livewire\Customers;
 
-use App\Models\Customer;
-use App\Services\CustomerService;
+use Exception;
 use Livewire\Component;
+use App\Models\Customer;
+use App\DTOs\CustomerData;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Rule;
+use App\Services\CustomerService;
 
 class CustomerForm extends Component
 {
     public ?Customer $customer = null;
 
-    #[Rule('required|string|max:255')]
     public string $name = '';
 
-    #[Rule('nullable|email|max:255|unique:customers,email,except,id')]
     public string $email = '';
 
-    #[Rule('nullable|string|max:20')]
     public string $phone = '';
 
-    #[Rule('nullable|string|max:1000')]
     public string $address = '';
 
-    #[Rule('nullable|string|max:1000')]
     public string $notes = '';
 
     public bool $isEditing = false;
+
+    protected function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:customers,email,' . ($this->customer?->id)],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:1000'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ];
+    }
 
     public function render()
     {
@@ -35,7 +42,7 @@ class CustomerForm extends Component
     }
 
     #[On('create-customer')]
-    public function create()
+    public function create(): void
     {
         $this->reset();
         $this->isEditing = false;
@@ -43,12 +50,12 @@ class CustomerForm extends Component
     }
 
     #[On('edit-customer')]
-    public function edit(Customer $customer)
+    public function edit(Customer $customer): void
     {
         $this->resetValidation();
         $this->customer = $customer;
         $this->name = $customer->name;
-        $this->email = $customer->email;
+        $this->email = $customer->email ?? '';
         $this->phone = $customer->phone ?? '';
         $this->address = $customer->address ?? '';
         $this->notes = $customer->notes ?? '';
@@ -57,22 +64,18 @@ class CustomerForm extends Component
         $this->dispatch('open-modal', name: 'customer-modal');
     }
 
-    public function save(CustomerService $service)
+    public function save(CustomerService $service): void
     {
-        $validated = $this->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255|unique:customers,email,' . ($this->customer?->id),
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:1000',
-            'notes' => 'nullable|string|max:1000',
-        ]);
+        $validated = $this->validate($this->rules());
 
         try {
+            $customerData = CustomerData::fromArray($validated);
+
             if ($this->isEditing && $this->customer) {
-                $service->updateCustomer($this->customer, $validated);
+                $service->updateCustomer($this->customer, $customerData);
                 $message = 'Customer updated successfully.';
             } else {
-                $service->createCustomer($validated);
+                $service->createCustomer($customerData);
                 $message = 'Customer created successfully.';
             }
 
@@ -82,7 +85,7 @@ class CustomerForm extends Component
             $this->dispatch('toast', message: $message, type: 'success');
             $this->reset();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
         }
     }

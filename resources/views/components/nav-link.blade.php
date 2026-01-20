@@ -17,14 +17,18 @@
         <div class="flex-shrink-0 {{ $iconClasses }}">
             @if ($icon === 'home')
                 <x-heroicon-o-home class="w-5 h-5" />
-            @elseif ($icon === 'users')
-                <x-heroicon-o-users class="w-5 h-5" />
+            @elseif ($icon === 'computer-desktop')
+                <x-heroicon-o-computer-desktop class="w-5 h-5" />
             @elseif ($icon === 'cube')
                 <x-heroicon-o-cube class="w-5 h-5" />
+            @elseif ($icon === 'currency-dollar')
+                <x-heroicon-o-currency-dollar class="w-5 h-5" />
+            @elseif ($icon === 'shopping-cart')
+                <x-heroicon-o-shopping-cart class="w-5 h-5" />
             @elseif ($icon === 'cog')
                 <x-heroicon-o-cog-6-tooth class="w-5 h-5" />
-            @elseif ($icon === 'truck')
-                <x-heroicon-o-truck class="w-5 h-5" />
+            @elseif ($icon === 'banknotes')
+                <x-heroicon-o-banknotes class="w-5 h-5" />
             @else
                 {{ $icon }}
             @endif

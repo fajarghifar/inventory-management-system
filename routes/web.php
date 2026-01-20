@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SalesController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/purchases/{purchase}/cancel', [PurchaseController::class, 'cancel'])->name('purchases.cancel');
     Route::patch('/purchases/{purchase}/restore-draft', [PurchaseController::class, 'restoreToDraft'])->name('purchases.restore-draft');
     Route::delete('/purchases/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.destroy');
+
+    Route::resource('sales', SalesController::class);
 });
 
 require __DIR__.'/auth.php';

@@ -1,5 +1,7 @@
+@import './../../vendor/power-components/livewire-powergrid/dist/tailwind.css';
 @import "tom-select/dist/css/tom-select.bootstrap5.css";
 @import "flatpickr/dist/flatpickr.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,11 +9,11 @@
 /* Custom Tom Select overrides for Tailwind */
 /* Fix Transparency */
 .ts-control {
-    @apply rounded-md border-0 mb-3 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white dark:bg-gray-800 dark:text-gray-100 dark:ring-gray-700 !important;
+    @apply rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white !important;
 }
 
 /* Fix Z-Index & Dropdown Background */
 .ts-dropdown {
-    @apply bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 shadow-lg !important;
+    @apply bg-white border-gray-300 shadow-lg !important;
     z-index: 9999 !important;
 }

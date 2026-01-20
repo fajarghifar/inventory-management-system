@@ -37,6 +37,10 @@
             Dashboard
         </x-nav-link>
 
+        <x-nav-link href="{{ route('sales.create') }}" :active="request()->routeIs('sales.create')" icon="computer-desktop">
+            POS (Cashier)
+        </x-nav-link>
+
         <!-- Inventory Group -->
         <x-nav-group label="Inventory" icon="cube" :active="request()->routeIs('products.*') || request()->routeIs('categories.*')">
             <x-nav-link href="#" :active="false">
@@ -50,9 +54,14 @@
             </x-nav-link>
         </x-nav-group>
 
-        <x-nav-link href="#" :active="false" icon="users">
-            Users
-        </x-nav-link>
+        <x-nav-group label="Sales" icon="currency-dollar" :active="request()->routeIs('sales.*') || request()->routeIs('customers.*')">
+            <x-nav-link href="{{ route('sales.index') }}" :active="request()->routeIs('sales.index') || request()->routeIs('sales.show')">
+                Sales List
+            </x-nav-link>
+            <x-nav-link href="{{ route('customers.index') }}" :active="request()->routeIs('customers.*')">
+                Customers
+            </x-nav-link>
+        </x-nav-group>
 
         <!-- Purchases Group -->
         <x-nav-group label="Purchases" icon="shopping-cart" :active="request()->routeIs('purchases.*') || request()->routeIs('suppliers.*')">
@@ -63,6 +72,14 @@
                 Suppliers
             </x-nav-link>
         </x-nav-group>
+
+        <!-- Sales Group -->
+        <x-nav-group label="Sales" icon="banknotes" :active="request()->routeIs('sales.*')">
+            <x-nav-link href="{{ route('sales.index') }}" :active="request()->routeIs('sales.index') || request()->routeIs('sales.show')">
+                Sales List
+            </x-nav-link>
+        </x-nav-group>
+
 
         <x-nav-link href="#" :active="false" icon="cog">
             Settings
@@ -115,6 +132,10 @@
                 Dashboard
             </x-nav-link>
 
+            <x-nav-link href="{{ route('sales.create') }}" :active="request()->routeIs('sales.create')" icon="computer-desktop" title="POS (Cashier)">
+                POS (Cashier)
+            </x-nav-link>
+
             <!-- Inventory Group -->
             <x-nav-group label="Inventory" icon="cube" :active="request()->routeIs(['products.*', 'categories.*', 'units.*'])">
                 <x-nav-link href="{{ route('products.index') }}" :active="request()->routeIs('products.*')">
@@ -128,9 +149,15 @@
                 </x-nav-link>
             </x-nav-group>
 
-            <x-nav-link href="{{ route('customers.index') }}" :active="request()->routeIs('customers.*')" icon="users" title="Customers">
-                Customers
-            </x-nav-link>
+            <!-- Sales Group -->
+            <x-nav-group label="Sales" icon="currency-dollar" :active="request()->routeIs('sales.*') || request()->routeIs('customers.*')">
+                <x-nav-link href="{{ route('sales.index') }}" :active="request()->routeIs('sales.index') || request()->routeIs('sales.show')">
+                    -> Sales List
+                </x-nav-link>
+                <x-nav-link href="{{ route('customers.index') }}" :active="request()->routeIs('customers.*')">
+                    -> Customers
+                </x-nav-link>
+            </x-nav-group>
 
             <!-- Purchases Group -->
             <x-nav-group label="Purchases" icon="shopping-cart" :active="request()->routeIs(['purchases.*', 'suppliers.*'])">
@@ -141,6 +168,8 @@
                     -> Suppliers
                 </x-nav-link>
             </x-nav-group>
+
+
 
             <x-nav-link href="#" :active="false" icon="cog" title="Settings">
                 Settings

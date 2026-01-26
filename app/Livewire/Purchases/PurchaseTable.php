@@ -7,6 +7,7 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use App\Enums\PurchaseStatus;
 use App\Services\PurchaseService;
+use App\Exceptions\PurchaseException;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -60,7 +61,7 @@ final class PurchaseTable extends PowerGridComponent
             ->add('invoice_number', fn(Purchase $model) => $model->invoice_number ?: '<span class="italic text-gray-400">-</span>')
             ->add('supplier_name', fn(Purchase $model) => $model->supplier ? $model->supplier->name : '-')
             ->add('purchase_date_formatted', fn(Purchase $model) => Carbon::parse($model->purchase_date)->format('d/m/Y'))
-            ->add('total_formatted', fn(Purchase $model) => 'Rp ' . number_format($model->total, 0, ',', '.'))
+            ->add('total_formatted', fn(Purchase $model) => 'Rp ' . number_format((float) $model->total, 0, ',', '.'))
             ->add('status_badge', function(Purchase $model) {
                 return view('components.status-badge', ['status' => $model->status])->render();
             })
@@ -198,8 +199,10 @@ final class PurchaseTable extends PowerGridComponent
             try {
                 $purchaseService->deletePurchase($purchase);
                 $this->dispatch('toast', message: 'Purchase deleted successfully.', type: 'success');
+            } catch (PurchaseException $e) {
+                $this->dispatch('toast', message: $e->getMessage(), type: 'error');
             } catch (\Exception $e) {
-                $this->dispatch('toast', message: 'Failed to delete purchase: ' . $e->getMessage(), type: 'error');
+                $this->dispatch('toast', message: 'An unexpected error occurred during deletion.', type: 'error');
             }
         }
     }

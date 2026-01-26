@@ -8,9 +8,7 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Enums\PurchaseStatus;
 use App\Services\PurchaseService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
@@ -38,7 +36,7 @@ class PurchaseController extends Controller
 
     public function show(Purchase $purchase): View
     {
-        $purchase->load(['supplier', 'details.product', 'creator']);
+        $purchase->load(['supplier', 'items.product', 'creator']);
         return view('purchases.show', compact('purchase'));
     }
 
@@ -65,8 +63,8 @@ class PurchaseController extends Controller
     public function markReceived(Request $request, Purchase $purchase): RedirectResponse
     {
         $request->validate([
-            'invoice_number' => 'required|string|max:255',
-            'proof_image'    => 'required|image|max:2048',
+            'invoice_number' => $purchase->invoice_number ? 'nullable|string|max:255' : 'required|string|max:255',
+            'proof_image' => $purchase->proof_image ? 'nullable|image|max:2048' : 'required|image|max:2048',
         ]);
 
         try {
@@ -74,7 +72,11 @@ class PurchaseController extends Controller
                 $path = $request->file('proof_image')->store('purchase-proofs', 'public');
                 $purchase->update(['proof_image' => $path]);
             }
-            $purchase->update(['invoice_number' => $request->invoice_number]);
+
+            if ($request->filled('invoice_number')) {
+                $purchase->update(['invoice_number' => $request->invoice_number]);
+            }
+
             $this->purchaseService->markAsReceived($purchase);
             return back()->with('success', 'Purchase received and stock updated.');
         } catch (Exception $e) {

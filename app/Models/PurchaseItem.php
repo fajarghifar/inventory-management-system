@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PurchaseDetail extends Model
+class PurchaseItem extends Model
 {
     use HasFactory;
 
@@ -16,6 +16,7 @@ class PurchaseDetail extends Model
         'quantity',
         'unit_price',
         'subtotal',
+        'selling_price',
     ];
 
     protected $casts = [
@@ -24,6 +25,7 @@ class PurchaseDetail extends Model
         'quantity' => 'integer',
         'unit_price' => 'integer',
         'subtotal' => 'integer',
+        'selling_price' => 'integer',
     ];
 
     public function purchase(): BelongsTo

@@ -3,50 +3,46 @@
 namespace App\Services;
 
 use Exception;
-use App\Models\Product;
 use App\Models\Purchase;
+use App\DTOs\PurchaseData;
+use App\DTOs\PurchaseItemData;
 use App\Enums\PurchaseStatus;
-use App\Models\PurchaseDetail;
+use App\Models\PurchaseItem;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use App\Exceptions\PurchaseException;
 
 class PurchaseService
 {
     /**
-     * Create a new purchase with details.
+     * Create a new purchase with items.
      *
-     * @param array $data Purchase main data (supplier_id, dates, notes, etc.)
-     * @param array $details Array of items (product_id, quantity, unit_price)
-     * @param int $userId ID of the user creating the purchase
+     * @param PurchaseData $data
+     * @param int $userId
      * @return Purchase
-     * @throws Exception
+     * @throws PurchaseException
      */
-    public function createPurchase(array $data, array $details, int $userId): Purchase
+    public function createPurchase(PurchaseData $data, int $userId): Purchase
     {
-        return DB::transaction(function () use ($data, $details, $userId) {
+        return DB::transaction(function () use ($data, $userId) {
             try {
-                Log::info('Attempting to create purchase', ['supplier_id' => $data['supplier_id']]);
-
                 $purchase = Purchase::create([
-                    'invoice_number' => $data['invoice_number'] ?? null,
-                    'supplier_id'    => $data['supplier_id'],
-                    'purchase_date'  => $data['purchase_date'],
-                    'due_date'       => $data['due_date'] ?? null,
-                    'status'         => $data['status'] ?? PurchaseStatus::DRAFT,
-                    'notes'          => $data['notes'] ?? null,
+                    'invoice_number' => $data->invoice_number,
+                    'supplier_id' => $data->supplier_id,
+                    'purchase_date' => $data->purchase_date,
+                    'due_date' => $data->due_date,
+                    'status' => $data->status,
+                    'notes' => $data->notes,
+                    'proof_image' => $data->proof_image,
                     'created_by'     => $userId,
                     'total'          => 0,
                 ]);
 
-                $this->syncDetails($purchase, $details);
-
-                Log::info('Purchase created successfully', ['id' => $purchase->id]);
+                $this->syncItems($purchase, $data->items);
 
                 return $purchase;
 
             } catch (Exception $e) {
-                Log::error('Failed to create purchase: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-                throw $e;
+                throw PurchaseException::creationFailed($e->getMessage(), ['supplier_id' => $data->supplier_id]);
             }
         });
     }
@@ -55,40 +51,37 @@ class PurchaseService
      * Update an existing purchase (Only if Draft).
      *
      * @param Purchase $purchase
-     * @param array $data
-     * @param array|null $details If null, details are not updated.
+     * @param PurchaseData $data
      * @return Purchase
-     * @throws Exception
+     * @throws PurchaseException
      */
-    public function updatePurchase(Purchase $purchase, array $data, ?array $details = null): Purchase
+    public function updatePurchase(Purchase $purchase, PurchaseData $data): Purchase
     {
-        return DB::transaction(function () use ($purchase, $data, $details) {
+        return DB::transaction(function () use ($purchase, $data) {
             try {
                 if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::ORDERED])) {
-                    throw new Exception("Only Draft or Ordered purchases can be updated. Current status: {$purchase->status->label()}");
+                    throw PurchaseException::invalidStatus('update', $purchase->status->label(), ['id' => $purchase->id]);
                 }
 
                 $purchase->update([
-                    'invoice_number' => $data['invoice_number'] ?? $purchase->invoice_number,
-                    'supplier_id'    => $data['supplier_id'] ?? $purchase->supplier_id,
-                    'purchase_date'  => $data['purchase_date'] ?? $purchase->purchase_date,
-                    'due_date'       => $data['due_date'] ?? $purchase->due_date,
-                    'notes'          => $data['notes'] ?? $purchase->notes,
+                    'invoice_number' => $data->invoice_number,
+                    'supplier_id' => $data->supplier_id,
+                    'purchase_date' => $data->purchase_date,
+                    'due_date' => $data->due_date,
+                    'notes' => $data->notes,
+                    'proof_image' => $data->proof_image,
                 ]);
 
-                if (!is_null($details)) {
-                    // Remove old details and re-create (simplest strategy for strict consistency)
-                    $purchase->details()->delete();
-                    $this->syncDetails($purchase, $details);
-                }
-
-                Log::info('Purchase updated successfully', ['id' => $purchase->id]);
+                // Full sync of items
+                $purchase->items()->delete();
+                $this->syncItems($purchase, $data->items);
 
                 return $purchase->refresh();
 
             } catch (Exception $e) {
-                Log::error('Failed to update purchase: ' . $e->getMessage());
-                throw $e;
+                if ($e instanceof PurchaseException)
+                    throw $e;
+                throw PurchaseException::updateFailed($e->getMessage(), ['id' => $purchase->id]);
             }
         });
     }
@@ -98,137 +91,166 @@ class PurchaseService
      *
      * @param Purchase $purchase
      * @return void
-     * @throws Exception
+     * @throws PurchaseException
      */
     public function deletePurchase(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::CANCELLED])) {
-                throw new Exception("Cannot delete purchase with status [{$purchase->status->label()}]. Only Draft or Cancelled purchases can be deleted.");
+            try {
+                if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::CANCELLED])) {
+                    throw PurchaseException::deletionFailed(
+                        "Cannot delete purchase with status [{$purchase->status->label()}]. Only Draft or Cancelled purchases can be deleted.",
+                        ['id' => $purchase->id, 'status' => $purchase->status->value]
+                    );
+                }
+
+                $purchase->items()->delete();
+                $purchase->delete();
+
+            } catch (Exception $e) {
+                if ($e instanceof PurchaseException)
+                    throw $e;
+                throw PurchaseException::deletionFailed($e->getMessage(), ['id' => $purchase->id]);
             }
-
-            // Details are deleted via cascade in DB usually, but strictly handling here is safer
-            $purchase->details()->delete();
-            $purchase->delete();
-
-            Log::info('Purchase deleted successfully', ['id' => $purchase->id]);
         });
     }
 
     /**
      * Mark purchase as Ordered.
+     *
+     * @throws PurchaseException
      */
     public function markAsOrdered(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
             if ($purchase->status !== PurchaseStatus::DRAFT) {
-                throw new Exception("Purchase in status {$purchase->status->label()} cannot be marked as ordered.");
+                throw PurchaseException::invalidStatus('order', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
-            if ($purchase->details()->count() === 0) {
-                throw new Exception("Cannot order a purchase with no items.");
+            if ($purchase->items()->count() === 0) {
+                throw PurchaseException::updateFailed("Cannot order a purchase with no items.", ['id' => $purchase->id]);
             }
 
             $purchase->update(['status' => PurchaseStatus::ORDERED]);
-            Log::info('Purchase marked as Ordered', ['id' => $purchase->id]);
         });
     }
 
     /**
      * Mark purchase as Received and update product stock.
+     *
+     * @throws PurchaseException
      */
     public function markAsReceived(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
             if (!in_array($purchase->status, [PurchaseStatus::ORDERED, PurchaseStatus::DRAFT])) {
-                throw new Exception("Purchase in status {$purchase->status->label()} cannot be received.");
+                throw PurchaseException::invalidStatus('receive', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
             if (empty($purchase->invoice_number)) {
-                throw new Exception("Invoice number is required to receive items.");
+                throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
             }
 
+            // Enforce Proof Image
             if (empty($purchase->proof_image)) {
-                throw new Exception("Proof image is required.");
+                throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
             }
 
             // Update Stock
-            foreach ($purchase->details as $detail) {
-                $product = $detail->product;
+            foreach ($purchase->items as $item) {
+                $product = $item->product;
                 if ($product) {
-                    $product->increment('quantity', $detail->quantity);
-                    $product->update(['purchase_price' => $detail->unit_price]);
+                    $product->increment('quantity', $item->quantity);
+                    // Update latest purchase price and selling price
+                    $updateData = ['purchase_price' => $item->unit_price];
+                    if ($item->selling_price) {
+                        $updateData['selling_price'] = $item->selling_price;
+                    }
+                    $product->update($updateData);
                 }
             }
 
             $purchase->update(['status' => PurchaseStatus::RECEIVED]);
-            Log::info('Purchase marked as Received', ['id' => $purchase->id]);
         });
     }
 
     /**
      * Mark purchase as Paid.
+     *
+     * @throws PurchaseException
      */
     public function markAsPaid(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
             if ($purchase->status === PurchaseStatus::CANCELLED) {
-                throw new Exception("Cancelled purchase cannot be paid.");
+                throw PurchaseException::invalidStatus('pay', $purchase->status->label(), ['id' => $purchase->id]);
+            }
+
+            // Strict Validation for Payment
+            if (empty($purchase->invoice_number)) {
+                throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
+            }
+
+            if (empty($purchase->proof_image)) {
+                throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
             }
 
             $purchase->update(['status' => PurchaseStatus::PAID]);
-            Log::info('Purchase marked as Paid', ['id' => $purchase->id]);
         });
     }
 
     /**
      * Cancel purchase.
+     *
+     * @throws PurchaseException
      */
     public function cancelPurchase(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
             if ($purchase->status === PurchaseStatus::RECEIVED || $purchase->status === PurchaseStatus::PAID) {
-                throw new Exception("Cannot cancel purchase that is already received or paid.");
+                throw PurchaseException::invalidStatus('cancel', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
             $purchase->update(['status' => PurchaseStatus::CANCELLED]);
-            Log::info('Purchase cancelled', ['id' => $purchase->id]);
         });
     }
 
     /**
      * Restore cancelled purchase to draft.
+     *
+     * @throws PurchaseException
      */
     public function restoreToDraft(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
             if ($purchase->status !== PurchaseStatus::CANCELLED) {
-                throw new Exception("Only cancelled purchases can be restored to draft.");
+                throw PurchaseException::invalidStatus('restore', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
             $purchase->update(['status' => PurchaseStatus::DRAFT]);
-            Log::info('Purchase restored to draft', ['id' => $purchase->id]);
         });
     }
 
     /**
-     * Internal helper to sync purchase details and calculate total.
+     * Internal helper to sync purchase items and calculate total.
+     *
+     * @param Purchase $purchase
+     * @param array<PurchaseItemData> $items
      */
-    private function syncDetails(Purchase $purchase, array $details): void
+    private function syncItems(Purchase $purchase, array $items): void
     {
         $total = 0;
 
-        foreach ($details as $item) {
-            $qty = $item['quantity'];
-            $price = $item['unit_price'];
-            $subtotal = $qty * $price;
+        foreach ($items as $itemData) {
+            $subtotal = $itemData->quantity * $itemData->unit_price;
 
-            PurchaseDetail::create([
+            PurchaseItem::create([
                 'purchase_id' => $purchase->id,
-                'product_id'  => $item['product_id'],
-                'quantity'    => $qty,
-                'unit_price'  => $price,
+                'product_id' => $itemData->product_id,
+                'quantity' => $itemData->quantity,
+                'unit_price' => $itemData->unit_price,
                 'subtotal'    => $subtotal,
+                'selling_price' => $itemData->selling_price,
             ]);
 
             $total += $subtotal;

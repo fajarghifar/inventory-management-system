@@ -7,27 +7,26 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\Purchase;
 use App\Models\Supplier;
+use App\DTOs\PurchaseData;
+use Illuminate\Validation\Rule;
 use App\Services\PurchaseService;
-use Livewire\Attributes\Validate;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use App\Exceptions\PurchaseException;
+use Illuminate\Support\Facades\Cache;
 
 class PurchaseForm extends Component
 {
-    #[Validate('required|exists:suppliers,id', message: 'Please select a supplier')]
+    use \Livewire\WithFileUploads;
+
     public $supplier_id = '';
-
-    #[Validate('nullable|string|unique:purchases,invoice_number')]
     public $invoice_number = '';
-
-    #[Validate('required|date')]
     public $purchase_date;
-
-    #[Validate('nullable|date|after_or_equal:purchase_date')]
     public $due_date;
-
-    #[Validate('nullable|string')]
+    public $status = 'draft';
     public $notes = '';
+    public $proof_image; // New upload
+    public $existing_proof_image; // Existing path
 
     // Dynamic Items
     public $items = [];
@@ -38,7 +37,34 @@ class PurchaseForm extends Component
 
     public ?int $purchaseId = null;
 
-    public function mount(?Purchase $purchase = null)
+    protected function rules(): array
+    {
+        return [
+            'supplier_id' => ['required', 'exists:suppliers,id'],
+            'invoice_number' => ['nullable', 'string', Rule::unique('purchases', 'invoice_number')->ignore($this->purchaseId)],
+            'purchase_date' => ['required', 'date'],
+            'due_date' => ['nullable', 'date', 'after_or_equal:purchase_date'],
+            'notes' => ['nullable', 'string'],
+            'proof_image' => ['nullable', 'image', 'max:2048'], // 2MB Max
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'items.*.unit_price' => ['required', 'integer', 'min:0'],
+            'items.*.selling_price' => ['nullable', 'integer', 'min:0'],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return [
+            'items.required' => 'Please add at least one item to the purchase.',
+            'items.min' => 'Please add at least one item to the purchase.',
+            'supplier_id.required' => 'The supplier field is required.',
+            'purchase_date.required' => 'The purchase date field is required.',
+        ];
+    }
+
+    public function mount(?Purchase $purchase = null): void
     {
         $this->suppliers = Supplier::orderBy('name')->get();
         $this->products = Product::where('is_active', true)->orderBy('name')->get();
@@ -50,14 +76,17 @@ class PurchaseForm extends Component
             $this->purchase_date = Carbon::parse($purchase->purchase_date)->format('Y-m-d');
             $this->due_date = $purchase->due_date ? Carbon::parse($purchase->due_date)->format('Y-m-d') : null;
             $this->notes = $purchase->notes;
+            $this->status = $purchase->status->value;
+            $this->existing_proof_image = $purchase->proof_image;
 
             // Map items
-            foreach ($purchase->details as $detail) {
+            foreach ($purchase->items as $item) {
                 $this->items[] = [
-                    'product_id' => $detail->product_id,
-                    'quantity' => $detail->quantity,
-                    'unit_price' => $detail->unit_price,
-                    'subtotal' => $detail->subtotal,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'selling_price' => $item->selling_price,
+                    'subtotal' => $item->subtotal,
                 ];
             }
         } else {
@@ -65,101 +94,172 @@ class PurchaseForm extends Component
             // Initialize with one empty row
             $this->addItem();
         }
+
+        $this->restoreFromCache();
     }
 
-    public function addItem()
+    public function updated($property): void
+    {
+        $this->saveToCache();
+    }
+
+    public function addItem(): void
     {
         $this->items[] = [
             'product_id' => '',
             'quantity' => 1,
             'unit_price' => 0,
+            'selling_price' => 0,
             'subtotal' => 0,
         ];
     }
 
-    public function removeItem($index)
+    public function removeItem(int $index): void
     {
         unset($this->items[$index]);
         $this->items = array_values($this->items); // Re-index
     }
 
-    public function updatedItems($value, $key)
+    public function updatedItems(mixed $value, string $key): void
     {
         // $key is something like "0.quantity" or "0.product_id"
         $parts = explode('.', $key);
+        if (count($parts) === 3 && $parts[2] === 'product_id') {
+            // Handle searchable select model binding structure which might be items.0.product_id
+            $index = $parts[1];
+            $this->updateProductPrice((int) $index, (int) $value);
+        }
+
+        // Handle direct Livewire updates
         if (count($parts) === 2) {
             $index = $parts[0];
             $field = $parts[1];
 
             if ($field === 'product_id') {
-                $product = $this->products->firstWhere('id', $value);
-                if ($product) {
-                    $this->items[$index]['unit_price'] = $product->purchase_price;
-                }
+                $this->updateProductPrice((int) $index, (int) $value);
             }
 
-            $this->calculateSubtotal($index);
+            $this->calculateSubtotal((int) $index);
         }
+
+        $this->saveToCache();
     }
 
-    public function calculateSubtotal($index)
+    public function updateProductPrice(int $index, int $productId): void
+    {
+        $product = $this->products->firstWhere('id', $productId);
+        if ($product) {
+            $this->items[$index]['unit_price'] = $product->purchase_price;
+            $this->items[$index]['selling_price'] = $product->selling_price;
+        }
+        $this->calculateSubtotal($index);
+    }
+
+    public function calculateSubtotal(int $index): void
     {
         $qty = (int) ($this->items[$index]['quantity'] ?? 0);
         $price = (int) ($this->items[$index]['unit_price'] ?? 0);
         $this->items[$index]['subtotal'] = $qty * $price;
     }
 
-    public function getTotalProperty()
+    public function getTotalProperty(): int
     {
-        return collect($this->items)->sum('subtotal');
+        return (int) collect($this->items)->sum('subtotal');
     }
 
     public function save(PurchaseService $service)
     {
-        $this->validate([
-            'supplier_id' => 'required|exists:suppliers,id',
-            'purchase_date' => 'required|date',
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.unit_price' => 'required|integer|min:0',
-        ], [
-            'items.required' => 'Please add at least one item to the purchase.',
-            'items.min' => 'Please add at least one item to the purchase.',
-            'supplier_id.required' => 'The supplier field is required.',
-            'purchase_date.required' => 'The purchase date field is required.',
-        ]);
+        $validated = $this->validate();
 
         try {
-            $data = [
+            // Handle File Upload
+            $proofPath = $this->existing_proof_image;
+            if ($this->proof_image) {
+                $proofPath = $this->proof_image->store('proofs', 'public');
+            }
+
+            $purchaseData = PurchaseData::fromArray([
                 'supplier_id' => $this->supplier_id,
                 'invoice_number' => $this->invoice_number ?: null,
                 'purchase_date' => $this->purchase_date,
                 'due_date' => $this->due_date,
                 'notes' => $this->notes,
-                'status' => 'draft',
-            ];
+                'status' => $this->status,
+                'items' => $this->items,
+                'proof_image' => $proofPath,
+            ]);
 
             if ($this->purchaseId) {
                 // Update
                 $purchase = Purchase::find($this->purchaseId);
-                $service->updatePurchase($purchase, $data, $this->items);
-                $this->dispatch('toast', message: 'Purchase updated successfully.', type: 'success');
+                $service->updatePurchase($purchase, $purchaseData);
+                session()->flash('success', 'Purchase updated successfully.');
             } else {
                 // Create
-                $service->createPurchase($data, $this->items, Auth::id());
-                $this->dispatch('toast', message: 'Purchase created successfully.', type: 'success');
+                $purchase = $service->createPurchase($purchaseData, Auth::id());
+                session()->flash('success', 'Purchase created successfully.');
             }
 
-            return redirect()->route('purchases.index');
+            $this->clearCache();
 
+            return redirect()->route('purchases.show', $purchase);
+
+        } catch (PurchaseException $e) {
+            $this->dispatch('toast', message: $e->getMessage(), type: 'error');
         } catch (\Exception $e) {
-            $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
+            $this->dispatch('toast', message: 'An unexpected error occurred: ' . $e->getMessage(), type: 'error');
         }
     }
 
     public function render()
     {
         return view('livewire.purchases.purchase-form');
+    }
+
+    protected function getCacheKey(): string
+    {
+        return 'purchase_form_' . Auth::id() . '_' . ($this->purchaseId ?? 'new');
+    }
+
+    protected function saveToCache(): void
+    {
+        $data = [
+            'supplier_id' => $this->supplier_id,
+            'invoice_number' => $this->invoice_number,
+            'purchase_date' => $this->purchase_date,
+            'due_date' => $this->due_date,
+            'notes' => $this->notes,
+            'status' => $this->status,
+            'items' => $this->items,
+        ];
+
+        Cache::put($this->getCacheKey(), $data, now()->addHours(2));
+    }
+
+    protected function restoreFromCache(): void
+    {
+        $cached = Cache::get($this->getCacheKey());
+
+        if ($cached) {
+            $this->supplier_id = $cached['supplier_id'] ?? $this->supplier_id;
+            $this->invoice_number = $cached['invoice_number'] ?? $this->invoice_number;
+            $this->purchase_date = $cached['purchase_date'] ?? $this->purchase_date;
+            $this->due_date = $cached['due_date'] ?? $this->due_date;
+            $this->notes = $cached['notes'] ?? $this->notes;
+            $this->status = $cached['status'] ?? $this->status;
+
+            // Only restore items if cache has them, otherwise keep DB/Default
+            if (!empty($cached['items'])) {
+                $this->items = $cached['items'];
+            }
+
+            // Dispatch notification to let user know data was restored
+            $this->dispatch('toast', message: 'Restored unsaved draft.', type: 'info');
+        }
+    }
+
+    protected function clearCache(): void
+    {
+        Cache::forget($this->getCacheKey());
     }
 }

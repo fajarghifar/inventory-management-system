@@ -21,7 +21,7 @@ $maxWidth = $maxWidthClasses[$maxWidth] ?? $maxWidthClasses['2xl'];
     x-on:close-modal.window="if ($event.detail.name === '{{ $name }}') show = false"
     x-on:keydown.escape.window="show = false"
     x-show="show"
-    class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
+    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
     style="display: none;"
 >
     <!-- Backdrop -->
@@ -36,30 +36,34 @@ $maxWidth = $maxWidthClasses[$maxWidth] ?? $maxWidthClasses['2xl'];
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-gray-500/75 dark:bg-gray-900/75 opacity-100"></div>
+        <div class="absolute inset-0 bg-gray-500/75 opacity-100"></div>
     </div>
 
     <!-- Modal Content -->
-    <div
-        x-show="show"
-        class="mb-6 bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto"
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-    >
-        @if($title)
-            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    {{ $title }}
-                </h3>
-            </div>
-        @endif
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div
+                x-show="show"
+                class="transform overflow-hidden rounded-lg bg-card text-left shadow-xl transition-all sm:w-full {{ $maxWidth }}"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+                @if(isset($title) && $title !== '')
+                    <div class="px-6 py-4 border-b border-border">
+                        <h3 class="text-lg font-medium text-foreground">
+                            {{ $title }}
+                        </h3>
+                    </div>
+                @endif
 
-        <div class="p-6">
-            {{ $slot }}
+                <div class="p-0">
+                    {{ $slot }}
+                </div>
+            </div>
         </div>
     </div>
 </div>

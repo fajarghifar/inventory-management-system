@@ -1,80 +1,62 @@
-<x-guest-layout>
+<x-guest-layout title="Login">
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <!-- Header Section -->
-    <div class="flex flex-col space-y-2 text-center">
-        <h1 class="text-2xl font-semibold tracking-tight text-gray-900">
-            Welcome back
-        </h1>
-        <p class="text-sm text-gray-500">
-            Enter your credentials to access your account
-        </p>
-    </div>
-
-    <!-- Session Status Alert -->
-    @if (session('status'))
-        <div class="mt-4 p-4 rounded-md bg-green-50 text-green-700 text-sm font-medium border border-green-200">
-            {{ session('status') }}
+    <div class="space-y-6">
+        <div class="space-y-2 text-center">
+            <h1 class="text-2xl font-semibold tracking-tight">Login</h1>
+            <p class="text-sm text-muted-foreground">Enter your username below to login to your account</p>
         </div>
-    @endif
 
-    <!-- Login Form Container -->
-    <div class="mt-6 bg-white p-6 md:p-8 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
-        <form method="POST" action="{{ route('login') }}" class="space-y-4">
+        <form method="POST" action="{{ route('login') }}">
             @csrf
 
-            <!-- Username Field -->
+            <!-- Username -->
             <x-form-input
                 name="username"
                 label="Username"
+                type="text"
                 :value="old('username')"
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="Enter your username"
+                :messages="$errors->get('username')"
             />
 
-            <!-- Password Field -->
-            <x-form-input
-                type="password"
-                name="password"
-                label="Password"
-                required
-                autocomplete="current-password"
-                placeholder="••••••••"
-            >
-                <x-slot name="cornerHint">
-                    <a href="{{ route('password.request') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 underline-offset-4 hover:underline transition-colors">
-                        Forgot password?
-                    </a>
-                </x-slot>
-            </x-form-input>
+            <!-- Password -->
+            <div class="mt-4 space-y-2">
+                <div class="flex items-center justify-between">
+                    <x-input-label for="password" :value="__('Password')" :required="true" />
+                    @if (Route::has('password.request'))
+                        <a class="text-sm font-medium text-primary hover:underline" href="{{ route('password.request') }}">
+                            {{ __('Forgot your password?') }}
+                        </a>
+                    @endif
+                </div>
+                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            </div>
 
-            <!-- Remember Me Checkbox -->
-            <div class="flex items-center space-x-2">
-                <input
-                    id="remember_me"
-                    type="checkbox"
-                    class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900 transition-colors"
-                    name="remember"
-                >
-                <label for="remember_me" class="text-sm font-medium leading-none text-gray-500 cursor-pointer select-none">
-                    Remember me
+            <!-- Remember Me -->
+            <div class="block mt-4">
+                <label for="remember_me" class="inline-flex items-center">
+                    <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-primary shadow-sm focus:ring-ring" name="remember">
+                    <span class="ms-2 text-sm text-muted-foreground">{{ __('Remember me') }}</span>
                 </label>
             </div>
 
-            <!-- Submit Button -->
-            <x-button class="w-full mt-2">
-                Sign In
-            </x-button>
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="w-full">
+                    {{ __('Log in') }}
+                </x-primary-button>
+            </div>
+
+            <div class="mt-4 text-center text-sm">
+                Don't have an account?
+                <a href="{{ route('register') }}" class="underline text-primary">
+                    Sign up
+                </a>
+            </div>
         </form>
     </div>
-
-    <!-- Sign Up Link -->
-    <div class="mt-6 text-center text-sm text-gray-500">
-        Don't have an account?
-        <a href="{{ route('register') }}" class="font-semibold text-gray-900 underline-offset-4 hover:underline">
-            Sign up
-        </a>
-    </div>
-
 </x-guest-layout>

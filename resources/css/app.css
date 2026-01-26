@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 @import './../../vendor/power-components/livewire-powergrid/dist/tailwind.css';
 @import "tom-select/dist/css/tom-select.bootstrap5.css";
 @import "flatpickr/dist/flatpickr.min.css";
@@ -6,14 +7,55 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 240 10% 3.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 10% 3.9%;
+        --primary: 240 5.9% 10%;
+        --primary-foreground: 0 0% 98%;
+        --secondary: 240 4.8% 95.9%;
+        --secondary-foreground: 240 5.9% 10%;
+        --muted: 240 4.8% 95.9%;
+        --muted-foreground: 240 3.8% 46.1%;
+        --accent: 240 4.8% 95.9%;
+        --accent-foreground: 240 5.9% 10%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 240 5.9% 90%;
+        --input: 240 5.9% 90%;
+        --ring: 240 5.9% 10%;
+        --radius: 0.5rem;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: theme('width.2');
+        height: theme('width.2');
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: theme('colors.gray.100');
+        border-radius: theme('borderRadius.full');
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: theme('colors.gray.300');
+        border-radius: theme('borderRadius.full');
+    }
+}
+
 /* Custom Tom Select overrides for Tailwind */
 /* Fix Transparency */
 .ts-control {
-    @apply rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white !important;
+    @apply rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white;
 }
 
 /* Fix Z-Index & Dropdown Background */
 .ts-dropdown {
-    @apply bg-white border-gray-300 shadow-lg !important;
+    @apply bg-white border-gray-300 shadow-lg;
     z-index: 9999 !important;
 }

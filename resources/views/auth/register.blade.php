@@ -1,85 +1,87 @@
-<x-guest-layout>
+<x-guest-layout title="Register">
+    <div class="space-y-6">
+        <div class="space-y-2 text-center">
+            <h1 class="text-2xl font-semibold tracking-tight">Create an account</h1>
+            <p class="text-sm text-muted-foreground">Enter your details below to create your account</p>
+        </div>
 
-    <!-- Header Section -->
-    <div class="flex flex-col space-y-2 text-center">
-        <h1 class="text-2xl font-semibold tracking-tight text-gray-900">
-            Create an account
-        </h1>
-        <p class="text-sm text-gray-500">
-            Enter your details below to create your account
-        </p>
-    </div>
-
-    <!-- Register Form Container -->
-    <div class="mt-6 bg-white p-6 md:p-8 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
-        <form method="POST" action="{{ route('register') }}" class="space-y-4">
+        <form method="POST" action="{{ route('register') }}">
             @csrf
 
-            <!-- Name Field -->
+            <!-- Name -->
             <x-form-input
                 name="name"
                 label="Name"
+                type="text"
                 :value="old('name')"
                 required
                 autofocus
                 autocomplete="name"
-                placeholder="Enter your name"
+                :messages="$errors->get('name')"
             />
 
-            <!-- Username Field -->
-            <x-form-input
-                name="username"
-                label="Username"
-                :value="old('username')"
-                required
-                autocomplete="username"
-                placeholder="Enter a username"
-            />
+            <!-- Username -->
+            <div class="mt-4">
+                <x-form-input
+                    name="username"
+                    label="Username"
+                    type="text"
+                    :value="old('username')"
+                    required
+                    autocomplete="username"
+                    :messages="$errors->get('username')"
+                />
+            </div>
 
-            <!-- Email Field -->
-            <x-form-input
-                type="email"
-                name="email"
-                label="Email"
-                :value="old('email')"
-                required
-                autocomplete="email"
-                placeholder="m@example.com"
-            />
+            <!-- Email Address -->
+            <div class="mt-4">
+                <x-form-input
+                    name="email"
+                    label="Email"
+                    type="email"
+                    :value="old('email')"
+                    required
+                    autocomplete="username"
+                    :messages="$errors->get('email')"
+                />
+            </div>
 
-            <!-- Password Field -->
-            <x-form-input
-                type="password"
-                name="password"
-                label="Password"
-                required
-                autocomplete="new-password"
-                placeholder="••••••••"
-            />
+            <!-- Password -->
+            <div class="mt-4">
+                <x-form-input
+                    name="password"
+                    label="Password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :messages="$errors->get('password')"
+                />
+            </div>
 
-            <!-- Confirm Password Field -->
-            <x-form-input
-                type="password"
-                name="password_confirmation"
-                label="Confirm Password"
-                required
-                autocomplete="new-password"
-                placeholder="••••••••"
-            />
+            <!-- Confirm Password -->
+            <div class="mt-4">
+                <x-form-input
+                    name="password_confirmation"
+                    label="Confirm Password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :messages="$errors->get('password_confirmation')"
+                />
+            </div>
 
-            <!-- Submit Button -->
-            <x-button class="w-full mt-2">
-                Create account
-            </x-button>
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="w-full">
+                    {{ __('Register') }}
+                </x-primary-button>
+            </div>
+
+            <div class="mt-4 text-center text-sm">
+                Already have an account?
+                <a href="{{ route('login') }}" class="underline text-primary">
+                    Log in
+                </a>
+            </div>
         </form>
     </div>
-
-    <!-- Sign In Link -->
-    <div class="mt-6 text-center text-sm text-gray-500">
-        Already have an account?
-        <a href="{{ route('login') }}" class="font-semibold text-gray-900 underline-offset-4 hover:underline">
-            Sign in
-        </a>
-    </div>
-
 </x-guest-layout>

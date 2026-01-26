@@ -1,35 +1,27 @@
-<x-guest-layout>
-
-    <!-- Header Section -->
-    <div class="flex flex-col space-y-2 text-center">
-        <h1 class="text-2xl font-semibold tracking-tight text-gray-900">
-            Confirm access
-        </h1>
-        <p class="text-sm text-gray-500">
-            This is a secure area of the application. Please confirm your password before continuing.
-        </p>
+<x-guest-layout title="Confirm Password">
+    <div class="mb-4 text-sm text-muted-foreground">
+        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
     </div>
 
-    <!-- Confirm Password Form Container -->
-    <div class="mt-6 bg-white p-6 md:p-8 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
-        <form method="POST" action="{{ route('password.confirm') }}" class="space-y-4">
-            @csrf
+    <form method="POST" action="{{ route('password.confirm') }}">
+        @csrf
 
-            <!-- Password Field -->
-            <x-form-input
-                type="password"
-                name="password"
-                label="Password"
-                required
-                autocomplete="current-password"
-                placeholder="••••••••"
-            />
+        <!-- Password -->
+        <div class="space-y-2">
+            <x-input-label for="password" :value="__('Password')" :required="true" />
 
-            <!-- Submit Button -->
-            <x-button class="w-full mt-2">
-                Confirm
-            </x-button>
-        </form>
-    </div>
+            <x-text-input id="password" class="block mt-1 w-full"
+                            type="password"
+                            name="password"
+                            required autocomplete="current-password" />
 
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        </div>
+
+        <div class="flex justify-end mt-4">
+            <x-primary-button class="w-full">
+                {{ __('Confirm') }}
+            </x-primary-button>
+        </div>
+    </form>
 </x-guest-layout>

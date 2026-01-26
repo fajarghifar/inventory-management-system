@@ -22,11 +22,8 @@ class CategoryDetail extends Component
         $this->dispatch('open-modal', name: 'category-detail-modal');
     }
 
-    public function edit()
+    public function closeModal()
     {
-        if ($this->category) {
-            $this->dispatch('close-modal', name: 'category-detail-modal');
-            $this->dispatch('edit-category', ['category' => $this->category->id]);
-        }
+        $this->category = null;
     }
 }

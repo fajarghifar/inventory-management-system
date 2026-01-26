@@ -52,7 +52,7 @@ class ProductService
                 $product->update([
                     'category_id' => $data->category_id,
                     'unit_id' => $data->unit_id,
-                    'sku' => $data->sku ?? $product->sku, // Should we allow updating SKU? Assuming yes if provided.
+                    'sku' => $data->sku ?? $product->sku,
                     'name' => $data->name,
                     'description' => $data->description,
                     'purchase_price' => $data->purchase_price,
@@ -80,7 +80,7 @@ class ProductService
     {
         DB::transaction(function () use ($product) {
             try {
-                if ($product->purchaseDetails()->exists() || $product->saleDetails()->exists()) {
+                if ($product->purchaseItems()->exists() || $product->saleItems()->exists()) {
                     throw new Exception('Cannot delete product because it is associated with purchase or sale records.');
                 }
 

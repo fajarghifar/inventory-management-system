@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Units;
 
-use App\Models\Unit;
 use Livewire\Component;
+use App\Models\Unit;
 use Livewire\Attributes\On;
 
 class UnitDetail extends Component
@@ -22,11 +22,8 @@ class UnitDetail extends Component
         $this->dispatch('open-modal', name: 'unit-detail-modal');
     }
 
-    public function edit()
+    public function closeModal()
     {
-        if ($this->unit) {
-            $this->dispatch('close-modal', name: 'unit-detail-modal');
-            $this->dispatch('edit-unit', ['unit' => $this->unit->id]);
-        }
+        $this->unit = null;
     }
 }

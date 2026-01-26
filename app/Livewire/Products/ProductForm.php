@@ -2,80 +2,51 @@
 
 namespace App\Livewire\Products;
 
-use Exception;
-use App\Models\Unit;
+use App\DTOs\ProductData;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
-use App\DTOs\ProductData;
+use App\Models\Unit;
 use Livewire\Attributes\On;
+use Illuminate\Validation\Rule;
 use App\Services\ProductService;
+use App\Exceptions\ProductException;
 
 class ProductForm extends Component
 {
+    public bool $isEditing = false;
     public ?Product $product = null;
 
-    public int $category_id = 0;
-
-    public int $unit_id = 0;
-
-    public string $sku = '';
-
+    // Form Fields
+    public ?string $sku = null;
     public string $name = '';
-
     public string $description = '';
-
+    public ?int $category_id = null;
+    public ?int $unit_id = null;
     public int $purchase_price = 0;
-
     public int $selling_price = 0;
-
     public int $quantity = 0;
-
     public int $min_stock = 0;
-
     public bool $is_active = true;
 
-    public bool $isEditing = false;
+    // Select Options
+    public array $categoryOptions = [];
+    public array $unitOptions = [];
 
-    // Collections for dropdowns
-    public $categories;
-    public $units;
-
-    protected function rules(): array
+    public function mount()
     {
-        return [
-            'category_id' => ['required', 'exists:categories,id'],
-            'unit_id' => ['required', 'exists:units,id'],
-            'sku' => ['nullable', 'string', 'max:50', 'unique:products,sku,' . ($this->product?->id)],
-            'name' => ['required', 'string', 'max:150'],
-            'description' => ['nullable', 'string'],
-            'purchase_price' => ['required', 'integer', 'min:0'],
-            'selling_price' => ['required', 'integer', 'min:0'],
-            'quantity' => ['required', 'integer', 'min:0'],
-            'min_stock' => ['required', 'integer', 'min:0'],
-            'is_active' => ['boolean'],
-        ];
+        $this->loadOptions();
     }
 
-    public function mount(): void
+    public function loadOptions()
     {
-        $this->categories = collect();
-        $this->units = collect();
-        $this->loadDependencies();
-    }
+        $this->categoryOptions = Category::orderBy('name')->get()->map(function ($c) {
+            return ['value' => $c->id, 'label' => $c->name];
+        })->toArray();
 
-    public function loadDependencies(): void
-    {
-        $this->categories = Category::orderBy('name')->get();
-        $this->units = Unit::orderBy('name')->get();
-
-        //Set initial values for select if needed or leave empty
-        if($this->categories->isNotEmpty()) {
-            $this->category_id = $this->categories->first()->id;
-        }
-        if($this->units->isNotEmpty()) {
-            $this->unit_id = $this->units->first()->id;
-        }
+        $this->unitOptions = Unit::orderBy('name')->get()->map(function ($u) {
+            return ['value' => $u->id, 'label' => $u->name . ' (' . $u->symbol . ')'];
+        })->toArray();
     }
 
     public function render()
@@ -86,63 +57,92 @@ class ProductForm extends Component
     #[On('create-product')]
     public function create(): void
     {
-        $this->reset(['product', 'sku', 'name', 'description', 'purchase_price', 'selling_price', 'quantity', 'min_stock']);
-        // Reset IDs to first available or 0?
-        // Best to reset to first available if exists to have a valid state or explicitly select "Select one"
-        $this->loadDependencies();
-
+        $this->reset(['sku', 'name', 'description', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'product', 'isEditing']);
         $this->is_active = true;
-        $this->isEditing = false;
-        $this->dispatch('open-modal', name: 'product-modal');
+
+        // Reload options to ensure freshness
+        $this->loadOptions();
+
+        $this->dispatch('open-modal', name: 'product-form-modal');
     }
 
     #[On('edit-product')]
     public function edit(Product $product): void
     {
-        $this->resetValidation();
         $this->product = $product;
-        $this->category_id = $product->category_id;
-        $this->unit_id = $product->unit_id;
         $this->sku = $product->sku;
         $this->name = $product->name;
         $this->description = $product->description ?? '';
+        $this->category_id = $product->category_id;
+        $this->unit_id = $product->unit_id;
         $this->purchase_price = $product->purchase_price;
         $this->selling_price = $product->selling_price;
         $this->quantity = $product->quantity;
         $this->min_stock = $product->min_stock;
         $this->is_active = $product->is_active;
 
-        $this->loadDependencies(); // Ensure lists are fresh
-
         $this->isEditing = true;
-        $this->dispatch('open-modal', name: 'product-modal');
+
+        // Reload options
+        $this->loadOptions();
+
+        $this->dispatch('open-modal', name: 'product-form-modal');
+    }
+
+    public function rules()
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'sku' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('products', 'sku')->ignore($this->product?->id)
+            ],
+            'description' => ['nullable', 'string'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'unit_id' => ['required', 'exists:units,id'],
+            'purchase_price' => ['required', 'integer', 'min:0'],
+            'selling_price' => ['required', 'integer', 'min:0'],
+            'quantity' => ['required', 'integer', 'min:0'],
+            'min_stock' => ['required', 'integer', 'min:0'],
+            'is_active' => ['boolean'],
+        ];
     }
 
     public function save(ProductService $service): void
     {
-        $validated = $this->validate($this->rules());
+        $this->validate();
+
+        $data = new ProductData(
+            category_id: $this->category_id,
+            unit_id: $this->unit_id,
+            sku: $this->sku ?: null, // Pass null if empty to let Service generate one
+            name: $this->name,
+            description: $this->description,
+            purchase_price: $this->purchase_price,
+            selling_price: $this->selling_price,
+            quantity: $this->quantity,
+            min_stock: $this->min_stock,
+            is_active: $this->is_active,
+        );
 
         try {
-            $productData = ProductData::fromArray($validated);
-
             if ($this->isEditing && $this->product) {
-                $service->updateProduct($this->product, $productData);
+                $service->updateProduct($this->product, $data);
                 $message = 'Product updated successfully.';
             } else {
-                $service->createProduct($productData);
+                $service->createProduct($data);
                 $message = 'Product created successfully.';
             }
 
-            $this->dispatch('close-modal', name: 'product-modal');
-            $this->dispatch('pg:eventRefresh-default');
+            $this->dispatch('close-modal', name: 'product-form-modal');
             $this->dispatch('pg:eventRefresh-product-table');
             $this->dispatch('toast', message: $message, type: 'success');
-            // Don't fully reset here to keep dependencies loaded, or call loadDependencies again if reset.
-            $this->reset(['product', 'sku', 'name', 'description', 'purchase_price', 'selling_price', 'quantity', 'min_stock']);
-            $this->isEditing = false;
-
-        } catch (Exception $e) {
-            $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
+        } catch (ProductException $e) {
+            $this->dispatch('toast', message: $e->getMessage(), type: 'error');
+        } catch (\Throwable $e) {
+            $this->dispatch('toast', message: 'An unexpected error occurred.', type: 'error');
         }
     }
 }

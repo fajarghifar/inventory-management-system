@@ -16,17 +16,14 @@ class ProductDetail extends Component
     }
 
     #[On('show-product')]
-    public function show(Product $product)
+    public function show(Product $product): void
     {
-        $this->product = $product->load(['category', 'unit']);
+        $this->product = $product;
         $this->dispatch('open-modal', name: 'product-detail-modal');
     }
 
-    public function edit()
+    public function closeModal(): void
     {
-        if ($this->product) {
-            $this->dispatch('close-modal', name: 'product-detail-modal');
-            $this->dispatch('edit-product', ['product' => $this->product->id]);
-        }
+        $this->product = null;
     }
 }

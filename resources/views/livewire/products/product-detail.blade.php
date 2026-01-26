@@ -1,20 +1,20 @@
 <div>
-    <x-modal name="product-detail-modal" title="Product Details" maxWidth="lg">
+    <x-modal name="product-detail-modal" :title="''" maxWidth="lg">
         @if($product)
-            <div class="space-y-6">
+            <div class="p-6 space-y-6">
                 <!-- Header Info -->
-                <div class="flex items-center justify-between border-b border-gray-200 pb-4">
+                <div class="flex items-center justify-between border-b border-border pb-4">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 tracking-tight">{{ $product->name }}</h3>
-                        <p class="text-sm text-gray-500 font-mono">{{ $product->sku }}</p>
+                        <h3 class="text-xl font-bold text-foreground tracking-tight">{{ $product->name }}</h3>
+                        <p class="text-sm text-muted-foreground font-mono">{{ $product->sku }}</p>
                     </div>
                     <div>
                         @if($product->is_active)
-                            <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800 border border-green-200">
+                            <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                                 Active
                             </span>
                         @else
-                            <span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-800 border border-red-200">
+                            <span class="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
                                 Inactive
                             </span>
                         @endif
@@ -23,38 +23,67 @@
 
                 <!-- Content Grid -->
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <x-detail-item label="Category" :value="$product->category->name ?? '-'" />
-                    <x-detail-item label="Unit" :value="$product->unit->name ?? '-'" />
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">Category</label>
+                        <p class="text-sm text-foreground font-medium">{{ $product->category->name ?? '-' }}</p>
+                    </div>
 
-                    <x-detail-item label="Selling Price" :value="'Rp ' . number_format($product->selling_price, 0, ',', '.')" />
-                    <x-detail-item label="Purchase Price" :value="'Rp ' . number_format($product->purchase_price, 0, ',', '.')" />
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">Unit</label>
+                        <p class="text-sm text-foreground font-medium">{{ $product->unit->name ?? '-' }}</p>
+                    </div>
 
-                    <x-detail-item label="Stock" :value="$product->quantity . ' ' . ($product->unit->symbol ?? '')" />
-                    <x-detail-item label="Min Stock Alert" :value="$product->min_stock" />
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">Selling Price</label>
+                        <p class="text-sm text-foreground font-medium">{{ 'Rp ' . number_format($product->selling_price, 0, ',', '.') }}</p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">Purchase Price</label>
+                        <p class="text-sm text-foreground font-medium">{{ 'Rp ' . number_format($product->purchase_price, 0, ',', '.') }}</p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">Stock</label>
+                        <p class="text-sm text-foreground font-medium {{ $product->quantity <= $product->min_stock ? 'text-red-500' : '' }}">
+                            {{ $product->quantity . ' ' . ($product->unit->symbol ?? '') }}
+                        </p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">Min Stock Alert</label>
+                        <p class="text-sm text-foreground font-medium">{{ $product->min_stock }}</p>
+                    </div>
                 </div>
 
-                <div class="border-t border-gray-200 pt-6 space-y-6">
-                    <x-detail-item label="Description" :value="$product->description ?: 'No description provided.'" />
+                <div class="border-t border-border pt-6 space-y-6">
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">Description</label>
+                        <p class="text-sm text-foreground leading-relaxed">
+                            {{ $product->description ?: 'No description provided.' }}
+                        </p>
+                    </div>
 
-                    <div class="text-xs text-gray-400">
+                    <div class="text-xs text-muted-foreground">
                         Last Updated: {{ $product->updated_at->format('d M Y, H:i') }}
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-                    <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'product-detail-modal' })">
-                        Close
-                    </x-button>
-                    <x-button type="button" wire:click="edit">
+                <!-- Footer Actions -->
+                <div class="flex items-center justify-end gap-x-2 pt-4 border-t border-border">
+                    <x-secondary-button type="button" x-on:click="$dispatch('close-modal', { name: 'product-detail-modal' })">
+                        {{ __('Close') }}
+                    </x-secondary-button>
+                    <x-primary-button type="button" x-on:click="$dispatch('close-modal', { name: 'product-detail-modal' }); $dispatch('edit-product', { product: {{ $product->id }} })">
                         <x-heroicon-o-pencil-square class="w-4 h-4 mr-2" />
-                        Edit Product
-                    </x-button>
+                        {{ __('Edit Product') }}
+                    </x-primary-button>
                 </div>
             </div>
         @else
-            <div class="p-8 text-center text-gray-500">
-                Loading details...
+            <div class="p-8 text-center flex flex-col items-center justify-center space-y-3">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span class="text-sm text-muted-foreground">{{ __('Loading details...') }}</span>
             </div>
         @endif
     </x-modal>

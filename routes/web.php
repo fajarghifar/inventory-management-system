@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/purchases/{purchase}/restore-draft', [PurchaseController::class, 'restoreToDraft'])->name('purchases.restore-draft');
     Route::delete('/purchases/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.destroy');
 
+    Route::get('/sales/{sale}/print', [SalesController::class, 'print'])->name('sales.print');
     Route::resource('sales', SalesController::class);
 });
 

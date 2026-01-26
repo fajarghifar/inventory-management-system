@@ -41,9 +41,9 @@ class Sale extends Model
         'cash' => 'integer',
     ];
 
-    public function details(): HasMany
+    public function items(): HasMany
     {
-        return $this->hasMany(SaleDetail::class);
+        return $this->hasMany(SaleItem::class);
     }
 
     public function customer(): BelongsTo

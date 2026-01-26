@@ -2,73 +2,87 @@
 
 namespace App\Services;
 
-use App\Enums\SaleStatus;
+use Exception;
 use App\Models\Sale;
 use App\Models\Product;
+use App\DTOs\SaleData;
+use App\Enums\SaleStatus;
+use App\Exceptions\SaleException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Collection;
-use Exception;
 
 class SaleService
 {
     /**
-     * Create a new sale transaction.
+     * Create a new sale with items and deduction of stock.
      *
-     * @param array $data Sale header data
-     * @param array $items Array of items ['product_id', 'quantity', 'discount', 'unit_price']
-     * @return Sale
-     * @throws Exception
+     * @throws SaleException
      */
-    public function createSale(array $data, array $items): Sale
+    public function createSale(SaleData $data): Sale
     {
-        return DB::transaction(function () use ($data, $items) {
+        return DB::transaction(function () use ($data) {
             try {
-                // 1. Create Header
+                // 1. Optimize: Collect Product IDs & Sort to prevent deadlocks
+                $productIds = [];
+                foreach ($data->items as $item) {
+                    $productIds[] = $item->product_id;
+                }
+                sort($productIds); // Sort IDs for consistent locking order
+
+                // 2. Fetch all products in one query with locking
+                $products = Product::whereIn('id', $productIds)
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy('id');
+
+                // 3. Create Sale Header
                 $sale = Sale::create([
                     'invoice_number' => $this->generateInvoiceNumber(),
-                    'customer_id'    => $data['customer_id'] ?? null,
-                    'created_by'     => $data['created_by'],
-                    'sale_date'      => $data['sale_date'],
-                    'status'         => $data['status'] ?? SaleStatus::COMPLETED,
-                    'payment_method' => $data['payment_method'],
-                    'notes'          => $data['notes'] ?? null,
-                    'cash_received'  => $data['cash_received'] ?? 0,
-                    'change'         => $data['change'] ?? 0,
-                    'cash'           => $data['cash'] ?? 0, // Explicit cash amount if split payment
-                    'subtotal'       => 0, // Recalculated below
-                    'total_discount' => 0, // Recalculated below
-                    'total'          => 0, // Recalculated below
+                    'customer_id' => $data->customer_id,
+                    'created_by' => $data->created_by,
+                    'sale_date' => $data->sale_date,
+                    'status' => $data->status,
+                    'payment_method' => $data->payment_method,
+                    'notes' => $data->notes,
+                    'cash_received' => $data->cash_received,
+                    'change' => $data->change,
+                    'cash' => $data->cash,
+                    'subtotal' => 0,
+                    'total_discount' => 0,
+                    'total' => 0,
                 ]);
 
                 $totalSubtotal = 0;
                 $totalDiscount = 0;
 
-                // 2. Process Items
-                foreach ($items as $item) {
-                    $product = Product::lockForUpdate()->find($item['product_id']);
+                // 4. Process Items (Memory check with pre-loaded products)
+                foreach ($data->items as $itemData) {
+                    $product = $products->get($itemData->product_id);
 
                     if (!$product) {
-                        throw new Exception("Product ID {$item['product_id']} not found.");
+                        throw new Exception("Product ID {$itemData->product_id} not found.");
                     }
 
-                    // Stock Validation
-                    if ($product->quantity < $item['quantity']) {
-                        throw new Exception("Insufficient stock for product {$product->name}. Requested: {$item['quantity']}, Available: {$product->quantity}");
+                    // Domain Rule: Stock Validation
+                    if ($product->quantity < $itemData->quantity) {
+                        throw SaleException::insufficientStock(
+                            $product->name,
+                            $itemData->quantity,
+                            $product->quantity
+                        );
                     }
 
-                    // Calculation (Backend Trust)
-                    $unitPrice  = $item['unit_price']; // From Input (POS override) or Product? Usually POS sends price.
-                    $quantity   = $item['quantity'];
-                    $discount   = $item['discount'] ?? 0;
+                    // Calculation
+                    $unitPrice = $itemData->unit_price;
+                    $quantity = $itemData->quantity;
+                    $discount = $itemData->discount;
                     $finalPrice = $unitPrice - $discount;
                     $subtotal   = $finalPrice * $quantity;
 
-                    // Create Detail
-                    $sale->details()->create([
+                    // Create Item
+                    $sale->items()->create([
                         'product_id'  => $product->id,
                         'quantity'    => $quantity,
-                        'cost_price'  => $product->purchase_price, // HPP Snapshot
+                        'cost_price' => $product->purchase_price, // HPP
                         'unit_price'  => $unitPrice,
                         'discount'    => $discount,
                         'final_price' => $finalPrice,
@@ -79,27 +93,29 @@ class SaleService
                     $product->decrement('quantity', $quantity);
 
                     $totalSubtotal += $subtotal;
-                    $totalDiscount += $discount * $quantity; // Assuming discount is per unit
+                    $totalDiscount += $discount * $quantity;
                 }
 
-                // 3. Update Header Totals
+                // 5. Update Header Totals
                 $sale->update([
-                    'subtotal'       => $totalSubtotal + $totalDiscount, // Gross subtotal
+                    'subtotal' => $totalSubtotal + $totalDiscount,
                     'total_discount' => $totalDiscount,
                     'total'          => $totalSubtotal,
                 ]);
 
-                return $sale->load(['details', 'customer', 'creator']);
+                return $sale;
 
             } catch (Exception $e) {
-                Log::error('Failed to create sale: ' . $e->getMessage());
-                throw $e; // Re-throw to trigger rollback
+                if ($e instanceof SaleException) {
+                    throw $e;
+                }
+                throw SaleException::creationFailed($e->getMessage(), ['data' => $data]);
             }
         });
     }
 
     /**
-     * Cancel a sale (void).
+     * Cancel a sale and restore stock.
      *
      * @param Sale $sale
      * @return Sale
@@ -108,24 +124,42 @@ class SaleService
     public function cancelSale(Sale $sale): Sale
     {
         return DB::transaction(function () use ($sale) {
-            if ($sale->status === SaleStatus::CANCELLED) {
-                throw new Exception("Sale is already cancelled.");
+            try {
+                if ($sale->status === SaleStatus::CANCELLED) {
+                    throw SaleException::invalidStatus('cancel', $sale->status->label(), ['id' => $sale->id]);
+                }
+
+                // Restore Stock
+                // Eager load items to avoid N+1 inside transaction if not already loaded
+                $sale->loadMissing('items.product');
+
+                foreach ($sale->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('quantity', $item->quantity);
+                    }
+                }
+
+                $sale->update(['status' => SaleStatus::CANCELLED]);
+
+                return $sale;
+
+            } catch (Exception $e) {
+                if ($e instanceof SaleException) {
+                    throw $e;
+                }
+                throw SaleException::cancellationFailed($e->getMessage(), ['id' => $sale->id]);
             }
-
-            // Restore Stock
-            foreach ($sale->details as $detail) {
-                $detail->product->increment('quantity', $detail->quantity);
-            }
-
-            $sale->update(['status' => SaleStatus::CANCELLED]);
-
-            return $sale;
         });
     }
 
+    /**
+     * Generate unique invoice number.
+     * Format: INV.YYYYMMDD.0001
+     */
     private function generateInvoiceNumber(): string
     {
-        $prefix = 'INV/' . date('Ymd') . '/';
+        $prefix = 'INV.' . date('Ymd') . '.';
+
         $latest = Sale::where('invoice_number', 'like', $prefix . '%')
             ->orderBy('id', 'desc')
             ->first();

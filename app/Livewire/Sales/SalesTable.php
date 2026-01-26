@@ -7,6 +7,7 @@ use App\Models\Sale;
 use App\Models\Customer;
 use App\Enums\SaleStatus;
 use App\Services\SaleService;
+use App\Exceptions\SaleException;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -57,8 +58,9 @@ final class SalesTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('id')
-            ->add('invoice_number', fn(Sale $model) => $model->invoice_number ?: '<span class="italic text-gray-400">-</span>')
-            ->add('customer_name', fn(Sale $model) => $model->customer ? $model->customer->name : '<span class="italic text-gray-400">Guest</span>')
+            ->add('notes') // Added notes field
+            ->add('invoice_number', fn(Sale $model) => $model->invoice_number ?: '-')
+            ->add('customer_name', fn(Sale $model) => $model->customer ? $model->customer->name : 'Guest')
             ->add('sale_date_formatted', fn(Sale $model) => Carbon::parse($model->sale_date)->format('d/m/Y'))
             ->add('total_formatted', fn(Sale $model) => 'Rp ' . number_format($model->total, 0, ',', '.'))
             ->add('status_badge', function(Sale $model) {
@@ -76,20 +78,17 @@ final class SalesTable extends PowerGridComponent
 
             Column::make('Invoice', 'invoice_number')
                 ->searchable()
-                ->sortable()
-                ->headerAttribute('text-left')
-                ->bodyAttribute('text-left text-indigo-600 hover:text-indigo-900'),
+                ->sortable(),
 
             Column::make('Customer', 'customer_name', 'customer_id')
                 ->searchable()
-                ->sortable()
-                ->headerAttribute('text-left')
-                ->bodyAttribute('text-left'),
+                ->sortable(),
+
+            Column::make('Created By', 'created_by_name', 'created_by')
+                ->sortable(),
 
             Column::make('Date', 'sale_date_formatted', 'sale_date')
-                ->sortable()
-                ->headerAttribute('text-left')
-                ->bodyAttribute('text-left'),
+                ->sortable(),
 
             Column::make('Period', 'date_period') // Hidden column for filter
                 ->hidden(),
@@ -100,13 +99,13 @@ final class SalesTable extends PowerGridComponent
                 ->bodyAttribute('text-right'),
 
             Column::make('Status', 'status_badge', 'status')
-                ->sortable()
-                ->headerAttribute('text-center')
-                ->bodyAttribute('text-center'),
+                ->sortable(),
 
-            Column::action('Action')
-                ->headerAttribute('text-center')
-                ->bodyAttribute('text-center'),
+            Column::make('Notes', 'notes')
+                ->sortable()
+                ->searchable(),
+
+            Column::action('Action'),
         ];
     }
 
@@ -181,6 +180,12 @@ final class SalesTable extends PowerGridComponent
                 ->route('sales.show', ['sale' => $row->id])
                 ->tooltip('View Details'),
 
+            Button::add('print')
+                ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.198-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" /></svg>')
+                ->class('bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-md flex items-center justify-center')
+                ->route('sales.print', ['sale' => $row->id])
+                ->tooltip('Print Invoice'),
+
             Button::add('delete')
                 ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>')
                 ->class('bg-red-500 hover:bg-red-600 text-white p-2 rounded-md flex items-center justify-center')
@@ -199,6 +204,8 @@ final class SalesTable extends PowerGridComponent
             try {
                 $saleService->cancelSale($sale);
                 $this->dispatch('toast', message: 'Sale cancelled.', type: 'success');
+            } catch (SaleException $e) {
+                $this->dispatch('toast', message: 'Cancel failed: ' . $e->getMessage(), type: 'error');
             } catch (\Exception $e) {
                 $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
             }

@@ -7,7 +7,7 @@ use App\Models\Product;
 use App\Models\Customer;
 use App\Enums\SaleStatus;
 use App\Enums\PaymentMethod;
-use App\Services\SaleService;
+use App\Actions\Sales\CreateSaleAction;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -76,7 +76,7 @@ class PosComponent extends Component
     public function processPayment()
     {
         $this->showConfirmModal = false;
-        $this->processSale(app(SaleService::class));
+        $this->processSale(app(\App\Services\SaleService::class));
     }
 
 
@@ -224,7 +224,7 @@ class PosComponent extends Component
         return max(0, (float)$this->cashReceived - $this->total);
     }
 
-    public function processSale(SaleService $saleService)
+    public function processSale(\App\Services\SaleService $saleService)
     {
         if (empty($this->cart)) {
             $this->dispatch('toast', message: 'Cart is empty!', type: 'error');
@@ -239,37 +239,50 @@ class PosComponent extends Component
         try {
             $items = collect($this->cart)->map(function ($item) {
                 // Determine unit discount by dividing total discount by quantity
-                // This ensures the Service logic ($unitPrice - $unitDiscount) * $qty
-                // matches the desired (Price*Qty) - TotalDiscount.
                 $unitDiscount = $item['quantity'] > 0 ? (int) ($item['discount'] / $item['quantity']) : 0;
 
-                return [
-                    'product_id' => $item['id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['price'],
-                    'discount' => $unitDiscount,
-                ];
+                return new \App\DTOs\SaleItemData(
+                    product_id: $item['id'],
+                    quantity: $item['quantity'],
+                    unit_price: $item['price'],
+                    discount: $unitDiscount
+                );
             })->values()->toArray();
 
-            $data = [
-                'customer_id' => $this->customerId ?: null,
-                'created_by' => Auth::id(),
-                'sale_date' => $this->saleDate . ' ' . now()->format('H:i:s'),
-                'payment_method' => $this->paymentMethod,
-                'status' => $this->status,
-                'notes' => $this->notes,
-                'cash_received' => (float)$this->cashReceived,
-                'change' => $this->change,
-                'cash' => (float)$this->cashReceived,
-            ];
+            $saleData = new \App\DTOs\SaleData(
+                sale_date: \Carbon\Carbon::parse($this->saleDate . ' ' . now()->format('H:i:s')),
+                payment_method: PaymentMethod::from($this->paymentMethod),
+                created_by: Auth::id(),
+                items: $items,
+                customer_id: $this->customerId ?: null,
+                status: SaleStatus::from($this->status),
+                notes: $this->notes,
+                cash_received: (int) $this->cashReceived,
+                change: (int) $this->change,
+                cash: (int) $this->cashReceived
+            );
 
-            $sale = $saleService->createSale($data, $items);
+            $sale = $saleService->createSale($saleData);
 
             $this->reset(['cart', 'customerId', 'cashReceived', 'notes', 'search']);
             $this->dispatch('toast', message: 'Sale completed! Invoice: ' . $sale->invoice_number, type: 'success');
 
-            return redirect()->route('sales.show', $sale);
+            // Auto-print in new tab
+            $this->dispatch('open-new-tab', url: route('sales.print', $sale));
 
+            // Optional: redirect after a delay or just stay for next sale.
+            // If we redirect immediately, the window.open might be blocked or cancelled if logic is client side.
+            // Let's rely on client side JS handling the open first.
+
+            // To ensure UI updates (like empty cart) before redirecting or to just refresh, we can use a small delay or just return match.
+            // But the user requested "stay on page" OR "open in new tab".
+            // "selain berada di halaman yang sama, ia juga akan otomatis open in new tab"
+            // So we can keep the redirect but maybe we should fire the event first.
+
+            return redirect()->route('sales.create')->with('success', 'Sale completed! Invoice: ' . $sale->invoice_number);
+
+        } catch (\App\Exceptions\SaleException $e) {
+            $this->dispatch('toast', message: 'Sale Error: ' . $e->getMessage(), type: 'error');
         } catch (\Exception $e) {
             $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
         }

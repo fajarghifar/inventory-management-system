@@ -1,4 +1,5 @@
-<div class="h-[calc(100vh-4.5rem)] bg-zinc-50 dark:bg-zinc-950 flex overflow-hidden font-sans">
+<div class="h-[calc(100vh-4.5rem)] bg-zinc-50 dark:bg-zinc-950 flex overflow-hidden font-sans"
+     x-on:open-new-tab.window="window.open($event.detail.url, '_blank')">
 
     <!-- LEFT PANEL: Search & Cart (Flexible Width) -->
     <div class="flex-1 flex flex-col min-w-0 border-r border-zinc-200 dark:border-zinc-800">

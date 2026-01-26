@@ -3,47 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sale;
-use App\Services\SaleService;
-use App\Http\Requests\StoreSaleRequest;
-use App\Http\Requests\UpdateSaleRequest;
+use App\DTOs\SaleData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreSaleRequest;
+use App\Services\SaleService;
 
 class SalesController extends Controller
 {
-    protected SaleService $saleService;
-
-    public function __construct(SaleService $saleService)
-    {
-        $this->saleService = $saleService;
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return view('sales.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('sales.create'); // POS View
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreSaleRequest $request)
+    public function store(StoreSaleRequest $request, SaleService $saleService)
     {
         try {
-            $data = $request->validated();
-            $data['created_by'] = Auth::id(); // Enforce current user
+            $validated = $request->validated();
+            $validated['created_by'] = Auth::id(); // Enforce current user
 
-            $sale = $this->saleService->createSale($data, $data['items']);
+            $saleData = SaleData::fromRequest($validated);
+
+            $sale = $saleService->createSale($saleData);
 
             if ($request->wantsJson()) {
                 return response()->json([
@@ -52,54 +38,53 @@ class SalesController extends Controller
                 ], 201);
             }
 
-            return redirect()->route('sales.show', $sale)
+            return redirect()->route('sales.create')
                 ->with('success', 'Sale created successfully.');
+
+        } catch (\App\Exceptions\SaleException $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+            return back()->with('error', $e->getMessage())->withInput();
 
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
+                // Log the confusing error for debugging but return generic message if strict
+                // return response()->json(['message' => 'Internal Error'], 500);
                 return response()->json(['message' => $e->getMessage()], 400);
             }
             return back()->with('error', $e->getMessage())->withInput();
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Sale $sale)
     {
-        $sale->load(['details.product', 'customer', 'creator']);
+        $sale->load(['items.product', 'customer', 'creator']);
         return view('sales.show', compact('sale'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Sale $sale)
     {
-        // Typically POS sales are not editable, only voidable.
-        // But for generic edit we can return a view.
         return view('sales.edit', compact('sale'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Sale $sale)
     {
         // Implement if needed.
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Sale $sale)
+    public function destroy(Sale $sale, SaleService $saleService)
     {
         try {
-            $this->saleService->cancelSale($sale);
+            $saleService->cancelSale($sale);
             return redirect()->route('sales.index')->with('success', 'Sale cancelled successfully.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
+    }
+    public function print(Sale $sale)
+    {
+        $sale->load(['items.product', 'customer', 'creator']);
+        return view('sales.print', compact('sale'));
     }
 }

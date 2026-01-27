@@ -11,7 +11,7 @@
         </div>
 
         <form wire:submit="save" class="space-y-6">
-            <!-- Row 1: SKU & Name -->
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- SKU -->
                 @if($isEditing)
@@ -21,83 +21,58 @@
                         type="text"
                         wire:model="sku"
                         readonly
+                        placeholder="e.g. SKU-1234-ABCD"
                         class="bg-muted text-muted-foreground cursor-not-allowed"
                     />
                 @else
-                    <!-- SKU Auto Generated or Optional Input if needed, but backup hides it -->
-                    <!-- Keeping it hidden/auto-generated as per backup logic -->
-                     <div class="hidden">
+                    <!-- SKU Auto Generated -->
+                    <div class="hidden">
                         <input type="hidden" wire:model="sku">
                     </div>
-                    <!-- If we want to show strict alignment, maybe just show Name in full width if SKU is hidden?
-                         But backup shows SKU grid col only if editing?
-                         Backup logic:
-                         @if($isEditing) ...sku input... @else ...hidden... @endif
-                         Then Name next to it.
-                    -->
-
-                    <!-- Actually backup layout:
-                        <div class="grid ...">
-                            @if($isEditing) ... @else ... @endif
-                             <x-form-input name="name" ... />
-                        </div>
-                        If create, SKU is hidden, so Name takes up its slot? No, grid gap applies.
-                        Let's check backup again.
-                        It puts them in the SAME grid container.
-                        If SKU is hidden, the grid cell is empty? Or hidden element doesn't take space?
-                        If hidden element doesn't take space, Name will be 1st cell.
-                        This might look weird if 2 cols and only 1 visible.
-                        However, I will follow the intent:
-                        If Creating: Just display Name (maybe full width or just 1st col).
-                        Let's make Name full-width if Creating, or just stick to the backup structure exactly.
-                    -->
-                     @if(!$isEditing)
-                        <!-- Placeholder to keep grid alignment or just nothing? -->
-                        <!-- Let's put Name first if creating? No, let's Stick to explicit structure -->
-                     @endif
                 @endif
 
                 <!-- Name -->
                 <x-form-input
                     name="name"
                     label="Product Name"
+                    placeholder="e.g. Wireless Mouse"
                     type="text"
                     wire:model="name"
-                    placeholder="e.g. Wireless Mouse"
                     required
                     class="{{ !$isEditing ? 'col-span-2' : '' }}"
                 />
-                <!-- I added col-span-2 logic to make Name full width if SKU is hidden, which looks better -->
             </div>
 
             <!-- Row 2: Category & Unit -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <x-input-label for="category_id" value="Category" required />
+            <div class="flex flex-col sm:flex-row gap-6">
+                <!-- Category -->
+                <div class="w-full sm:w-1/2">
                     <x-searchable-select
                         id="category_id"
                         name="category_id"
+                        label="Category"
                         wire:model="category_id"
                         :options="$categoryOptions"
                         placeholder="Select Category"
+                        required
                     />
-                    <x-input-error :messages="$errors->get('category_id')" />
                 </div>
 
-                <div class="space-y-2">
-                    <x-input-label for="unit_id" value="Unit" required />
+                <!-- Unit -->
+                <div class="w-full sm:w-1/2">
                     <x-searchable-select
                         id="unit_id"
                         name="unit_id"
+                        label="Unit"
                         wire:model="unit_id"
                         :options="$unitOptions"
                         placeholder="Select Unit"
+                        required
                     />
-                    <x-input-error :messages="$errors->get('unit_id')" />
                 </div>
             </div>
 
-            <!-- Row 3: Description -->
+            <!-- Description -->
             <div class="space-y-2">
                 <x-input-label for="description" value="Description" />
                 <textarea
@@ -110,31 +85,38 @@
                 <x-input-error :messages="$errors->get('description')" />
             </div>
 
-            <!-- Row 4: Prices -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <x-form-input
-                    name="purchase_price"
-                    label="Purchase Price (Rp)"
-                    type="number"
-                    wire:model="purchase_price"
-                    min="0"
-                    placeholder="0"
-                    required
-                />
+            <!-- Prices (Forced Inline) -->
+            <div class="flex flex-col sm:flex-row gap-6">
+                <!-- Purchase Price -->
+                <div class="w-full sm:w-1/2">
+                    <x-form-input
+                        name="purchase_price"
+                        label="Purchase Price (Rp)"
+                        type="number"
+                        wire:model="purchase_price"
+                        min="0"
+                        placeholder="0"
+                        required
+                    />
+                </div>
 
-                <x-form-input
-                    name="selling_price"
-                    label="Selling Price (Rp)"
-                    type="number"
-                    wire:model="selling_price"
-                    min="0"
-                    placeholder="0"
-                    required
-                />
+                <!-- Selling Price -->
+                <div class="w-full sm:w-1/2">
+                    <x-form-input
+                        name="selling_price"
+                        label="Selling Price (Rp)"
+                        type="number"
+                        wire:model="selling_price"
+                        min="0"
+                        placeholder="0"
+                        required
+                    />
+                </div>
             </div>
 
             <!-- Row 5: Qty, Min Stock, Active -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Quantity -->
                 <x-form-input
                     name="quantity"
                     label="Quantity"
@@ -145,6 +127,7 @@
                     required
                 />
 
+                <!-- Min Stock -->
                 <x-form-input
                     name="min_stock"
                     label="Min Stock Alert"
@@ -155,17 +138,23 @@
                     required
                 />
 
+                <!-- Is Active -->
                 <div class="flex items-center h-full pt-8">
-                     <label class="inline-flex items-center cursor-pointer">
-                        <input type="checkbox" wire:model="is_active" class="sr-only peer">
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-700 dark:text-gray-300">Active</span>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            wire:model="is_active"
+                            class="w-6 h-6 rounded-full border-2 border-primary text-primary focus:ring-primary/20"
+                        >
+                        <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {{ __('Active') }}
+                        </span>
                     </label>
                 </div>
             </div>
 
             <!-- Actions -->
-            <div class="mt-6 flex justify-end gap-3 border-t pt-4">
+            <div class="mt-6 flex justify-end gap-3 border-t pt-4 border-gray-200">
                 <x-secondary-button type="button" x-on:click="$dispatch('close-modal', { name: 'product-form-modal' })">
                     {{ __('Cancel') }}
                 </x-secondary-button>

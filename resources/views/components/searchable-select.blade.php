@@ -32,7 +32,14 @@
                 }
             });
 
-            // Watch for external param updates (if bound via Alpine)
+            this.$watch('selected', (value) => {
+                if (value && this.options.length > 0) {
+                    const option = this.options.find(o => o.value == value);
+                    if (option) this.query = option.label;
+                } else if (!value) {
+                    this.query = '';
+                }
+            });
         },
         async fetchOptions(search) {
             this.isLoading = true;

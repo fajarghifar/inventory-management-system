@@ -85,6 +85,8 @@ final class ProductTable extends PowerGridComponent
     public function columns(): array
     {
         return [
+            Column::action('Action'),
+
             Column::make('ID', 'id')
                 ->hidden()
                 ->visibleInExport(true),
@@ -127,8 +129,6 @@ final class ProductTable extends PowerGridComponent
                 ->sortable()
                 ->headerAttribute('text-center')
                 ->bodyAttribute('text-center'),
-
-            Column::action('Action'),
         ];
     }
 

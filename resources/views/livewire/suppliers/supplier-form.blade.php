@@ -1,76 +1,101 @@
-<div>
-    <x-modal name="supplier-modal" :title="$isEditing ? 'Edit Supplier' : 'Add New Supplier'">
-        <form wire:submit="save" class="space-y-6">
-            <!-- Grid: Name & Contact Person -->
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <!-- Name -->
-                <x-form-input
-                    name="name"
-                    label="Company Name"
-                    placeholder="e.g. PT Example Supplier"
-                    required
-                    wire:model="name"
-                />
+<x-modal name="supplier-modal" :show="$errors->isNotEmpty()" focusable>
+    <div class="p-6">
+        <!-- Header -->
+        <div class="mb-6 space-y-1.5 text-center sm:text-left border-b border-gray-200 pb-4">
+            <h3 class="text-lg font-semibold leading-none tracking-tight text-foreground">
+                {{ $isEditing ? __('Edit Supplier') : __('Create Supplier') }}
+            </h3>
+            <p class="text-sm text-muted-foreground">
+                {{ $isEditing ? __('Make changes to the supplier details here. Click update when you\'re done.') : __('Add a new supplier to your list.') }}
+            </p>
+        </div>
 
-                <!-- Contact Person -->
-                <x-form-input
-                    name="contact_person"
-                    label="Contact Person"
-                    placeholder="e.g. Budi Santoso"
-                    required
-                    wire:model="contact_person"
-                />
+        <form wire:submit="save" class="space-y-4">
+            <!-- Basic Info -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="w-full sm:w-1/2">
+                    <x-form-input
+                        name="name"
+                        label="Supplier Name"
+                        type="text"
+                        wire:model="name"
+                        placeholder="Company Name"
+                        required
+                    />
+                </div>
+                <div class="w-full sm:w-1/2">
+                    <x-form-input
+                        name="contact_person"
+                        label="Contact Person"
+                        type="text"
+                        wire:model="contact_person"
+                        placeholder="Contact Person Name"
+                        required
+                    />
+                </div>
             </div>
 
-            <!-- Grid: Email & Phone -->
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <!-- Email -->
-                <x-form-input
-                    type="email"
-                    name="email"
-                    label="Email"
-                    placeholder="supplier@example.com"
-                    wire:model="email"
-                />
-
-                <!-- Phone -->
-                <x-form-input
-                    name="phone"
-                    label="Phone"
-                    placeholder="+62 812-3456-7890"
-                    wire:model="phone"
-                />
+            <!-- Contact Info -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="w-full sm:w-1/2">
+                    <x-form-input
+                        name="email"
+                        label="Email"
+                        type="email"
+                        wire:model="email"
+                        placeholder="email@example.com"
+                    />
+                </div>
+                <div class="w-full sm:w-1/2">
+                    <x-form-input
+                        name="phone"
+                        label="Phone"
+                        type="text"
+                        wire:model="phone"
+                        placeholder="+62..."
+                    />
+                </div>
             </div>
 
-            <!-- Address -->
-            <x-form-textarea
-                name="address"
-                label="Address"
-                placeholder="Full address"
-                wire:model="address"
-            />
+            <div class="space-y-2">
+                <x-input-label for="address" :value="__('Address')" />
+                <textarea
+                    id="address"
+                    wire:model="address"
+                    rows="3"
+                    class="block w-full rounded-md border-input bg-background shadow-sm focus:border-ring focus:ring-ring sm:text-sm"
+                    placeholder="Full Address"
+                ></textarea>
+                <x-input-error :messages="$errors->get('address')" />
+            </div>
 
-            <!-- Notes -->
-            <x-form-textarea
-                name="notes"
-                label="Notes"
-                placeholder="Any additional notes..."
-                wire:model="notes"
-            />
+            <div class="space-y-2">
+                <x-input-label for="notes" :value="__('Notes')" />
+                <textarea
+                    id="notes"
+                    wire:model="notes"
+                    rows="3"
+                    class="block w-full rounded-md border-input bg-background shadow-sm focus:border-ring focus:ring-ring sm:text-sm"
+                    placeholder="Additional notes..."
+                ></textarea>
+                <x-input-error :messages="$errors->get('notes')" />
+            </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-                <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'supplier-modal' })">
-                    Cancel
-                </x-button>
-                <x-button type="submit">
-                    <span wire:loading.remove wire:target="save">
-                        {{ $isEditing ? 'Update Supplier' : 'Save Supplier' }}
-                    </span>
-                    <span wire:loading wire:target="save">
-                        Saving...
-                    </span>
-                </x-button>
+            <!-- Actions -->
+            <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-4">
+                <x-secondary-button type="button" x-on:click="$dispatch('close-modal', { name: 'supplier-modal' })">
+                    {{ __('Cancel') }}
+                </x-secondary-button>
+
+                <x-primary-button type="submit" wire:loading.attr="disabled">
+                    <svg wire:loading wire:target="save" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <x-heroicon-o-check wire:loading.remove wire:target="save" class="w-4 h-4 mr-2" />
+                    {{ $isEditing ? __('Save Changes') : __('Create Supplier') }}
+                </x-primary-button>
             </div>
         </form>
-    </x-modal>
-</div>
+    </div>
+</x-modal>

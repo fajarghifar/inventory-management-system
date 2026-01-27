@@ -1,63 +1,80 @@
 <div>
-    <x-modal name="customer-detail-modal" title="Customer Details">
+    <x-modal name="customer-detail-modal" focusable>
         @if($customer)
+            <div class="p-6">
+            <!-- Header -->
+            <div class="mb-6 space-y-1.5 text-center sm:text-left border-b border-gray-200 pb-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold leading-none tracking-tight text-foreground">
+                        {{ __('Customer Details') }}
+                    </h3>
+                </div>
+                <p class="text-sm text-muted-foreground">
+                    {{ __('Detailed information about') }} {{ $customer->name }}.
+                </p>
+            </div>
+
             <div class="space-y-6">
-                <!-- Header Info -->
-                <div class="flex items-start justify-between border-b border-gray-200 pb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 tracking-tight">{{ $customer->name }}</h3>
-                        <p class="text-sm text-gray-500">Customer Account Information</p>
-                    </div>
-                    <div class="inline-flex items-center rounded-full border border-gray-200 px-2.5 py-0.5 text-xs font-semibold text-gray-700 bg-gray-50">
-                        ID: #{{ $customer->id }}
-                    </div>
+                <div class="space-y-1">
+                    <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Name') }}</label>
+                    <p class="text-sm text-foreground font-medium">{{ $customer->name }}</p>
                 </div>
 
-                <!-- Content Grid -->
+                <!-- Contact Info -->
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <!-- Email -->
-                    <x-detail-item label="Email" :value="$customer->email ?: '-'">
-                        <x-heroicon-o-envelope class="w-4 h-4 text-gray-400" />
-                    </x-detail-item>
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Email') }}</label>
+                        <p class="text-sm text-foreground font-medium">{{ $customer->email ?? '-' }}</p>
+                    </div>
 
-                    <!-- Phone -->
-                    <x-detail-item label="Phone" :value="$customer->phone ?: '-'">
-                        <x-heroicon-o-phone class="w-4 h-4 text-gray-400" />
-                    </x-detail-item>
-
-                    <!-- Registered At -->
-                    <x-detail-item label="Registered At" :value="$customer->created_at->format('d M Y, H:i')" />
-                </div>
-
-                <div class="border-t border-gray-200 pt-6 space-y-6">
-                    <!-- Address -->
-                    <x-detail-item label="Address" :value="$customer->address ?: '-'" />
-
-                    <!-- Notes -->
-                    <div class="space-y-1.5">
-                        <label class="text-sm font-medium leading-none text-gray-500">
-                            Notes
-                        </label>
-                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                            <p class="text-sm text-gray-700 italic leading-relaxed">{{ $customer->notes ?: 'No additional notes.' }}</p>
-                        </div>
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Phone') }}</label>
+                        <p class="text-sm text-foreground font-medium">{{ $customer->phone ?? '-' }}</p>
                     </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-                    <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'customer-detail-modal' })">
-                        Close
-                    </x-button>
-                    <x-button type="button" wire:click="edit">
+                <div class="space-y-1">
+                    <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Address') }}</label>
+                    <p class="text-sm text-foreground font-medium">{{ $customer->address ?? '-' }}</p>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Notes') }}</label>
+                    <p class="text-sm text-foreground font-medium">
+                        {{ $customer->notes ?: 'No notes provided.' }}
+                    </p>
+                </div>
+
+                <!-- Meta -->
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Joined Date') }}</label>
+                        <p class="text-sm text-foreground font-medium">{{ $customer->created_at?->format('d M Y, H:i') ?? '-' }}</p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Last Updated') }}</label>
+                        <p class="text-sm text-foreground font-medium">{{ $customer->updated_at?->format('d M Y, H:i') ?? '-' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 flex items-center justify-end gap-x-2 pt-4 border-t border-border">
+                    <x-secondary-button type="button" x-on:click="$dispatch('close-modal', { name: 'customer-detail-modal' })">
+                        {{ __('Close') }}
+                    </x-secondary-button>
+
+                    <x-primary-button type="button" x-on:click="$dispatch('close-modal', { name: 'customer-detail-modal' }); $dispatch('edit-customer', { customer: {{ $customer->id }} })" class="bg-amber-500 hover:bg-amber-600 focus:ring-amber-500">
                         <x-heroicon-o-pencil-square class="w-4 h-4 mr-2" />
-                        Edit Customer
-                    </x-button>
+                        {{ __('Edit Customer') }}
+                    </x-primary-button>
                 </div>
             </div>
         @else
-            <div class="p-8 text-center text-gray-500">
-                Loading details...
+            <div class="p-8 text-center flex flex-col items-center justify-center space-y-3">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span class="text-sm text-muted-foreground">{{ __('Loading details...') }}</span>
             </div>
         @endif
     </x-modal>

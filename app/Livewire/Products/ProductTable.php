@@ -59,6 +59,11 @@ final class ProductTable extends PowerGridComponent
             ->add('id')
             ->add('sku')
             ->add('name')
+            ->add('name_formatted', function (Product $model) {
+                return $model->is_active ? $model->name : '(DISCONTINUE) ' . $model->name;
+            })
+            ->add('description')
+            ->add('category_slug', fn(Product $model) => $model->category ? $model->category->slug : '-')
             ->add('category_name', fn(Product $model) => $model->category ? $model->category->name : '-')
             ->add('unit_symbol', fn(Product $model) => $model->unit ? $model->unit->symbol : '-')
             ->add('purchase_price_formatted', fn(Product $model) => 'Rp ' . number_format($model->purchase_price, 0, ',', '.'))
@@ -79,7 +84,9 @@ final class ProductTable extends PowerGridComponent
                     ? '<div class="flex items-center justify-center text-green-500"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></div>'
                     : '<div class="flex items-center justify-center text-red-500"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></div>';
             })
-            ->add('created_at');
+            ->add('is_active_export', fn(Product $model) => $model->is_active ? 'true' : 'false')
+            ->add('created_at')
+            ->add('created_at_formatted', fn(Product $model) => $model->created_at->format('d/m/Y H:i'));
     }
 
     public function columns(): array
@@ -89,18 +96,28 @@ final class ProductTable extends PowerGridComponent
 
             Column::make('ID', 'id')
                 ->hidden()
-                ->visibleInExport(true),
+                ->visibleInExport(false),
 
             Column::make('SKU', 'sku')
                 ->searchable(),
 
-            Column::make('Name', 'name')
+            Column::make('Name', 'name_formatted', 'name')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->visibleInExport(false),
+
+            Column::make('Name', 'name')
+                ->hidden()
+                ->visibleInExport(true),
 
             Column::make('Category', 'category_name', 'category_id')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->visibleInExport(false),
+
+            Column::make('Category', 'category_slug', 'category_id')
+                ->hidden()
+                ->visibleInExport(true),
 
             Column::make('Unit', 'unit_symbol', 'unit_id')
                 ->sortable()
@@ -115,7 +132,8 @@ final class ProductTable extends PowerGridComponent
                 ->bodyAttribute('text-right'),
 
             Column::make('Margin', 'margin_formatted')
-                ->bodyAttribute('text-right text-indigo-600'),
+                ->bodyAttribute('text-right text-indigo-600')
+                ->visibleInExport(false),
 
             Column::make('Qty', 'quantity')
                 ->sortable()
@@ -128,7 +146,21 @@ final class ProductTable extends PowerGridComponent
             Column::make('Status', 'is_active_label', 'is_active')
                 ->sortable()
                 ->headerAttribute('text-center')
-                ->bodyAttribute('text-center'),
+                ->bodyAttribute('text-center')
+                ->visibleInExport(false),
+
+            Column::make('Status', 'is_active_export', 'is_active')
+                ->hidden()
+                ->visibleInExport(true),
+
+            // Exports
+            Column::make('Description', 'description')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('Created At', 'created_at_formatted', 'created_at')
+                ->hidden()
+                ->visibleInExport(true),
         ];
     }
 

@@ -22,8 +22,7 @@ class ProfileService
     {
         return DB::transaction(function () use ($user, $data) {
             try {
-                // Ensure email uniqueness allows for the current user
-                // Validation at the request layer should catch this, but double safety here.
+                // Check for email or username collisions
                 if (
                     $user->email !== $data['email'] &&
                     User::where('email', $data['email'])->exists()
@@ -31,8 +30,16 @@ class ProfileService
                     throw new Exception('The email address is already in use by another account.');
                 }
 
+                if (
+                    $user->username !== $data['username'] &&
+                    User::where('username', $data['username'])->exists()
+                ) {
+                    throw new Exception('The username is already taken by another account.');
+                }
+
                 $user->update([
                     'name' => $data['name'],
+                    'username' => $data['username'],
                     'email' => $data['email'],
                 ]);
 

@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Auth;
 class EditProfile extends Component
 {
     public string $name = '';
+    public string $username = '';
     public string $email = '';
 
     public function mount(): void
     {
         $user = Auth::user();
         $this->name = $user->name;
+        $this->username = $user->username;
         $this->email = $user->email;
     }
 
@@ -23,6 +25,7 @@ class EditProfile extends Component
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,' . Auth::id()],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . Auth::id()],
         ];
     }
@@ -37,6 +40,7 @@ class EditProfile extends Component
 
             $service->updateProfile($user, [
                 'name' => $this->name,
+                'username' => $this->username,
                 'email' => $this->email,
             ]);
 

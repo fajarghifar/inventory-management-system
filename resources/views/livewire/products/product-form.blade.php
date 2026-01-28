@@ -72,45 +72,30 @@
                 </div>
             </div>
 
-            <!-- Description -->
-            <div class="space-y-2">
-                <x-input-label for="description" value="Description" />
-                <textarea
-                    id="description"
-                    wire:model="description"
-                    rows="3"
-                    class="block w-full rounded-md border-input bg-background shadow-sm focus:border-ring focus:ring-ring sm:text-sm"
-                    placeholder="Optional description..."
-                ></textarea>
-                <x-input-error :messages="$errors->get('description')" />
-            </div>
-
             <!-- Prices (Forced Inline) -->
             <div class="flex flex-col sm:flex-row gap-6">
                 <!-- Purchase Price -->
-                <div class="w-full sm:w-1/2">
-                    <x-form-input
-                        name="purchase_price"
-                        label="Purchase Price (Rp)"
-                        type="number"
-                        wire:model="purchase_price"
-                        min="0"
+                <div class="w-full sm:w-1/2 space-y-2">
+                    <x-input-label for="purchase_price" value="Purchase Price (Rp)" />
+                    <x-currency-input
+                        id="purchase_price"
+                        wire:model.live.debounce.500ms="purchase_price"
                         placeholder="0"
                         required
                     />
+                    <x-input-error :messages="$errors->get('purchase_price')" />
                 </div>
 
                 <!-- Selling Price -->
-                <div class="w-full sm:w-1/2">
-                    <x-form-input
-                        name="selling_price"
-                        label="Selling Price (Rp)"
-                        type="number"
-                        wire:model="selling_price"
-                        min="0"
+                <div class="w-full sm:w-1/2 space-y-2">
+                    <x-input-label for="selling_price" value="Selling Price (Rp)" />
+                    <x-currency-input
+                        id="selling_price"
+                        wire:model.live.debounce.500ms="selling_price"
                         placeholder="0"
                         required
                     />
+                    <x-input-error :messages="$errors->get('selling_price')" />
                 </div>
             </div>
 
@@ -151,6 +136,32 @@
                         </span>
                     </label>
                 </div>
+            </div>
+
+            <!-- Description -->
+            <div class="space-y-2">
+                <x-input-label for="description" value="Description" />
+                <textarea
+                    id="description"
+                    wire:model="description"
+                    rows="3"
+                    class="block w-full rounded-md border-input bg-background shadow-sm focus:border-ring focus:ring-ring sm:text-sm"
+                    placeholder="Optional description..."
+                ></textarea>
+                <x-input-error :messages="$errors->get('description')" />
+            </div>
+
+            <!-- Notes -->
+            <div class="space-y-2">
+                <x-input-label for="notes" value="Internal Notes" />
+                <textarea
+                    id="notes"
+                    wire:model="notes"
+                    rows="3"
+                    class="block w-full rounded-md border-input bg-background shadow-sm focus:border-ring focus:ring-ring sm:text-sm"
+                    placeholder="Internal pricing history & notes..."
+                ></textarea>
+                <x-input-error :messages="$errors->get('notes')" />
             </div>
 
             <!-- Actions -->

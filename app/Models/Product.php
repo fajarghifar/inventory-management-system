@@ -41,12 +41,13 @@ class Product extends Model
         'unit_id',
         'sku',
         'name',
-        'description',
         'purchase_price',
         'selling_price',
         'quantity',
         'min_stock',
         'is_active',
+        'description',
+        'notes',
     ];
 
     /**

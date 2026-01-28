@@ -20,7 +20,6 @@ class ProductForm extends Component
     // Form Fields
     public ?string $sku = null;
     public string $name = '';
-    public string $description = '';
     public ?int $category_id = null;
     public ?int $unit_id = null;
     public int $purchase_price = 0;
@@ -28,6 +27,8 @@ class ProductForm extends Component
     public int $quantity = 0;
     public int $min_stock = 0;
     public bool $is_active = true;
+    public string $description = '';
+    public string $notes = '';
 
     // Select Options
     public array $categoryOptions = [];
@@ -57,7 +58,7 @@ class ProductForm extends Component
     #[On('create-product')]
     public function create(): void
     {
-        $this->reset(['sku', 'name', 'description', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'product', 'isEditing']);
+        $this->reset(['sku', 'name', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'description', 'notes', 'product', 'isEditing']);
         $this->is_active = true;
 
         // Reload options to ensure freshness
@@ -72,7 +73,6 @@ class ProductForm extends Component
         $this->product = $product;
         $this->sku = $product->sku;
         $this->name = $product->name;
-        $this->description = $product->description ?? '';
         $this->category_id = $product->category_id;
         $this->unit_id = $product->unit_id;
         $this->purchase_price = $product->purchase_price;
@@ -80,6 +80,8 @@ class ProductForm extends Component
         $this->quantity = $product->quantity;
         $this->min_stock = $product->min_stock;
         $this->is_active = $product->is_active;
+        $this->description = $product->description ?? '';
+        $this->notes = $product->notes ?? '';
 
         $this->isEditing = true;
 
@@ -99,7 +101,6 @@ class ProductForm extends Component
                 'max:255',
                 Rule::unique('products', 'sku')->ignore($this->product?->id)
             ],
-            'description' => ['nullable', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
             'unit_id' => ['required', 'exists:units,id'],
             'purchase_price' => ['required', 'integer', 'min:0'],
@@ -107,6 +108,8 @@ class ProductForm extends Component
             'quantity' => ['required', 'integer', 'min:0'],
             'min_stock' => ['required', 'integer', 'min:0'],
             'is_active' => ['boolean'],
+            'description' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string'],
         ];
     }
 
@@ -117,14 +120,15 @@ class ProductForm extends Component
         $data = new ProductData(
             category_id: $this->category_id,
             unit_id: $this->unit_id,
-            sku: $this->sku ?: null, // Pass null if empty to let Service generate one
+            sku: $this->sku ?: null,
             name: $this->name,
-            description: $this->description,
             purchase_price: $this->purchase_price,
             selling_price: $this->selling_price,
             quantity: $this->quantity,
             min_stock: $this->min_stock,
             is_active: $this->is_active,
+            description: $this->description,
+            notes: $this->notes,
         );
 
         try {

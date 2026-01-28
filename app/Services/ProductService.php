@@ -25,12 +25,13 @@ class ProductService
                     'unit_id' => $data->unit_id,
                     'sku' => $sku,
                     'name' => $data->name,
-                    'description' => $data->description,
                     'purchase_price' => $data->purchase_price,
                     'selling_price' => $data->selling_price,
                     'quantity' => $data->quantity,
                     'min_stock' => $data->min_stock,
                     'is_active' => $data->is_active,
+                    'description' => $data->description,
+                    'notes' => $data->notes,
                 ]);
 
             } catch (Exception $e) {
@@ -54,12 +55,13 @@ class ProductService
                     'unit_id' => $data->unit_id,
                     'sku' => $data->sku ?? $product->sku,
                     'name' => $data->name,
-                    'description' => $data->description,
                     'purchase_price' => $data->purchase_price,
                     'selling_price' => $data->selling_price,
                     'quantity' => $data->quantity,
                     'min_stock' => $data->min_stock,
                     'is_active' => $data->is_active,
+                    'description' => $data->description,
+                    'notes' => $data->notes,
                 ]);
 
                 return $product->refresh();

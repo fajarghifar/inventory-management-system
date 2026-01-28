@@ -17,12 +17,13 @@ return new class extends Migration
             $table->foreignId('unit_id')->constrained()->restrictOnDelete();
             $table->string('sku', 50)->unique();
             $table->string('name', 150)->index();
-            $table->text('description')->nullable();
             $table->bigInteger('purchase_price');
             $table->bigInteger('selling_price');
             $table->integer('quantity')->default(0);
             $table->integer('min_stock')->default(0);
             $table->boolean('is_active')->default(true);
+            $table->text('description')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

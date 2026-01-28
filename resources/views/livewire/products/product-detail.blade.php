@@ -69,6 +69,13 @@
                     </p>
                 </div>
 
+                <div class="space-y-1">
+                    <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Internal Notes') }}</label>
+                    <div class="bg-gray-50 border border-secondary p-3 rounded-md">
+                        <p class="text-sm text-foreground font-mono whitespace-pre-wrap leading-relaxed">{{ $product->notes ?: 'No notes.' }}</p>
+                    </div>
+                </div>
+
                 <!-- Meta -->
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div class="space-y-1">

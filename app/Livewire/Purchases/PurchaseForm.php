@@ -122,27 +122,31 @@ class PurchaseForm extends Component
 
     public function updatedItems(mixed $value, string $key): void
     {
-        // $key is something like "0.quantity" or "0.product_id"
+        // Handle direct Livewire updates for Quantity/Price changes
         $parts = explode('.', $key);
-        if (count($parts) === 3 && $parts[2] === 'product_id') {
-            // Handle searchable select model binding structure which might be items.0.product_id
-            $index = $parts[1];
-            $this->updateProductPrice((int) $index, (int) $value);
-        }
-
-        // Handle direct Livewire updates
         if (count($parts) === 2) {
             $index = $parts[0];
-            $field = $parts[1];
-
-            if ($field === 'product_id') {
-                $this->updateProductPrice((int) $index, (int) $value);
-            }
-
             $this->calculateSubtotal((int) $index);
         }
-
         $this->saveToCache();
+    }
+
+    #[\Livewire\Attributes\On('option-selected')]
+    public function handleOptionSelected($name, $value): void
+    {
+        // Name format: product_{index} or supplier_id
+        if ($name === 'supplier_id') {
+            $this->supplier_id = $value;
+            $this->saveToCache(); // Persist immediately
+            return;
+        }
+
+        if (str_starts_with($name, 'product_')) {
+            $index = (int) str_replace('product_', '', $name);
+            $this->items[$index]['product_id'] = $value;
+            $this->updateProductPrice($index, (int) $value);
+            $this->saveToCache(); // Persist immediately
+        }
     }
 
     public function updateProductPrice(int $index, int $productId): void

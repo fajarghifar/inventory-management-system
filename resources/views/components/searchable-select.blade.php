@@ -10,6 +10,8 @@
     'inputClass' => 'h-10',
     'initialLabel' => '',
     'params' => [],
+    'optionValue' => 'value',
+    'optionLabel' => 'label',
 ])
 
 <div
@@ -20,10 +22,12 @@
         options: @js($options),
         isLoading: false,
         params: @js($params),
+        optionValue: @js($optionValue),
+        optionLabel: @js($optionLabel),
         init() {
             if (this.selected && this.options.length > 0) {
-                const option = this.options.find(o => o.value == this.selected);
-                if (option) this.query = option.label;
+                const option = this.options.find(o => o[this.optionValue] == this.selected);
+                if (option) this.query = option[this.optionLabel];
             }
 
             this.$watch('query', (value) => {
@@ -34,8 +38,8 @@
 
             this.$watch('selected', (value) => {
                 if (value && this.options.length > 0) {
-                    const option = this.options.find(o => o.value == value);
-                    if (option) this.query = option.label;
+                    const option = this.options.find(o => o[this.optionValue] == value);
+                    if (option) this.query = option[this.optionLabel];
                 } else if (!value) {
                     this.query = '';
                 }
@@ -78,16 +82,16 @@
             if ('{{ $url }}') return this.options;
             if (this.query === '') return this.options;
             return this.options.filter(option =>
-                option.label.toLowerCase().includes(this.query.toLowerCase())
+                String(option[this.optionLabel]).toLowerCase().includes(this.query.toLowerCase())
             );
         },
         selectOption(option) {
-            this.selected = option.value;
-            this.query = option.label;
+            this.selected = option[this.optionValue];
+            this.query = option[this.optionLabel];
             this.open = false;
             this.$dispatch('option-selected', {
                 name: '{{ $name }}',
-                value: option.value,
+                value: option[this.optionValue],
                 item: option
             });
         }
@@ -144,13 +148,13 @@
         style="display: none;"
     >
         <ul class="py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            <template x-for="option in filteredOptions" :key="option.value">
+            <template x-for="option in filteredOptions" :key="option[optionValue]">
                 <li
                     x-on:click="selectOption(option)"
                     class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-accent hover:text-accent-foreground"
                 >
-                    <span x-text="option.label" class="block truncate" :class="{ 'font-semibold': selected == option.value, 'font-normal': selected != option.value }"></span>
-                    <span x-show="selected == option.value" class="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600">
+                    <span x-text="option[optionLabel]" class="block truncate" :class="{ 'font-semibold': selected == option[optionValue], 'font-normal': selected != option[optionValue] }"></span>
+                    <span x-show="selected == option[optionValue]" class="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600">
                         <x-heroicon-o-check class="w-5 h-5" />
                     </span>
                 </li>

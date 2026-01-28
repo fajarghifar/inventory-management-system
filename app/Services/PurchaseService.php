@@ -161,11 +161,39 @@ class PurchaseService
                 $product = $item->product;
                 if ($product) {
                     $product->increment('quantity', $item->quantity);
+
                     // Update latest purchase price and selling price
                     $updateData = ['purchase_price' => $item->unit_price];
+                    $priceChangeLog = "";
+                    $hasPriceChange = false;
+
+                    // Check for Purchase Price Change
+                    if ((float) $product->purchase_price !== (float) $item->unit_price) {
+                        $hasPriceChange = true;
+                        $oldBuy = number_format($product->purchase_price ?? 0, 0, ',', '.');
+                        $newBuy = number_format($item->unit_price, 0, ',', '.');
+                        $priceChangeLog .= "\n- Buying Price: Rp {$oldBuy} -> Rp {$newBuy}";
+                    }
+
+                    // Check for Selling Price Change
                     if ($item->selling_price) {
                         $updateData['selling_price'] = $item->selling_price;
+                        if ((float) $product->selling_price !== (float) $item->selling_price) {
+                            $hasPriceChange = true;
+                            $oldSell = number_format($product->selling_price ?? 0, 0, ',', '.');
+                            $newSell = number_format($item->selling_price, 0, ',', '.');
+                            $priceChangeLog .= "\n- Selling Price: Rp {$oldSell} -> Rp {$newSell}";
+                        }
                     }
+
+                    // Append to Notes if prices changed
+                    if ($hasPriceChange) {
+                        $timestamp = now()->format('Y-m-d H:i');
+                        $ref = $purchase->invoice_number ? "Invoice #{$purchase->invoice_number}" : "Purchase #{$purchase->id}";
+                        $logHeader = "\n\n[System Log - {$timestamp}] Price update via {$ref}:";
+                        $updateData['notes'] = TRIM(($product->notes ?? '') . $logHeader . $priceChangeLog);
+                    }
+
                     $product->update($updateData);
                 }
             }

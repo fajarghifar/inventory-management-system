@@ -24,7 +24,6 @@ class Sale extends Model
         'total',
         'cash_received',
         'change',
-        'cash',
         'payment_method',
         'notes',
     ];
@@ -38,7 +37,6 @@ class Sale extends Model
         'total' => 'integer',
         'cash_received' => 'integer',
         'change' => 'integer',
-        'cash' => 'integer',
     ];
 
     public function items(): HasMany

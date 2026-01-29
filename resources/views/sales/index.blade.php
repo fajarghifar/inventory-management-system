@@ -1,23 +1,24 @@
-<x-app-layout>
+<x-app-layout title="Sales">
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Sales Management') }}
+            <h2 class="font-semibold text-xl text-foreground leading-tight">
+                {{ __('Sales') }}
             </h2>
-            <x-button href="{{ route('sales.create') }}">
+            <x-primary-button
+                x-data
+                x-on:click="window.location.href = '{{ route('sales.create') }}'"
+            >
                 <x-heroicon-o-plus class="w-4 h-4 mr-2" />
-                New Sale (POS)
-            </x-button>
+                {{ __('Create Sale') }}
+            </x-primary-button>
         </div>
     </x-slot>
 
-    <div>
-        <div class="max-w-full mx-auto">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <livewire:sales.sales-table />
-                </div>
-            </div>
+    <div class="py-4">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <livewire:sales.sales-table />
         </div>
     </div>
+
+    <livewire:components.delete-modal />
 </x-app-layout>

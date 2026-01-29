@@ -258,8 +258,7 @@ class PosComponent extends Component
                 status: SaleStatus::from($this->status),
                 notes: $this->notes,
                 cash_received: (int) $this->cashReceived,
-                change: (int) $this->change,
-                cash: (int) $this->cashReceived
+                change: (int) $this->change
             );
 
             $sale = $saleService->createSale($saleData);

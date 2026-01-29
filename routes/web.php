@@ -1,16 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\Api\PosController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::view('profile', 'profile.index')->name('profile.index');
@@ -33,6 +35,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/purchases/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.destroy');
 
     Route::get('/sales/{sale}/print', [SalesController::class, 'print'])->name('sales.print');
+    Route::patch('/sales/{sale}/complete', [SalesController::class, 'complete'])->name('sales.complete');
+    Route::patch('/sales/{sale}/restore', [SalesController::class, 'restore'])->name('sales.restore');
+    Route::prefix('pos-api')->group(function () {
+        Route::get('/products', [PosController::class, 'searchProducts']);
+        Route::get('/customers', [PosController::class, 'searchCustomers']);
+        Route::post('/customers', [PosController::class, 'storeCustomer']);
+        Route::post('/sales', [PosController::class, 'storeSale']);
+    });
+
     Route::resource('sales', SalesController::class);
 });
 

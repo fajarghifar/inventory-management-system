@@ -22,12 +22,12 @@ class SaleException extends Exception
     public static function cancellationFailed(string $message, array $context = []): self
     {
         Log::error("Sale cancellation failed: {$message}", $context);
-        return new self("Failed to cancel sale. {$message}");
+        return new self("Failed to cancel sale: {$message}");
     }
 
     public static function invalidStatus(string $action, string $status, array $context = []): self
     {
-        $message = "Cannot {$action} sale with status '{$status}'.";
+        $message = "Cannot perform {$action} on sale with status '{$status}'.";
         Log::warning($message, $context);
         return new self($message);
     }

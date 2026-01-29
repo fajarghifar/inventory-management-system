@@ -1,207 +1,342 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Invoice {{ $sale->invoice_number }}</title>
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faktur #{{ $sale->invoice_number }}</title>
     <style>
         @media print {
-            body {
-                background: white;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .no-print {
-                display: none !important;
-            }
             @page {
-                size: A4;
+                size: A5 landscape;
                 margin: 0;
             }
-            .print-container {
-                box-shadow: none;
-                border: none;
-                margin: 0;
-                padding: 40px;
-                width: 100%;
+            body {
+                margin: 5mm 10mm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            line-height: normal;
+            color: #000;
+            max-width: 210mm;
+            margin: 0 auto;
+            background: #fff;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            border: 0px solid #000; /* Optional outer box? Reference doesn't show full box */
+        }
+
+        /* HEADER GRID */
+        .header {
+            display: flex;
+            width: 100%;
+            margin-bottom: 2px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        .header-left {
+            width: 60%;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-box {
+            border: 3px double #000;
+            width: 60px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24pt;
+            font-weight: bold;
+            font-family: 'Times New Roman', serif;
+            margin-right: 10px;
+        }
+
+        .company-info {
+            text-align: left;
+        }
+
+        .company-name {
+            font-family: 'Times New Roman', serif;
+            font-size: 16pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .company-desc {
+            font-size: 8pt;
+            margin-bottom: 2px;
+        }
+
+        .company-address {
+            font-size: 8pt;
+        }
+
+        .header-right {
+            width: 40%;
+            text-align: right;
+            padding-left: 20px;
+            font-size: 9pt;
+        }
+
+        .header-row {
+            display: flex;
+            margin-bottom: 5px;
+            align-items: flex-end; /* Align bottom to match dotted line */
+        }
+
+        .header-right .header-row {
+            justify-content: flex-end !important;
+        }
+
+        .header-label {
+            white-space: nowrap;
+            margin-right: 5px;
+        }
+
+        .header-value {
+            border-bottom: 1px dotted #000;
+            flex-grow: 1;
+            padding-left: 5px;
+        }
+
+        .header-right .header-value {
+            flex-grow: 0;
+            min-width: 150px;
+        }
+        /* Remove border for date if desired? User just said align right.
+           But consistent look usually keeps the line.
+           For Date row, I removed the label earlier.
+         */
+
+        /* INVOICE NO ROW */
+        .invoice-row {
+            margin-top: 2px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 9pt;
+            display: flex;
+            align-items: center;
+        }
+
+        .invoice-label {
+            margin-right: 5px;
+            font-style: italic;
+        }
+
+        .invoice-value {
+             border-bottom: 1px dotted #000;
+             min-width: 100px;
+             display: inline-block;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+            margin-bottom: 5px;
+        }
+
+        th {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+            font-weight: bold;
+            background: #f0f0f0; /* Slight gray background like reference */
+            font-size: 8pt; /* Slightly smaller to fit 7 cols */
+            white-space: nowrap;
+        }
+
+        td {
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 4px 5px;
+            font-size: 8pt;
+            vertical-align: middle;
+            height: 20px; /* Minimum height for lines */
+        }
+
+        .col-name { width: 35%; text-align: left; }
+        .col-unit { width: 8%; text-align: center; }
+        .col-qty { width: 8%; text-align: center; }
+        .col-price { width: 16%; text-align: right; }
+        .col-disc { width: 15%; text-align: right; }
+        .col-total { width: 18%; text-align: right; }
+
+        /* FOOTER GRID */
+        .footer {
+            display: flex;
+            margin-top: 5px;
+            align-items: flex-start;
+        }
+
+        .footer-left {
+            width: 25%;
+            text-align: center;
+            font-size: 9pt;
+        }
+
+        .footer-center {
+            width: 45%;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .disclaimer-box {
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 8px;
+            font-size: 8pt;
+            text-align: center;
+            background: #f5f5f5;
+            width: 100%;
+        }
+
+        .footer-right {
+            width: 30%;
+        }
+
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 10pt;
+            font-weight: bold;
+        }
+
+        .amount-label {
+            text-align: left;
+        }
+
+        .amount-value {
+            text-align: right;
+            border-bottom: 1px solid #ccc;
+            min-width: 80px;
+        }
+
+        .signature-space {
+            height: 40px;
+            margin-top: 5px;
+        }
+
     </style>
 </head>
-<body class="bg-gray-100 font-sans antialiased text-gray-900">
+<body>
 
-    <div class="max-w-[210mm] mx-auto my-8 bg-white shadow-lg print-container relative min-h-[297mm]">
-
-        <!-- Print Toolbar -->
-        <div class="no-print absolute top-4 right-4 flex gap-2">
-            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow-sm transition flex items-center text-sm font-medium">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                Print Invoice
-            </button>
-            <a href="{{ route('sales.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md shadow-sm transition flex items-center text-sm font-medium">
-                &larr; Back
-            </a>
-        </div>
-
+    <div class="container">
         <!-- Header -->
-        <div class="flex justify-between items-start mb-12 pt-8 px-8">
-            <div>
-                <h1 class="text-4xl font-bold text-gray-800 tracking-tight">INVOICE</h1>
-                <p class="text-gray-500 mt-1">#{{ $sale->invoice_number }}</p>
-                <div class="mt-4">
-                    <p class="text-sm text-gray-500 uppercase tracking-wider font-semibold">Status</p>
-                    <span class="inline-flex mt-1 items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
-                        {{ $sale->status === \App\Enums\SaleStatus::COMPLETED ? 'bg-green-100 text-green-800 border-green-200' : '' }}
-                        {{ $sale->status === \App\Enums\SaleStatus::PENDING ? 'bg-yellow-100 text-yellow-800 border-yellow-200' : '' }}
-                        {{ $sale->status === \App\Enums\SaleStatus::CANCELLED ? 'bg-red-100 text-red-800 border-red-200' : '' }}">
-                        {{ $sale->status->label() }}
-                    </span>
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-box">TB</div>
+                <div class="company-info">
+                    <div class="company-name">{{ config('app.name', 'TOKO BUILD') }}</div>
+                    <div class="company-desc">Menjual: Bahan Bangunan, Alat Teknik, Cat, Dll.</div>
+                    <div class="company-address">Jl. Tukad Badung No. 5 Renon - Denpasar<br>HP. 0812-3456-7890</div>
                 </div>
             </div>
-            <div class="text-right">
-                <h2 class="text-xl font-bold text-gray-700">Toko Berkah Sejahtera</h2>
-                <div class="text-sm text-gray-500 mt-2 space-y-1">
-                    <p>Jl. Raya Utama No. 123</p>
-                    <p>Jakarta Selatan, 12000</p>
-                    <p>contact@berkahsejahtera.com</p>
-                    <p>+62 812 3456 7890</p>
+            <div class="header-right">
+                <div class="header-row">
+                    <span>{{ $sale->sale_date->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
+                </div>
+                <div class="header-row">
+                    <span class="header-label">Kepada Yth,</span>
+                    <span class="header-value">{{ $sale->customer->name ?? 'Guest' }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- Info Grid -->
-        <div class="grid grid-cols-2 gap-12 px-8 mb-12">
-            <div>
-                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 pb-2 mb-3">Bill To</p>
-                <div class="text-gray-800">
-                    @if($sale->customer)
-                        <p class="font-bold text-lg">{{ $sale->customer->name }}</p>
-                        @if($sale->customer->address)
-                            <p class="text-sm text-gray-600 mt-1 max-w-xs">{{ $sale->customer->address }}</p>
-                        @endif
-                        @if($sale->customer->phone)
-                            <p class="text-sm text-gray-600 mt-1">{{ $sale->customer->phone }}</p>
-                        @endif
-                    @else
-                        <p class="font-medium text-gray-700 italic">Guest Customer</p>
-                    @endif
-                </div>
-            </div>
-            <div class="text-right">
-                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-200 pb-2 mb-3">Invoice Details</p>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Date:</span>
-                        <span class="font-medium text-gray-900">{{ $sale->sale_date->format('d M Y, H:i') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Served By:</span>
-                        <span class="font-medium text-gray-900">{{ $sale->creator->name }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Payment Method:</span>
-                        <span class="font-medium text-gray-900 uppercase">{{ $sale->payment_method->label() }}</span>
-                    </div>
-                </div>
-            </div>
+        <!-- Invoice No Line -->
+        <div class="invoice-row">
+            <span class="invoice-label">FAKTUR / BON / KONTAN No.</span>
+            <span class="invoice-value">{{ $sale->invoice_number }}</span>
         </div>
 
-        <!-- Items Table -->
-        <div class="px-8 mb-8">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b-2 border-gray-800 text-gray-800 uppercase tracking-wider font-bold text-xs">
-                        <th class="text-left py-3">Item Description</th>
-                        <th class="text-center py-3 w-24">Qty</th>
-                        <th class="text-right py-3 w-32">Unit Price</th>
-                        <th class="text-right py-3 w-32">Discount</th>
-                        <th class="text-right py-3 w-32">Amount</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    @foreach($sale->items as $item)
-                        <tr>
-                            <td class="py-4 text-gray-700">
-                                <p class="font-semibold">{{ $item->product->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $item->product->product_code ?? $item->product->sku }}</p>
-                            </td>
-                            <td class="py-4 text-center text-gray-700">{{ $item->quantity }}</td>
-                            <td class="py-4 text-right text-gray-700">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                            <td class="py-4 text-right text-red-500 text-xs">
-                                {{ $item->discount > 0 ? '- Rp ' . number_format($item->discount * $item->quantity, 0, ',', '.') : '-' }}
-                            </td>
-                            <td class="py-4 text-right font-bold text-gray-900">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+        <!-- Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-name">Nama Barang</th>
+                    <th class="col-unit">Satuan</th>
+                    <th class="col-qty">Qty</th>
+                    <th class="col-price">Harga</th>
+                    <th class="col-disc">Diskon</th>
+                    <th class="col-total">Jumlah</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($sale->items as $item)
+                @php
+                    $finalPrice = $item->unit_price - $item->discount;
+                @endphp
+                <tr>
+                    <td class="col-name">{{ $item->product->name }}</td>
+                    <td class="col-unit">{{ $item->product->unit->symbol ?? '-' }}</td>
+                    <td class="col-qty">{{ $item->quantity }}</td>
+                    <td class="col-price">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                    <td class="col-disc">{{ $item->discount > 0 ? number_format($item->discount, 0, ',', '.') : '-' }}</td>
+                    <td class="col-total">{{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                </tr>
+                @endforeach
 
-        <!-- Totals & Payment Info -->
-        <div class="px-8 flex flex-row justify-between items-start">
-            <div class="w-1/2 pr-12">
-                @if($sale->notes)
-                    <div class="mb-6">
-                        <p class="text-xs font-bold text-gray-500 uppercase mb-2">Notes</p>
-                        <p class="text-sm text-gray-600 italic bg-gray-50 p-3 rounded border border-gray-100">{{ $sale->notes }}</p>
-                    </div>
-                @endif
-                <div class="text-xs text-gray-500 mt-8">
-                    <p class="font-bold mb-1">Terms & Conditions:</p>
-                    <ul class="list-disc pl-4 space-y-1">
-                        <li>Goods sold are non-refundable unless defective.</li>
-                        <li>Please keep this invoice as proof of purchase.</li>
-                        <li>Warranty claims require this original invoice.</li>
-                    </ul>
+                {{-- Fill empty rows to maintain size --}}
+                @for($i = 0; $i < max(0, 8 - count($sale->items)); $i++)
+                <tr>
+                    <td>&nbsp;</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                @endfor
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <div>Tanda Terima</div>
+                <div class="signature-space"></div>
+                <div>( .................................... )</div>
+            </div>
+
+            <div class="footer-center">
+                <div class="disclaimer-box">
+                    Mohon diperiksa bahwa barang dalam keadaan baik pada waktu diterima, barang yang sudah dibeli tidak dapat dikembalikan
                 </div>
             </div>
 
-            <div class="w-1/2 max-w-xs">
-                <div class="space-y-3 pt-4 border-t border-gray-100">
-                    <div class="flex justify-between text-gray-600 text-sm">
-                        <span>Subtotal</span>
-                        <span>Rp {{ number_format($sale->subtotal, 0, ',', '.') }}</span>
-                    </div>
-                    @if($sale->total_discount > 0)
-                    <div class="flex justify-between text-red-600 text-sm">
-                        <span>Total Discount</span>
-                        <span>- Rp {{ number_format($sale->total_discount, 0, ',', '.') }}</span>
-                    </div>
-                    @endif
-                    <div class="flex justify-between text-gray-900 font-bold text-lg pt-3 border-t-2 border-gray-800">
-                        <span>TOTAL</span>
-                        <span>Rp {{ number_format($sale->total, 0, ',', '.') }}</span>
-                    </div>
-
-                    <div class="pt-6 space-y-2 mt-4 border-t border-gray-200">
-                         <div class="flex justify-between text-gray-600 text-sm">
-                            <span>Cash Received</span>
-                            <span>Rp {{ number_format($sale->cash_received, 0, ',', '.') }}</span>
-                        </div>
-                         <div class="flex justify-between text-gray-600 text-sm">
-                            <span>Change</span>
-                            <span>Rp {{ number_format($sale->change, 0, ',', '.') }}</span>
-                        </div>
-                    </div>
+            <div class="footer-right">
+                <div class="amount-row">
+                    <span class="amount-label">Total</span>
+                    <span class="amount-value">Rp. {{ number_format($sale->total, 0, ',', '.') }}</span>
+                </div>
+                <div class="amount-row">
+                    <span class="amount-label">Uang Diterima</span>
+                    <span class="amount-value">Rp. {{ number_format($sale->cash_received, 0, ',', '.') }}</span>
+                </div>
+                <div class="amount-row">
+                    <span class="amount-label">Kembalian</span>
+                    <span class="amount-value">Rp. {{ number_format($sale->change, 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>
-
-        <!-- Signature Area (Optional, for formal invoices) -->
-        <div class="absolute bottom-12 left-8 right-8 flex justify-between text-center no-print-height">
-           {{-- Only visible in print or long pages --}}
-        </div>
-
-        <div class="mt-20 px-8 text-center text-xs text-gray-400">
-             <p>Generated by Sales System on {{ now()->format('d M Y H:i:s') }}</p>
-        </div>
-
     </div>
+
 </body>
 </html>

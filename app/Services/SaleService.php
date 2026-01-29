@@ -14,27 +14,19 @@ class SaleService
 {
     /**
      * Create a new sale with items and deduction of stock.
-     *
-     * @throws SaleException
      */
     public function createSale(SaleData $data): Sale
     {
         return DB::transaction(function () use ($data) {
             try {
-                // 1. Optimize: Collect Product IDs & Sort to prevent deadlocks
-                $productIds = [];
-                foreach ($data->items as $item) {
-                    $productIds[] = $item->product_id;
-                }
-                sort($productIds); // Sort IDs for consistent locking order
+                // Collect and sort products for locking
+                $productIds = collect($data->items)->pluck('product_id')->sort()->values()->all();
 
-                // 2. Fetch all products in one query with locking
                 $products = Product::whereIn('id', $productIds)
                     ->lockForUpdate()
                     ->get()
                     ->keyBy('id');
 
-                // 3. Create Sale Header
                 $sale = Sale::create([
                     'invoice_number' => $this->generateInvoiceNumber(),
                     'customer_id' => $data->customer_id,
@@ -45,7 +37,6 @@ class SaleService
                     'notes' => $data->notes,
                     'cash_received' => $data->cash_received,
                     'change' => $data->change,
-                    'cash' => $data->cash,
                     'subtotal' => 0,
                     'total_discount' => 0,
                     'total' => 0,
@@ -54,7 +45,6 @@ class SaleService
                 $totalSubtotal = 0;
                 $totalDiscount = 0;
 
-                // 4. Process Items (Memory check with pre-loaded products)
                 foreach ($data->items as $itemData) {
                     $product = $products->get($itemData->product_id);
 
@@ -62,7 +52,7 @@ class SaleService
                         throw new Exception("Product ID {$itemData->product_id} not found.");
                     }
 
-                    // Domain Rule: Stock Validation
+                    // Stock validation
                     if ($product->quantity < $itemData->quantity) {
                         throw SaleException::insufficientStock(
                             $product->name,
@@ -70,33 +60,29 @@ class SaleService
                             $product->quantity
                         );
                     }
+                    $product->decrement('quantity', $itemData->quantity);
 
-                    // Calculation
-                    $unitPrice = $itemData->unit_price;
+                    // Financials
+                    $unitPrice = $product->selling_price;
                     $quantity = $itemData->quantity;
                     $discount = $itemData->discount;
                     $finalPrice = $unitPrice - $discount;
                     $subtotal   = $finalPrice * $quantity;
 
-                    // Create Item
                     $sale->items()->create([
                         'product_id'  => $product->id,
                         'quantity'    => $quantity,
-                        'cost_price' => $product->purchase_price, // HPP
+                        'cost_price' => $product->purchase_price,
                         'unit_price'  => $unitPrice,
                         'discount'    => $discount,
                         'final_price' => $finalPrice,
                         'subtotal'    => $subtotal,
                     ]);
 
-                    // Update Stock
-                    $product->decrement('quantity', $quantity);
-
                     $totalSubtotal += $subtotal;
                     $totalDiscount += $discount * $quantity;
                 }
 
-                // 5. Update Header Totals
                 $sale->update([
                     'subtotal' => $totalSubtotal + $totalDiscount,
                     'total_discount' => $totalDiscount,
@@ -106,9 +92,8 @@ class SaleService
                 return $sale;
 
             } catch (Exception $e) {
-                if ($e instanceof SaleException) {
+                if ($e instanceof SaleException)
                     throw $e;
-                }
                 throw SaleException::creationFailed($e->getMessage(), ['data' => $data]);
             }
         });
@@ -116,49 +101,132 @@ class SaleService
 
     /**
      * Cancel a sale and restore stock.
-     *
-     * @param Sale $sale
-     * @return Sale
-     * @throws Exception
      */
-    public function cancelSale(Sale $sale): Sale
+    public function cancelSale(Sale $sale, ?string $reason = null): Sale
     {
-        return DB::transaction(function () use ($sale) {
+        return DB::transaction(function () use ($sale, $reason) {
             try {
                 if ($sale->status === SaleStatus::CANCELLED) {
                     throw SaleException::invalidStatus('cancel', $sale->status->label(), ['id' => $sale->id]);
                 }
 
-                // Restore Stock
-                // Eager load items to avoid N+1 inside transaction if not already loaded
-                $sale->loadMissing('items.product');
+                // Restore stock for completed or pending sales
+                if (in_array($sale->status, [SaleStatus::COMPLETED, SaleStatus::PENDING])) {
+                    $sale->loadMissing('items.product');
 
-                foreach ($sale->items as $item) {
-                    if ($item->product) {
-                        $item->product->increment('quantity', $item->quantity);
+                    foreach ($sale->items as $item) {
+                        if ($item->product) {
+                            $item->product->increment('quantity', $item->quantity);
+                        }
                     }
                 }
 
-                $sale->update(['status' => SaleStatus::CANCELLED]);
+                $updateData = ['status' => SaleStatus::CANCELLED];
+
+                if ($reason) {
+                    $updateData['notes'] = ($sale->notes ? $sale->notes . "\n" : '') . "[Cancelled]: " . $reason;
+                }
+
+                $sale->update($updateData);
 
                 return $sale;
 
             } catch (Exception $e) {
-                if ($e instanceof SaleException) {
+                if ($e instanceof SaleException)
                     throw $e;
-                }
                 throw SaleException::cancellationFailed($e->getMessage(), ['id' => $sale->id]);
             }
         });
     }
 
     /**
+     * Mark a pending sale as completed.
+     */
+    public function completeSale(Sale $sale, array $paymentData = []): Sale
+    {
+        return DB::transaction(function () use ($sale, $paymentData) {
+            if ($sale->status !== SaleStatus::PENDING) {
+                throw SaleException::invalidStatus('complete', $sale->status->label(), ['id' => $sale->id]);
+            }
+
+            $updateData = ['status' => SaleStatus::COMPLETED];
+
+            if (!empty($paymentData)) {
+                $updateData['cash_received'] = $paymentData['cash_received'] ?? $sale->cash_received;
+                $updateData['change'] = $paymentData['change'] ?? $sale->change;
+            }
+
+            $sale->update($updateData);
+
+            return $sale;
+        });
+    }
+
+    /**
+     * Restore a cancelled sale to pending (must reserve stock again).
+     */
+    public function restoreSale(Sale $sale): Sale
+    {
+        return DB::transaction(function () use ($sale) {
+            if ($sale->status !== SaleStatus::CANCELLED) {
+                throw SaleException::invalidStatus('restore', $sale->status->label(), ['id' => $sale->id]);
+            }
+
+            // Must re-deduct stock
+            $sale->loadMissing('items.product');
+
+            foreach ($sale->items as $item) {
+                $product = $item->product()->lockForUpdate()->find($item->product_id);
+
+                if (!$product) {
+                    throw new Exception("Product ID {$item->product_id} not found.");
+                }
+
+                if ($product->quantity < $item->quantity) {
+                    throw SaleException::insufficientStock(
+                        $product->name,
+                        $item->quantity,
+                        $product->quantity
+                    );
+                }
+
+                $product->decrement('quantity', $item->quantity);
+            }
+
+            // Restore to PENDING
+            $sale->update(['status' => SaleStatus::PENDING]);
+
+            return $sale;
+        });
+    }
+
+    /**
+     * Permanently delete a cancelled sale.
+     *
+     * @param Sale $sale
+     * @return void
+     * @throws Exception
+     */
+    public function deleteSale(Sale $sale): void
+    {
+        DB::transaction(function () use ($sale) {
+            if ($sale->status !== SaleStatus::CANCELLED) {
+                throw SaleException::invalidStatus('delete', $sale->status->label(), ['id' => $sale->id]);
+            }
+
+            // Manually delete items first due to restrictOnDelete constraint
+            $sale->items()->delete();
+            $sale->delete();
+        });
+    }
+
+    /**
      * Generate unique invoice number.
-     * Format: INV.YYYYMMDD.0001
+     * Format: INV.YYMMDD.0001
      */
     private function generateInvoiceNumber(): string
     {
-        $prefix = 'INV.' . date('Ymd') . '.';
+        $prefix = 'INV.' . date('ymd') . '.';
 
         $latest = Sale::where('invoice_number', 'like', $prefix . '%')
             ->orderBy('id', 'desc')

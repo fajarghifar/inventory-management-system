@@ -58,7 +58,6 @@ final class SalesTable extends PowerGridComponent
     {
         return PowerGrid::fields()
             ->add('id')
-            ->add('notes') // Added notes field
             ->add('invoice_number', fn(Sale $model) => $model->invoice_number ?: '-')
             ->add('customer_name', fn(Sale $model) => $model->customer ? $model->customer->name : 'Guest')
             ->add('sale_date_formatted', fn(Sale $model) => Carbon::parse($model->sale_date)->format('d/m/Y'))
@@ -100,10 +99,6 @@ final class SalesTable extends PowerGridComponent
 
             Column::make('Status', 'status_badge', 'status')
                 ->sortable(),
-
-            Column::make('Notes', 'notes')
-                ->sortable()
-                ->searchable(),
 
             Column::action('Action'),
         ];
@@ -187,25 +182,30 @@ final class SalesTable extends PowerGridComponent
                 ->tooltip('Print Invoice'),
 
             Button::add('delete')
-                ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>')
+                ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>')
                 ->class('bg-red-500 hover:bg-red-600 text-white p-2 rounded-md flex items-center justify-center')
-                ->dispatch('cancel', ['rowId' => $row->id])
-                ->attributes(['wire:confirm' => 'Are you sure you want to CANCEL this sale?'])
-                ->tooltip('Cancel/Void Sale')
-                ->can(fn($row) => $row->status !== SaleStatus::CANCELLED),
+                ->dispatch('open-delete-modal', [
+                    'component' => 'sales.sales-table',
+                    'method' => 'delete',
+                    'params' => ['rowId' => $row->id],
+                    'title' => 'Delete Sale?',
+                    'description' => "Are you sure you want to PERMANENTLY DELETE invoice '{$row->invoice_number}'? This action cannot be undone.",
+                ])
+                ->tooltip('Delete Sale')
+                ->can(fn($row) => $row->status === SaleStatus::CANCELLED),
         ];
     }
 
-    #[\Livewire\Attributes\On('cancel')]
-    public function cancel($rowId, SaleService $saleService): void
+    #[\Livewire\Attributes\On('delete')]
+    public function delete($rowId, SaleService $saleService): void
     {
         $sale = Sale::find($rowId);
         if ($sale) {
             try {
-                $saleService->cancelSale($sale);
-                $this->dispatch('toast', message: 'Sale cancelled.', type: 'success');
+                $saleService->deleteSale($sale);
+                $this->dispatch('toast', message: 'Sale deleted successfully.', type: 'success');
             } catch (SaleException $e) {
-                $this->dispatch('toast', message: 'Cancel failed: ' . $e->getMessage(), type: 'error');
+                $this->dispatch('toast', message: 'Delete failed: ' . $e->getMessage(), type: 'error');
             } catch (\Exception $e) {
                 $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
             }

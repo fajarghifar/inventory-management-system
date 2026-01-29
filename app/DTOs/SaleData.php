@@ -21,7 +21,6 @@ readonly class SaleData
         public ?string $notes = null,
         public int $cash_received = 0,
         public int $change = 0,
-        public int $cash = 0,
     ) {}
 
     public static function fromRequest(array $data): self
@@ -36,7 +35,6 @@ readonly class SaleData
             notes: $data['notes'] ?? null,
             cash_received: (int) ($data['cash_received'] ?? 0),
             change: (int) ($data['change'] ?? 0),
-            cash: (int) ($data['cash'] ?? 0),
         );
     }
 }

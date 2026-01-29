@@ -29,7 +29,10 @@
                                 Sales
                             </x-slot>
                             <x-slot name="content">
-                                <x-dropdown-link :href="route('sales.index')" :active="request()->routeIs('sales.*')">
+                                <x-dropdown-link :href="route('sales.create')" :active="request()->routeIs('sales.create')">
+                                    POS
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('sales.index')" :active="request()->routeIs(['sales.index', 'sales.show'])">
                                     Sales
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
@@ -170,7 +173,8 @@
                             </button>
                             <div x-show="expanded" x-collapse>
                                 <div class="mt-2 flex flex-col gap-2 pl-4 border-l border-border ml-2">
-                                    <a class="text-sm font-medium hover:underline py-1 {{ request()->routeIs('sales.index') ? 'text-primary' : '' }}" href="{{ route('sales.index') }}">Sales</a>
+                                    <a class="text-sm font-medium hover:underline py-1 {{ request()->routeIs(['sales.index', 'sales.show']) ? 'text-primary' : '' }}" href="{{ route('sales.index') }}">Sales</a>
+                                    <a class="text-sm font-medium hover:underline py-1 {{ request()->routeIs('sales.create') ? 'text-primary' : '' }}" href="{{ route('sales.create') }}">POS</a>
                                     <a class="text-sm font-medium hover:underline py-1 {{ request()->routeIs('customers.index') ? 'text-primary' : '' }}" href="{{ route('customers.index') }}">Customers</a>
                                 </div>
                             </div>

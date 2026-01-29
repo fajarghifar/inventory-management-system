@@ -25,7 +25,6 @@ return new class extends Migration
             // Payment Info
             $table->bigInteger('cash_received')->default(0);
             $table->bigInteger('change')->default(0);
-            $table->bigInteger('cash')->default(0); // Optional: cash payment amount if implied
             $table->string('payment_method')->default('cash'); // Enums\PaymentMethod
             $table->text('notes')->nullable();
             $table->timestamps();

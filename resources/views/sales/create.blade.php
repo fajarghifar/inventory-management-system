@@ -1,9 +1,9 @@
-<x-app-layout title="Create Sale">
+<x-app-layout title="POS">
     <div class="mx-auto sm:px-6 lg:px-8 py-4"
          x-data="pos()"
          x-init="init()"
-         @keydown.window.f1.prevent="$refs.searchInput.focus()"
-         @keydown.window.f2.prevent="$refs.customerInput.focus()"
+         @keydown.window.f1.prevent="productTs && productTs.focus()"
+         @keydown.window.f2.prevent="customerTs && customerTs.focus()"
          @keydown.window.f3.prevent="openConfirmation()"
          @keydown.window.f4.prevent="openCustomerModal()"
     >
@@ -11,62 +11,13 @@
 
             <!-- Left Side: Transaction Details (70%) -->
             <div class="w-full lg:w-[70%] flex flex-col space-y-4 h-full">
-                <!-- Search Bar -->
-                <div class="relative z-20" @click.outside="closeSearch()">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <template x-if="!isLoading">
-                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                            </svg>
-                        </template>
-                        <template x-if="isLoading">
-                            <svg class="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </template>
-                    </div>
-                    <input
-                        x-ref="searchInput"
-                        x-model="searchQuery"
-                        @input.debounce.300ms="searchProducts()"
-                        @focus="showResults = true"
-                        type="text"
+                <!-- Search Bar (TomSelect) -->
+                <div class="relative z-20 mb-2">
+                    <select
+                        x-ref="productSelect"
                         placeholder="Search Products (Name or SKU) [F1]..."
-                        class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-base shadow-sm"
-                        autofocus
-                    >
-
-                    <!-- Search Results Dropdown -->
-                    <div x-show="showResults"
-                         x-transition.opacity.duration.200ms
-                         class="absolute z-50 w-full mt-1 bg-white shadow-xl max-h-96 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
-                         style="display: none;">
-
-                        <div x-show="searchResults.length === 0 && searchQuery.length >= 2 && !isLoading" class="py-3 px-3 text-gray-500 text-center italic">
-                            Product not found
-                        </div>
-
-                        <template x-for="product in searchResults" :key="product.id">
-                            <div
-                                @click="addToCart(product)"
-                                class="cursor-pointer select-none relative py-3 pl-3 pr-9 hover:bg-indigo-50 border-b border-gray-100 last:border-0"
-                            >
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <span class="font-medium text-gray-900" x-text="product.name"></span>
-                                        <span class="text-xs text-gray-500 ml-2" x-text="product.sku"></span>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="font-bold text-indigo-600" x-text="formatCurrency(product.selling_price)"></div>
-                                        <div class="text-xs" :class="product.quantity > 0 ? 'text-green-600' : 'text-red-600'">
-                                            Stock: <span x-text="product.quantity"></span> <span x-text="product.unit?.symbol || ''"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
+                        autocomplete="off"
+                    ></select>
                 </div>
 
                 <!-- Cart Table -->
@@ -103,7 +54,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500" x-text="item.unit"></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right">
-                                             <div class="relative rounded-md shadow-sm w-32 ml-auto">
+                                            <div class="relative rounded-md shadow-sm w-32 ml-auto">
                                                 <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                                     <span class="text-gray-500 sm:text-xs">Rp</span>
                                                 </div>
@@ -158,56 +109,31 @@
                             </button>
                         </div>
 
-                        <div class="relative" @click.outside="closeCustomerSearch()">
+                        <div class="relative">
                             <template x-if="selectedCustomer">
                                 <div class="flex justify-between items-center">
                                     <div>
                                         <h3 class="font-bold text-lg text-gray-900" x-text="selectedCustomer.name"></h3>
                                         <p class="text-sm text-gray-600" x-text="selectedCustomer.phone || 'No Phone'"></p>
                                     </div>
-                                    <button @click="selectedCustomer = null; customerSearch = ''" class="text-gray-400 hover:text-red-500">
+                                    <button @click="resetCustomer()" class="text-gray-400 hover:text-red-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                     </button>
                                 </div>
                             </template>
-                            <template x-if="!selectedCustomer">
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <template x-if="isCustomerLoading">
-                                            <svg class="animate-spin h-4 w-4 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                        </template>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        x-ref="customerInput"
-                                        x-model="customerSearch"
-                                        @input.debounce.300ms="searchCustomers()"
-                                        @focus="showCustomerResults = true"
-                                        placeholder="Search Customer [F2]..."
-                                        class="block w-full text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white pr-10"
-                                    >
-                                    <div x-show="showCustomerResults" class="absolute z-10 w-full mt-1 bg-white shadow-lg max-h-40 rounded-md py-1 text-sm overflow-auto" style="display: none;">
-                                        <div x-show="customerResults.length === 0 && customerSearch.length >= 2 && !isCustomerLoading" class="px-3 py-2 text-gray-500 italic text-xs text-center">
-                                            Customer not found
-                                        </div>
-                                        <template x-for="cust in customerResults" :key="cust.id">
-                                            <div @click="selectCustomer(cust)" class="px-3 py-2 hover:bg-indigo-50 cursor-pointer">
-                                                <div class="font-medium" x-text="cust.name"></div>
-                                                <div class="text-xs text-gray-500" x-text="cust.phone"></div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                            </template>
+                            <div x-show="!selectedCustomer">
+                                <select
+                                    x-ref="customerSelect"
+                                    placeholder="Search Customer [F2]..."
+                                    autocomplete="off"
+                                ></select>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Totals Section -->
                     <div class="space-y-3">
-                         <div class="flex justify-between text-gray-600 text-sm font-medium">
+                        <div class="flex justify-between text-gray-600 text-sm font-medium">
                             <span>Subtotal</span>
                             <span x-text="formatCurrency(subtotal)"></span>
                         </div>
@@ -279,7 +205,7 @@
                                     <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 5000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
                                         +5K
                                     </button>
-                                     <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 2000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
+                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 2000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
                                         +2K
                                     </button>
                                     <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 1000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
@@ -310,6 +236,7 @@
                 <!-- Footer Actions -->
                 <div class="p-4 border-t border-gray-200 bg-gray-50 flex gap-3">
                     <button
+                        @click="$dispatch('open-modal', { name: 'cancel-modal' })"
                         class="w-1/3 py-3 text-sm font-bold text-red-600 hover:text-white bg-white border border-red-200 hover:bg-red-600 rounded-lg flex items-center justify-center transition-colors shadow-sm"
                     >
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -334,28 +261,21 @@
         <script>
             function pos() {
                 return {
-                    searchQuery: '',
-                    searchResults: [],
-                    showResults: false,
-                    isLoading: false,
-
-                    customerSearch: '',
-                    customerResults: [],
-                    showCustomerResults: false,
-                    selectedCustomer: null,
-                    isCustomerLoading: false,
-
                     cart: [],
-
+                    selectedCustomer: null,
                     payment: {
                         method: 'cash',
                         cash_received: 0,
                         notes: ''
                     },
-
-                    saleStatus: 'completed', // pending | completed
-
+                    saleStatus: 'completed',
                     isSubmitting: false,
+
+                    // TomSelect Instances
+                    productTs: null,
+                    customerTs: null,
+
+                    lastSearchQuery: '',
 
                     init() {
                          // Load from LocalStorage
@@ -368,38 +288,141 @@
                         const savedPayment = localStorage.getItem('pos_payment');
                         if (savedPayment) this.payment = JSON.parse(savedPayment);
 
-                        // Watch for changes (manual watchers as Alpine doesn't have deep watch on arrays easily without plugin, using explicit watchers)
+                        // Watchers
                         this.$watch('cart', (val) => localStorage.setItem('pos_cart', JSON.stringify(val)));
                         this.$watch('selectedCustomer', (val) => localStorage.setItem('pos_customer', JSON.stringify(val)));
                         this.$watch('payment', (val) => localStorage.setItem('pos_payment', JSON.stringify(val)));
+
+                        this.initProductSelect();
+                        this.initCustomerSelect();
                     },
 
-                    // Product Search
-                    async searchProducts() {
-                        if (this.searchQuery.length < 2) {
-                            this.searchResults = [];
-                            return;
+                    initProductSelect() {
+                        if (!this.$refs.productSelect) return;
+
+                        if (this.productTs) {
+                            this.productTs.destroy();
+                            this.productTs = null;
                         }
-                        this.isLoading = true;
-                        try {
-                            const res = await fetch(`/pos-api/products?query=${this.searchQuery}`);
-                            this.searchResults = await res.json();
-                            this.showResults = true;
-                        } catch (e) {
-                            console.error(e);
-                        } finally {
-                            this.isLoading = false;
+
+                        this.productTs = new TomSelect(this.$refs.productSelect, {
+                            valueField: 'id',
+                            labelField: 'name',
+                            searchField: ['name', 'sku'],
+                            closeAfterSelect: false,
+                            openOnFocus: true,
+                            load: (query, callback) => {
+                                this.lastSearchQuery = query; // Capture query
+                                if(query.length < 2) return callback();
+                                fetch(`/pos-api/products?query=${query}`)
+                                    .then(response => response.json())
+                                    .then(json => {
+                                        callback(json);
+                                    }).catch(()=>{
+                                        callback();
+                                    });
+                            },
+                            render: {
+                                option: (item, escape) => {
+                                    return `
+                                        <div class="py-2 px-3 border-b border-gray-100">
+                                            <div class="flex justify-between items-center">
+                                                <div>
+                                                    <div class="font-medium text-gray-900">${escape(item.name)}</div>
+                                                    <div class="text-xs text-gray-500">${escape(item.sku)}</div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="font-bold text-indigo-600">${this.formatCurrency(item.selling_price)}</div>
+                                                    <div class="text-xs ${item.quantity > 0 ? 'text-green-600' : 'text-red-600'}">
+                                                        Stock: ${escape(item.quantity)} ${escape(item.unit?.symbol || '')}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                },
+                                item: (item, escape) => {
+                                    return `<div>${escape(item.name)}</div>`;
+                                }
+                            },
+                            onChange: (value) => {
+                                if (value) {
+                                    const item = this.productTs.options[value];
+                                    if(item) {
+                                        this.addToCart(item);
+
+                                        // Improved Logic: Prevent double input on Enter
+                                        const cleanup = () => {
+                                            this.productTs.clear(true);
+                                            this.productTs.setTextboxValue(this.lastSearchQuery);
+                                            this.productTs.refreshOptions(false);
+                                        };
+
+                                        // Small delay to ensure TS internal "Enter" handling is done
+                                        setTimeout(cleanup, 10);
+                                    }
+                                }
+                            }
+                        });
+                    },
+
+                    initCustomerSelect() {
+                        if (!this.$refs.customerSelect) return;
+
+                        if (this.customerTs) {
+                            this.customerTs.destroy();
+                            this.customerTs = null;
                         }
+
+                        this.customerTs = new TomSelect(this.$refs.customerSelect, {
+                            valueField: 'id',
+                            labelField: 'name',
+                            searchField: ['name', 'phone'],
+                            load: (query, callback) => {
+                                if(query.length < 2) return callback();
+                                fetch(`/pos-api/customers?query=${query}`)
+                                    .then(response => response.json())
+                                    .then(json => {
+                                        callback(json);
+                                    }).catch(()=>{
+                                        callback();
+                                    });
+                            },
+                            render: {
+                                option: (item, escape) => {
+                                    return `
+                                        <div class="py-2 px-3 hover:bg-indigo-50">
+                                            <div class="font-medium text-gray-900">${escape(item.name)}</div>
+                                            <div class="text-xs text-gray-500">${escape(item.phone || 'No Phone')}</div>
+                                        </div>
+                                    `;
+                                }
+                            },
+                            onChange: (value) => {
+                                if (value) {
+                                    const item = this.customerTs.options[value];
+                                    if(item) {
+                                        this.selectedCustomer = item;
+                                        // Once selected, the div toggles to show selectedCustomer details.
+                                        // We might want to clear TS value if we ever un-select.
+                                        this.customerTs.clear();
+                                    }
+                                }
+                            }
+                        });
+                    },
+
+                    resetCustomer() {
+                        this.selectedCustomer = null;
+                        this.$nextTick(() => {
+                            this.customerTs && this.customerTs.focus();
+                        });
                     },
 
                     clearStorage() {
                         localStorage.removeItem('pos_cart');
                         localStorage.removeItem('pos_customer');
                         localStorage.removeItem('pos_payment');
-                    },
-
-                    closeSearch() {
-                        this.showResults = false;
                     },
 
                     // Cart Management
@@ -427,17 +450,13 @@
                                 this.$dispatch('toast', { message: 'Out of Stock!', type: 'error' });
                             }
                         }
-                        // Keep search open as requested
-                        // this.searchQuery = '';
-                        // this.searchResults = [];
-                        // this.showResults = false;
                     },
 
                     validateQty(index) {
                         const item = this.cart[index];
                         if (item.quantity > item.max_stock) {
-                             item.quantity = item.max_stock;
-                             this.$dispatch('toast', { message: 'Maksimum stok tercapai', type: 'warning' });
+                            item.quantity = item.max_stock;
+                            this.$dispatch('toast', { message: 'Maksimum stok tercapai', type: 'warning' });
                         }
                         if (item.quantity < 1) item.quantity = 1;
                     },
@@ -446,38 +465,14 @@
                         this.cart.splice(index, 1);
                     },
 
-                    // Customer Search
-                    async searchCustomers() {
-                         if (this.customerSearch.length < 2) {
-                            this.customerResults = [];
-                            return;
-                        }
-                        this.isCustomerLoading = true;
-                        try {
-                            const res = await fetch(`/pos-api/customers?query=${this.customerSearch}`);
-                            this.customerResults = await res.json();
-                            this.showCustomerResults = true;
-                        } catch (e) {
-                            console.error(e);
-                        } finally {
-                            this.isCustomerLoading = false;
-                        }
-                    },
-
-                    selectCustomer(cust) {
-                        this.selectedCustomer = cust;
-                        this.customerSearch = '';
-                        this.showCustomerResults = false;
-                        this.customerResults = [];
-                    },
-
-                    closeCustomerSearch() {
-                        this.showCustomerResults = false;
-                    },
-
                     // Customer Modal Open
                     openCustomerModal() {
                         this.$dispatch('open-modal', { name: 'customer-modal' });
+                        this.$nextTick(() => {
+                            setTimeout(() => {
+                                this.$refs.nameInput && this.$refs.nameInput.focus();
+                            }, 100); // Small delay to ensure modal transition
+                        });
                     },
 
                     // Computed properties (simulated getters in Alpine)
@@ -487,7 +482,7 @@
                     },
 
                     get totalDiscount() {
-                         return this.cart.reduce((sum, item) => sum + (item.discount || 0), 0);
+                        return this.cart.reduce((sum, item) => sum + (item.discount || 0), 0);
                     },
 
                     get total() {
@@ -501,7 +496,7 @@
 
                     // Helpers
                     formatCurrency(value) {
-                         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value).replace('Rp', 'Rp ');
+                        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value).replace('Rp', 'Rp ');
                     },
 
                     formatNumber(value) {
@@ -580,15 +575,14 @@
                     resetForm() {
                         this.cart = [];
                         this.selectedCustomer = null;
-                        this.customerSearch = '';
                         this.payment = {
                             method: 'cash',
                             cash_received: 0,
                             notes: ''
                         };
-                        this.searchQuery = '';
-                        this.searchResults = [];
-                        this.showResults = false;
+                        // Reset TomSelects
+                        this.productTs && this.productTs.clear();
+                        this.customerTs && this.customerTs.clear();
                     }
                 }
             }
@@ -596,7 +590,7 @@
 
         <!-- Confirmation Modal -->
         <x-modal name="confirmation-modal" focusable>
-             <div class="p-6">
+            <div class="p-6">
                 <!-- Header -->
                 <div class="mb-6 space-y-1.5 text-center sm:text-left border-b border-gray-200 pb-4">
                     <h3 class="text-lg font-semibold leading-none tracking-tight text-foreground">
@@ -621,7 +615,7 @@
                         <span class="text-sm font-medium">Discount</span>
                         <span class="font-semibold" x-text="'- ' + formatCurrency(totalDiscount)"></span>
                     </div>
-                     <div class="flex items-center justify-between border-t border-gray-100 pt-2 mt-2">
+                    <div class="flex items-center justify-between border-t border-gray-100 pt-2 mt-2">
                         <span class="text-lg font-bold">Total Bill</span>
                         <span class="text-lg font-bold text-blue-600" x-text="formatCurrency(total)"></span>
                     </div>
@@ -676,7 +670,7 @@
 
                     <button
                         @click="$dispatch('close-modal', { name: 'confirmation-modal' })"
-                         class="w-full flex justify-center items-center py-2 px-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+                        class="w-full flex justify-center items-center py-2 px-4 text-sm font-medium text-gray-500 hover:text-gray-700"
                     >
                         Back
                     </button>
@@ -724,8 +718,8 @@
                                     this.errors[key] = data.errors[key][0];
                                 });
                             } else {
-                                 // Fallback if generic error
-                                 this.$dispatch('toast', { message: data.message || 'Error creating customer', type: 'error' });
+                                // Fallback if generic error
+                                this.$dispatch('toast', { message: data.message || 'Error creating customer', type: 'error' });
                             }
                         }
                     } catch(e) { console.error(e); }
@@ -749,6 +743,7 @@
                             name="new_name"
                             label="Full Name"
                             x-model="newCust.name"
+                            x-ref="nameInput"
                             required
                         />
                         <p x-show="errors.name" x-text="errors.name" class="text-sm font-medium text-red-600 mt-1" style="display: none;"></p>
@@ -818,6 +813,41 @@
                         </x-primary-button>
                     </div>
                 </div>
+            </div>
+        </x-modal>
+
+        <!-- Cancel Confirmation Modal -->
+        <x-modal name="cancel-modal" focusable>
+            <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">
+                            Cancel Transaction?
+                        </h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                Are you sure you want to cancel? All current items and selections will be lost.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
+                <x-danger-button @click="resetForm(); clearStorage(); $dispatch('close-modal', { name: 'cancel-modal' }); $dispatch('toast', { message: 'Transaction Cancelled', type: 'info' })" class="w-full sm:w-auto justify-center">
+                    {{ __('Yes, Cancel Transaction') }}
+                </x-danger-button>
+                <button
+                    type="button"
+                    @click="$dispatch('close-modal', { name: 'cancel-modal' })"
+                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors"
+                >
+                    {{ __('No, Return') }}
+                </button>
             </div>
         </x-modal>
 

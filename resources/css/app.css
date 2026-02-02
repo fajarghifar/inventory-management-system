@@ -59,3 +59,22 @@
     @apply bg-white border-gray-300 shadow-lg;
     z-index: 9999 !important;
 }
+
+/* Ensure Active Option is Visible */
+.ts-dropdown .active {
+    @apply bg-indigo-600 !important;
+}
+
+.ts-dropdown .active .text-gray-900,
+.ts-dropdown .active .text-gray-500,
+.ts-dropdown .active .text-indigo-600,
+.ts-dropdown .active .text-green-600,
+.ts-dropdown .active .text-red-600
+{
+    @apply text-white !important;
+}
+
+/* Increase Dropdown Height */
+.ts-dropdown-content {
+    max-height: 400px !important;
+}

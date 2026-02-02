@@ -2,33 +2,25 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Unit;
+use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UnitSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $units = [
-            ['name' => 'Kilogram', 'symbol' => 'kg'],
-            ['name' => 'Gram', 'symbol' => 'g'],
-            ['name' => 'Milligram', 'symbol' => 'mg'],
-            ['name' => 'Meter', 'symbol' => 'm'],
-            ['name' => 'Centimeter', 'symbol' => 'cm'],
-            ['name' => 'Millimeter', 'symbol' => 'mm'],
-            ['name' => 'Liter', 'symbol' => 'l'],
-            ['name' => 'Milliliter', 'symbol' => 'ml'],
-            ['name' => 'Pieces', 'symbol' => 'pcs'],
-            ['name' => 'Box', 'symbol' => 'box'],
-            ['name' => 'Pack', 'symbol' => 'pck'],
-            ['name' => 'Dozen', 'symbol' => 'dz'],
-            ['name' => 'Pair', 'symbol' => 'pr'],
-            ['name' => 'Set', 'symbol' => 'set'],
-            ['name' => 'Roll', 'symbol' => 'roll'],
+            ['name' => 'Pcs', 'symbol' => 'pcs'],       // Satuan umum (Alat, Sambungan Pipa, Kuas)
+            ['name' => 'Kilogram', 'symbol' => 'kg'],  // Paku, Kawat, Cat Kiloan
+            ['name' => 'Meter', 'symbol' => 'm'],      // Kabel, Talang, Plastik Cor
+            ['name' => 'Batang', 'symbol' => 'btg'],  // Pipa, Besi Beton, Baja Ringan, Lis
+            ['name' => 'Lembar', 'symbol' => 'lbr'],   // Triplek, Seng, Asbes, GRC
+            ['name' => 'Sak', 'symbol' => 'sak'],      // Khusus Semen
+            ['name' => 'Dus', 'symbol' => 'dus'],      // Keramik, Granit, Paku (Grosir)
+            ['name' => 'Roll', 'symbol' => 'roll'],    // Kabel Besar, Selang, Terpal Gulung
+            ['name' => 'Rit', 'symbol' => 'rit'],      // Pasir, Batu (Muatan Truk)
+            ['name' => 'Liter', 'symbol' => 'ltr'],    // Thinner, Cat Minyak
         ];
 
         foreach ($units as $unit) {

@@ -100,6 +100,7 @@
     class="relative space-y-2"
     wire:ignore
     x-on:click.outside="open = false"
+    x-on:mousedown.outside="open = false"
     {{ $attributes }}
 >
     @if($label)

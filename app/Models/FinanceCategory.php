@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Enums\FinanceCategoryType;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class FinanceCategory extends Model
 {
@@ -28,4 +28,9 @@ class FinanceCategory extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(FinanceTransaction::class);
+    }
 }

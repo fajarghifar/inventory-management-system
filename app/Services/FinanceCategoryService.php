@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\FinanceCategory;
 use App\DTOs\FinanceCategoryData;
-use App\Exceptions\FinanceCategoryException;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\FinanceCategoryException;
 
 class FinanceCategoryService
 {
@@ -47,7 +47,9 @@ class FinanceCategoryService
     {
         try {
             DB::transaction(function () use ($category) {
-                // Check for dependencies if needed (e.g. transactions)
+                if ($category->transactions()->exists()) {
+                    throw new \Exception('Cannot delete category because it has related transactions.');
+                }
                 $category->delete();
             });
         } catch (\Exception $e) {

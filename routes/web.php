@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::view('units', 'units.index')->name('units.index');
     Route::view('categories', 'categories.index')->name('categories.index');
     Route::view('products', 'products.index')->name('products.index');
+    Route::view('finance/categories', 'finance-categories.index')->name('finance.categories.index');
 
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');

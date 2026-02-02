@@ -20,4 +20,14 @@ class PurchaseItemData
             selling_price: $data['selling_price'],
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'product_id' => $this->product_id,
+            'quantity' => $this->quantity,
+            'unit_price' => $this->unit_price,
+            'selling_price' => $this->selling_price,
+        ];
+    }
 }

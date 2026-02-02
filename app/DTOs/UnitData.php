@@ -16,4 +16,12 @@ class UnitData
             symbol: $data['symbol'],
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'symbol' => $this->symbol,
+        ];
+    }
 }

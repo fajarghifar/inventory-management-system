@@ -36,4 +36,18 @@ class PurchaseData
             status: isset($data['status']) ? PurchaseStatus::from($data['status']) : PurchaseStatus::DRAFT,
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'supplier_id' => $this->supplier_id,
+            'purchase_date' => $this->purchase_date->toDateTimeString(),
+            'items' => array_map(fn($item) => $item->toArray(), $this->items),
+            'invoice_number' => $this->invoice_number,
+            'due_date' => $this->due_date?->toDateTimeString(),
+            'notes' => $this->notes,
+            'proof_image' => $this->proof_image,
+            'status' => $this->status->value,
+        ];
+    }
 }

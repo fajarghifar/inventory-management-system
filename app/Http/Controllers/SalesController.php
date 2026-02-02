@@ -28,7 +28,7 @@ class SalesController extends Controller
             $validated = $request->validated();
             $validated['created_by'] = Auth::id(); // Enforce current user
 
-            $saleData = SaleData::fromRequest($validated);
+            $saleData = SaleData::fromArray($validated);
 
             $sale = $saleService->createSale($saleData);
 

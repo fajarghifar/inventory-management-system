@@ -20,4 +20,14 @@ readonly class SaleItemData
             discount: (int) ($data['discount'] ?? 0),
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'product_id' => $this->product_id,
+            'quantity' => $this->quantity,
+            'unit_price' => $this->unit_price,
+            'discount' => $this->discount,
+        ];
+    }
 }

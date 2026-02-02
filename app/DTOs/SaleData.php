@@ -23,7 +23,7 @@ readonly class SaleData
         public int $change = 0,
     ) {}
 
-    public static function fromRequest(array $data): self
+    public static function fromArray(array $data): self
     {
         return new self(
             sale_date: Carbon::parse($data['sale_date']),
@@ -36,5 +36,20 @@ readonly class SaleData
             cash_received: (int) ($data['cash_received'] ?? 0),
             change: (int) ($data['change'] ?? 0),
         );
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'sale_date' => $this->sale_date->toDateTimeString(),
+            'payment_method' => $this->payment_method->value,
+            'created_by' => $this->created_by,
+            'items' => array_map(fn($item) => $item->toArray(), $this->items),
+            'customer_id' => $this->customer_id,
+            'status' => $this->status->value,
+            'notes' => $this->notes,
+            'cash_received' => $this->cash_received,
+            'change' => $this->change,
+        ];
     }
 }

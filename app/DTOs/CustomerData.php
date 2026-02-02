@@ -22,4 +22,15 @@ class CustomerData
             notes: $data['notes'] ?? null,
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'address' => $this->address,
+            'notes' => $this->notes,
+        ];
+    }
 }

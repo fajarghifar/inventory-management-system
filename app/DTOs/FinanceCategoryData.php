@@ -2,21 +2,24 @@
 
 namespace App\DTOs;
 
-use Illuminate\Support\Str;
+use App\Enums\FinanceCategoryType;
 
-class CategoryData
+class FinanceCategoryData
 {
     public function __construct(
         public readonly string $name,
-        public readonly ?string $slug,
-        public readonly ?string $description,
-    ) {}
+        public readonly string $slug,
+        public readonly FinanceCategoryType $type,
+        public readonly ?string $description = null,
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
         return new self(
             name: $data['name'],
-            slug: !empty($data['slug']) ? $data['slug'] : Str::slug($data['name']),
+            slug: $data['slug'],
+            type: $data['type'] instanceof FinanceCategoryType ? $data['type'] : FinanceCategoryType::from($data['type']),
             description: $data['description'] ?? null,
         );
     }
@@ -26,6 +29,7 @@ class CategoryData
         return [
             'name' => $this->name,
             'slug' => $this->slug,
+            'type' => $this->type->value,
             'description' => $this->description,
         ];
     }

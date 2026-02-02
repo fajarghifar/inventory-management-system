@@ -25,4 +25,15 @@ class SupplierData
         );
     }
 
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'contact_person' => $this->contact_person,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'address' => $this->address,
+            'notes' => $this->notes,
+        ];
+    }
 }

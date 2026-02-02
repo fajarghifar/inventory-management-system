@@ -111,7 +111,7 @@ class PosController extends Controller
                 $change = max(0, $cashReceived - $total);
             }
 
-            $saleData = SaleData::fromRequest([
+            $saleData = SaleData::fromArray([
                 'sale_date' => now()->format('Y-m-d'),
                 'payment_method' => $validated['payment_method'],
                 'created_by' => Auth::id(),

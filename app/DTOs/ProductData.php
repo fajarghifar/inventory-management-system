@@ -34,4 +34,21 @@ class ProductData
             notes: $data['notes'] ?? null,
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'category_id' => $this->category_id,
+            'unit_id' => $this->unit_id,
+            'sku' => $this->sku,
+            'name' => $this->name,
+            'purchase_price' => $this->purchase_price,
+            'selling_price' => $this->selling_price,
+            'quantity' => $this->quantity,
+            'min_stock' => $this->min_stock,
+            'is_active' => $this->is_active,
+            'description' => $this->description,
+            'notes' => $this->notes,
+        ];
+    }
 }

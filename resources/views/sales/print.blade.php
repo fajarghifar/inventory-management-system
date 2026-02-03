@@ -169,8 +169,8 @@
             height: 20px; /* Minimum height for lines */
         }
 
-        .col-name { width: 35%; text-align: left; }
-        .col-unit { width: 8%; text-align: center; }
+        .col-name { width: 43%; text-align: left; }
+        /* .col-unit removed */
         .col-qty { width: 8%; text-align: center; }
         .col-price { width: 16%; text-align: right; }
         .col-disc { width: 15%; text-align: right; }
@@ -244,9 +244,12 @@
             <div class="header-left">
                 <div class="logo-box">TB</div>
                 <div class="company-info">
-                    <div class="company-name">{{ config('app.name', 'TOKO BUILD') }}</div>
+                    <div class="company-name">{{ \App\Models\Setting::get('store_name', config('app.name')) }}</div>
                     <div class="company-desc">Menjual: Bahan Bangunan, Alat Teknik, Cat, Dll.</div>
-                    <div class="company-address">Jl. Tukad Badung No. 5 Renon - Denpasar<br>HP. 0812-3456-7890</div>
+                    <div class="company-address">
+                        {{ \App\Models\Setting::get('store_address', 'Jl. Default No. 1') }}<br>
+                        HP. {{ \App\Models\Setting::get('store_phone', '-') }}
+                    </div>
                 </div>
             </div>
             <div class="header-right">
@@ -271,7 +274,7 @@
             <thead>
                 <tr>
                     <th class="col-name">Nama Barang</th>
-                    <th class="col-unit">Satuan</th>
+                    <!-- <th class="col-unit">Satuan</th> -->
                     <th class="col-qty">Qty</th>
                     <th class="col-price">Harga</th>
                     <th class="col-disc">Diskon</th>
@@ -285,7 +288,7 @@
                 @endphp
                 <tr>
                     <td class="col-name">{{ $item->product->name }}</td>
-                    <td class="col-unit">{{ $item->product->unit->symbol ?? '-' }}</td>
+                    <!-- <td class="col-unit">{{ $item->product->unit->symbol ?? '-' }}</td> -->
                     <td class="col-qty">{{ $item->quantity }}</td>
                     <td class="col-price">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
                     <td class="col-disc">{{ $item->discount > 0 ? number_format($item->discount, 0, ',', '.') : '-' }}</td>
@@ -297,7 +300,7 @@
                 @for($i = 0; $i < max(0, 8 - count($sale->items)); $i++)
                 <tr>
                     <td>&nbsp;</td>
-                    <td></td>
+                    <!-- <td></td> -->
                     <td></td>
                     <td></td>
                     <td></td>

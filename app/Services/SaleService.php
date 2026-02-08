@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class SaleService
 {
+    public function __construct(
+        protected FinanceTransactionService $financeService
+    ) {
+    }
+
     /**
      * Create a new sale with items and deduction of stock.
      */
@@ -89,6 +94,11 @@ class SaleService
                     'total'          => $totalSubtotal,
                 ]);
 
+                // Sync Finance if Completed
+                if ($sale->status === SaleStatus::COMPLETED) {
+                    $this->financeService->recordIncomeFromSale($sale);
+                }
+
                 return $sale;
 
             } catch (Exception $e) {
@@ -129,6 +139,9 @@ class SaleService
 
                 $sale->update($updateData);
 
+                // Void Finance
+                $this->financeService->voidTransaction($sale);
+
                 return $sale;
 
             } catch (Exception $e) {
@@ -157,6 +170,9 @@ class SaleService
             }
 
             $sale->update($updateData);
+
+            // Sync Finance
+            $this->financeService->recordIncomeFromSale($sale);
 
             return $sale;
         });
@@ -196,6 +212,8 @@ class SaleService
             // Restore to PENDING
             $sale->update(['status' => SaleStatus::PENDING]);
 
+            // No Finance Sync needed as it goes to PENDING
+
             return $sale;
         });
     }
@@ -213,6 +231,9 @@ class SaleService
             if ($sale->status !== SaleStatus::CANCELLED) {
                 throw SaleException::invalidStatus('delete', $sale->status->label(), ['id' => $sale->id]);
             }
+
+            // Void Finance (Just in case)
+            $this->financeService->voidTransaction($sale);
 
             // Manually delete items first due to restrictOnDelete constraint
             $sale->items()->delete();

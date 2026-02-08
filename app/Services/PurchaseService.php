@@ -13,6 +13,11 @@ use App\Exceptions\PurchaseException;
 
 class PurchaseService
 {
+    public function __construct(
+        protected FinanceTransactionService $financeService
+    ) {
+    }
+
     /**
      * Create a new purchase with items.
      *
@@ -103,6 +108,8 @@ class PurchaseService
                         ['id' => $purchase->id, 'status' => $purchase->status->value]
                     );
                 }
+
+                $this->financeService->voidTransaction($purchase);
 
                 $purchase->items()->delete();
                 $purchase->delete();
@@ -224,6 +231,8 @@ class PurchaseService
             }
 
             $purchase->update(['status' => PurchaseStatus::PAID]);
+
+            $this->financeService->recordExpenseFromPurchase($purchase);
         });
     }
 
@@ -240,6 +249,8 @@ class PurchaseService
             }
 
             $purchase->update(['status' => PurchaseStatus::CANCELLED]);
+
+            $this->financeService->voidTransaction($purchase);
         });
     }
 

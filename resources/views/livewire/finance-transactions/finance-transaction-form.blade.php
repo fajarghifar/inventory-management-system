@@ -26,7 +26,7 @@
                 <x-form-input
                     name="external_reference"
                     label="External Reference"
-                    placeholder="e.g. INV-001 or Receipt #123"
+                    placeholder="e.g. INV.001 or Receipt #123"
                     type="text"
                     wire:model="external_reference"
                 />

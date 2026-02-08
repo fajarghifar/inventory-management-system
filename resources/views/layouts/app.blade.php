@@ -40,6 +40,25 @@
         <x-toaster />
         <livewire:components.delete-modal />
         @livewireScripts
+        <script>
+            document.addEventListener('livewire:initialized', () => {
+                Livewire.on('open-print-window', (event) => {
+                    let url = event.url;
+                    if (url) {
+                        // Check if current page has 'filters[date_period]' in URL
+                        const params = new URLSearchParams(window.location.search);
+                        const periodFilter = params.get('filters[date_period]');
+
+                        // If found and not already in target URL, append it
+                        if (periodFilter && !url.includes('period=')) {
+                            url += (url.includes('?') ? '&' : '?') + 'period=' + periodFilter;
+                        }
+
+                        window.open(url, '_blank');
+                    }
+                });
+            });
+        </script>
 
     </body>
 </html>

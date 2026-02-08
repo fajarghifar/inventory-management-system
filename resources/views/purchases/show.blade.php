@@ -205,7 +205,7 @@
                     </x-secondary-button>
 
                     {{-- Receive Action Trigger (Modal) --}}
-                    <div x-data="{ open: false }">
+                    <div x-data="{ open: @if($errors->has('invoice_number') || $errors->has('proof_image')) true @else false @endif }">
                         <x-primary-button @click="open = true" class="!bg-green-600 hover:!bg-green-700 focus:!ring-green-500">
                             <x-heroicon-o-check-circle class="w-5 h-5 mr-1" />
                             {{ __('Receive Items') }}
@@ -231,40 +231,38 @@
                                     @method('PATCH')
 
                                     <div class="space-y-4">
-                                        @if($purchase->invoice_number && $purchase->proof_image)
-                                            <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
-                                                <div class="mb-4">
-                                                    <span class="block text-xs font-medium text-gray-500 uppercase">Invoice Number</span>
-                                                    <span class="text-sm font-semibold text-gray-900">{{ $purchase->invoice_number }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="block text-xs font-medium text-gray-500 uppercase mb-1">Proof of Receipt</span>
-                                                    <a href="{{ Storage::url($purchase->proof_image) }}" target="_blank" class="text-indigo-600 hover:underline text-sm flex items-center gap-1">
-                                                        <x-heroicon-o-paper-clip class="w-4 h-4" />
-                                                        View Uploaded Image
-                                                    </a>
-                                                </div>
-                                                <p class="text-xs text-green-600 mt-3 font-medium flex items-center">
-                                                    <x-heroicon-o-check-circle class="w-4 h-4 mr-1" />
-                                                    Data complete. Ready to receive.
-                                                </p>
+                                        <!-- Invoice Section -->
+                                        @if($purchase->invoice_number)
+                                            <div class="bg-gray-50 p-3 rounded-md border border-gray-200">
+                                                <span class="block text-xs font-medium text-gray-500 uppercase">Invoice Number</span>
+                                                <span class="text-sm font-semibold text-gray-900">{{ $purchase->invoice_number }}</span>
                                             </div>
                                         @else
-                                            <!-- Invoice Input -->
                                             <div class="space-y-2">
                                                 <x-input-label for="invoice_number" :value="__('Final Invoice Number')" required />
                                                 <x-text-input
                                                     id="invoice_number"
                                                     name="invoice_number"
-                                                    :value="$purchase->invoice_number"
+                                                    :value="old('invoice_number')"
                                                     required
-                                                    placeholder="INV-..."
+                                                    placeholder="INV...."
                                                 />
+                                                <x-input-error :messages="$errors->get('invoice_number')" class="mt-2" />
                                             </div>
+                                        @endif
 
-                                            <!-- Proof Image -->
+                                        <!-- Proof Section -->
+                                        @if($purchase->proof_image)
+                                            <div class="bg-gray-50 p-3 rounded-md border border-gray-200">
+                                                <span class="block text-xs font-medium text-gray-500 uppercase mb-1">Proof of Receipt</span>
+                                                <a href="{{ Storage::url($purchase->proof_image) }}" target="_blank" class="text-indigo-600 hover:underline text-sm flex items-center gap-1">
+                                                    <x-heroicon-o-paper-clip class="w-4 h-4" />
+                                                    View Uploaded Image
+                                                </a>
+                                            </div>
+                                        @else
                                             <div class="space-y-2">
-                                                <x-input-label for="proof_image" :value="__('Upload Proof of Receipt')" />
+                                                <x-input-label for="proof_image" :value="__('Upload Proof of Receipt')" required />
                                                 <input
                                                     id="proof_image"
                                                     type="file"
@@ -279,7 +277,15 @@
                                                         hover:file:bg-indigo-100"
                                                 />
                                                 <p class="text-xs text-gray-500">Image (JPG, PNG) max 2MB.</p>
+                                                <x-input-error :messages="$errors->get('proof_image')" class="mt-2" />
                                             </div>
+                                        @endif
+
+                                        @if($purchase->invoice_number && $purchase->proof_image)
+                                            <p class="text-xs text-green-600 mt-3 font-medium flex items-center">
+                                                <x-heroicon-o-check-circle class="w-4 h-4 mr-1" />
+                                                Data complete. Ready to receive.
+                                            </p>
                                         @endif
                                     </div>
 

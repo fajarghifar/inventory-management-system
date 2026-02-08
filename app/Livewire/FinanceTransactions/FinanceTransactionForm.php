@@ -76,6 +76,11 @@ class FinanceTransactionForm extends Component
     #[On('edit-finance-transaction')]
     public function edit(FinanceTransaction $transaction): void
     {
+        if ($transaction->reference_type) {
+            $this->dispatch('toast', message: 'System transactions (Sales/Purchases) cannot be edited.', type: 'error');
+            return;
+        }
+
         $this->transaction = $transaction;
         $this->isEditing = true;
 
@@ -119,7 +124,8 @@ class FinanceTransactionForm extends Component
         } catch (FinanceTransactionException $e) {
             $this->dispatch('toast', message: $e->getMessage(), type: 'error');
         } catch (\Throwable $e) {
-            $this->dispatch('toast', message: 'An unexpected error occurred.', type: 'error');
+            \Illuminate\Support\Facades\Log::error($e);
+            $this->dispatch('toast', message: 'Error: ' . $e->getMessage(), type: 'error');
         }
     }
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\SalesController;
 use App\Http\Controllers\Api\PosController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinanceReportController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -23,7 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::view('categories', 'categories.index')->name('categories.index');
     Route::view('products', 'products.index')->name('products.index');
     Route::view('finance/categories', 'finance-categories.index')->name('finance.categories.index');
+    Route::get('finance/transactions/print/{printId}', [FinanceReportController::class, 'print'])->name('finance.transactions.print');
     Route::view('finance/transactions', 'finance-transactions.index')->name('finance.transactions.index');
+    // Route::view('users', 'users.index')->name('users.index');
     Route::view('settings', 'settings.index')->name('settings.index');
 
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
@@ -41,11 +44,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/{sale}/complete', [SalesController::class, 'complete'])->name('sales.complete');
     Route::patch('/sales/{sale}/restore', [SalesController::class, 'restore'])->name('sales.restore');
     Route::prefix('pos-api')->group(function () {
-        Route::get('/products', [PosController::class, 'searchProducts']);
+        Route::get('/products', action: [PosController::class, 'searchProducts']);
         Route::get('/customers', [PosController::class, 'searchCustomers']);
         Route::post('/customers', [PosController::class, 'storeCustomer']);
         Route::post('/sales', [PosController::class, 'storeSale']);
     });
+
+
 
     Route::resource('sales', SalesController::class);
 });

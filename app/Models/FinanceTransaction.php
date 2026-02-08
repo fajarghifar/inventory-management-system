@@ -20,6 +20,8 @@ class FinanceTransaction extends Model
         'description',
         'external_reference',
         'created_by',
+        'reference_id',
+        'reference_type',
     ];
 
     protected $casts = [
@@ -37,5 +39,10 @@ class FinanceTransaction extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function reference()
+    {
+        return $this->morphTo();
     }
 }

@@ -47,6 +47,11 @@ class FinanceCategoryService
     {
         try {
             DB::transaction(function () use ($category) {
+                // Protect System Categories
+                if (in_array($category->name, ['Product Sales', 'Product Purchases'])) {
+                    throw new \Exception('System categories (Product Sales, Product Purchases) cannot be deleted.');
+                }
+
                 if ($category->transactions()->exists()) {
                     throw new \Exception('Cannot delete category because it has related transactions.');
                 }

@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::view('finance/categories', 'finance-categories.index')->name('finance.categories.index');
     Route::get('finance/transactions/print/{printId}', [FinanceReportController::class, 'print'])->name('finance.transactions.print');
     Route::view('finance/transactions', 'finance-transactions.index')->name('finance.transactions.index');
-    // Route::view('users', 'users.index')->name('users.index');
+    Route::view('users', 'users.index')->name('users.index');
     Route::view('settings', 'settings.index')->name('settings.index');
 
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');

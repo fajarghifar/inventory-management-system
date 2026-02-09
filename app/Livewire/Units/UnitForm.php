@@ -24,10 +24,10 @@ class UnitForm extends Component
             'name' => [
                 'required',
                 'string',
-                'max:255',
+                'max:50',
                 Rule::unique('units', 'name')->ignore($this->unit?->id),
             ],
-            'symbol' => ['required', 'string', 'max:50'],
+            'symbol' => ['required', 'string', 'max:10'],
         ];
     }
 
@@ -55,12 +55,9 @@ class UnitForm extends Component
 
     public function save(UnitService $service): void
     {
-        $this->validate();
+        $validated = $this->validate();
 
-        $data = new UnitData(
-            name: $this->name,
-            symbol: $this->symbol,
-        );
+        $data = UnitData::fromArray($validated);
 
         try {
             if ($this->isEditing && $this->unit) {

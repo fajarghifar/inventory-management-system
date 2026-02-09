@@ -16,10 +16,10 @@ class CustomerData
     {
         return new self(
             name: $data['name'],
-            email: $data['email'] ?? null,
-            phone: $data['phone'] ?? null,
-            address: $data['address'] ?? null,
-            notes: $data['notes'] ?? null,
+            email: empty($data['email']) ? null : $data['email'],
+            phone: empty($data['phone']) ? null : $data['phone'],
+            address: empty($data['address']) ? null : $data['address'],
+            notes: empty($data['notes']) ? null : $data['notes'],
         );
     }
 

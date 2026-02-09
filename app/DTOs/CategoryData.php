@@ -17,7 +17,7 @@ class CategoryData
         return new self(
             name: $data['name'],
             slug: !empty($data['slug']) ? $data['slug'] : Str::slug($data['name']),
-            description: $data['description'] ?? null,
+            description: empty($data['description']) ? null : $data['description'],
         );
     }
 

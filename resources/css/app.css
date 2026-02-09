@@ -49,32 +49,65 @@
 }
 
 /* Custom Tom Select overrides for Tailwind */
-/* Fix Transparency */
+
+/* Input Control (Trigger) */
 .ts-control {
-    @apply rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white;
+    @apply rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3 py-2;
+    min-height: 2.5rem; /* 40px - h-10 */
+    background-color: #ffffff !important;
+    color: #111827 !important; /* text-gray-900 */
 }
 
-/* Fix Z-Index & Dropdown Background */
+/* Ensure selected item in single mode doesn't have background that looks like disabled */
+.ts-control > .item {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+/* Fix Focus Ring - Apply Tailwind ring when wrapper handles focus */
+.ts-wrapper.focus .ts-control {
+    @apply ring-2 ring-inset ring-indigo-600;
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000) !important;
+    border-color: transparent;
+}
+
+/* Dropdown Container */
 .ts-dropdown {
-    @apply bg-white border-gray-300 shadow-lg;
-    z-index: 9999 !important;
+    @apply bg-white border border-gray-200 shadow-lg rounded-md mt-1 overflow-hidden;
+    z-index: 50 !important;
 }
 
-/* Ensure Active Option is Visible */
+/* Dropdown Options */
+.ts-dropdown .option {
+    @apply px-3 py-2 text-sm text-gray-700 cursor-pointer;
+}
+
+/* Hover/Active State (Navigation) */
 .ts-dropdown .active {
-    @apply bg-indigo-600 !important;
+    @apply bg-gray-100 text-gray-900 !important;
 }
 
-.ts-dropdown .active .text-gray-900,
-.ts-dropdown .active .text-gray-500,
-.ts-dropdown .active .text-indigo-600,
-.ts-dropdown .active .text-green-600,
-.ts-dropdown .active .text-red-600
-{
-    @apply text-white !important;
+/* Selected State (Currently Selected Value) */
+.ts-dropdown .option.selected {
+    @apply font-medium bg-indigo-50 text-indigo-700;
+}
+
+.ts-dropdown .active.selected {
+    @apply bg-indigo-100 text-indigo-800 !important;
+}
+
+/* Highlighted Match in Search */
+.ts-dropdown .option .highlight {
+    @apply bg-yellow-100 font-bold rounded-sm;
+}
+
+/* Spinner Adjustments */
+.ts-wrapper.loading .ts-control {
+    background-image: none !important; /* Remove default spinner if needed, or customize */
 }
 
 /* Increase Dropdown Height */
 .ts-dropdown-content {
-    max-height: 400px !important;
+    max-height: 300px !important;
+    @apply p-1; /* Add internal padding for options container */
 }

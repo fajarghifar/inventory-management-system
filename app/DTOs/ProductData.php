@@ -30,8 +30,8 @@ class ProductData
             quantity: (int) ($data['quantity'] ?? 0),
             min_stock: (int) ($data['min_stock'] ?? 0),
             is_active: (bool) ($data['is_active'] ?? true),
-            description: $data['description'] ?? null,
-            notes: $data['notes'] ?? null,
+            description: empty($data['description']) ? null : $data['description'],
+            notes: empty($data['notes']) ? null : $data['notes'],
         );
     }
 

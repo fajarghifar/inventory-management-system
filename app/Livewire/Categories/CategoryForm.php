@@ -25,7 +25,7 @@ class CategoryForm extends Component
             'name' => [
                 'required',
                 'string',
-                'max:255',
+                'max:100',
                 Rule::unique('categories', 'name')->ignore($this->category?->id),
             ],
             'description' => ['nullable', 'string'],
@@ -60,11 +60,8 @@ class CategoryForm extends Component
 
         $slug = \Illuminate\Support\Str::slug(str_replace('&', '', $this->name));
 
-        $data = new CategoryData(
-            name: $this->name,
-            slug: $slug,
-            description: $this->description,
-        );
+        $validated['slug'] = $slug;
+        $data = CategoryData::fromArray($validated);
 
         try {
             if ($this->isEditing && $this->category) {

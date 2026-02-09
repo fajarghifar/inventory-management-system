@@ -94,11 +94,11 @@ class ProductForm extends Component
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:150'],
             'sku' => [
                 'nullable',
                 'string',
-                'max:255',
+                'max:50',
                 Rule::unique('products', 'sku')->ignore($this->product?->id)
             ],
             'category_id' => ['required', 'exists:categories,id'],
@@ -115,21 +115,9 @@ class ProductForm extends Component
 
     public function save(ProductService $service): void
     {
-        $this->validate();
+        $validated = $this->validate();
 
-        $data = new ProductData(
-            category_id: $this->category_id,
-            unit_id: $this->unit_id,
-            sku: $this->sku ?: null,
-            name: $this->name,
-            purchase_price: $this->purchase_price,
-            selling_price: $this->selling_price,
-            quantity: $this->quantity,
-            min_stock: $this->min_stock,
-            is_active: $this->is_active,
-            description: $this->description,
-            notes: $this->notes,
-        );
+        $data = ProductData::fromArray($validated);
 
         try {
             if ($this->isEditing && $this->product) {

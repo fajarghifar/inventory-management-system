@@ -29,10 +29,10 @@ class PurchaseData
             supplier_id: (int) $data['supplier_id'],
             purchase_date: Carbon::parse($data['purchase_date']),
             items: $items,
-            invoice_number: $data['invoice_number'] ?? null,
-            due_date: isset($data['due_date']) ? Carbon::parse($data['due_date']) : null,
-            notes: $data['notes'] ?? null,
-            proof_image: $data['proof_image'] ?? null,
+            invoice_number: !empty($data['invoice_number']) ? $data['invoice_number'] : null,
+            due_date: !empty($data['due_date']) ? Carbon::parse($data['due_date']) : null,
+            notes: !empty($data['notes']) ? $data['notes'] : null,
+            proof_image: !empty($data['proof_image']) ? $data['proof_image'] : null,
             status: isset($data['status']) ? PurchaseStatus::from($data['status']) : PurchaseStatus::DRAFT,
         );
     }

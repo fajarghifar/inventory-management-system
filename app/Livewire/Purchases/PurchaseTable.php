@@ -107,11 +107,17 @@ final class PurchaseTable extends PowerGridComponent
         ];
     }
 
+    private ?\Illuminate\Support\Collection $suppliers = null;
+    private ?\Illuminate\Support\Collection $users = null;
+
     public function filters(): array
     {
+        $this->suppliers ??= Supplier::query()->select('id', 'name')->orderBy('name')->get();
+        $this->users ??= User::query()->select('id', 'name')->orderBy('name')->get();
+
         return [
             Filter::multiSelect('supplier_name', 'supplier_id')
-                ->dataSource(Supplier::all())
+                ->dataSource($this->suppliers)
                 ->optionLabel('name')
                 ->optionValue('id'),
 
@@ -124,7 +130,7 @@ final class PurchaseTable extends PowerGridComponent
                 ->optionValue('value'),
 
             Filter::multiSelect('creator_name', 'created_by')
-                ->dataSource(User::all())
+                ->dataSource($this->users)
                 ->optionLabel('name')
                 ->optionValue('id'),
 

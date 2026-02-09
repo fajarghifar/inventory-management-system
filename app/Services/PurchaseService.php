@@ -3,11 +3,12 @@
 namespace App\Services;
 
 use Exception;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\DTOs\PurchaseData;
-use App\DTOs\PurchaseItemData;
-use App\Enums\PurchaseStatus;
 use App\Models\PurchaseItem;
+use App\Enums\PurchaseStatus;
+use App\DTOs\PurchaseItemData;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\PurchaseException;
 
@@ -165,7 +166,9 @@ class PurchaseService
 
             // Update Stock
             foreach ($purchase->items as $item) {
-                $product = $item->product;
+                // Lock the product row for update to prevent race conditions
+                $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
+
                 if ($product) {
                     $product->increment('quantity', $item->quantity);
 

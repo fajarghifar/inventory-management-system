@@ -5,14 +5,12 @@
         <div class="space-y-2">
             <x-input-label for="supplier_id" :value="__('Supplier')" required />
             <div wire:ignore>
-                <x-searchable-select
+                <x-tom-select
                     name="supplier_id"
-                    :options="$suppliers"
-                    :value="$supplier_id"
-                    optionValue="id"
-                    optionLabel="name"
+                    wire:model="supplier_id"
+                    :url="route('ajax.suppliers.search')"
                     placeholder="Select Supplier"
-                    required
+                    data-initial-label="{{ $this->supplierName }}"
                 />
             </div>
             <x-input-error :messages="$errors->get('supplier_id')" />
@@ -119,14 +117,12 @@
                         <tr wire:key="item-{{ $index }}" class="group hover:bg-gray-50/50">
                             <td class="px-4 py-2 align-top pt-3">
                                 <div wire:ignore>
-                                    <x-searchable-select
+                                    <x-tom-select
                                         name="product_{{ $index }}"
-                                        label=""
-                                        :options="$products"
-                                        :value="$items[$index]['product_id']"
-                                        optionValue="id"
-                                        optionLabel="name"
+                                        wire:model="items.{{ $index }}.product_id"
+                                        :url="route('ajax.products.search')"
                                         placeholder="Select Product"
+                                        data-initial-label="{{ $this->getProductName($index) }}"
                                     />
                                 </div>
                                 @error("items.{$index}.product_id")

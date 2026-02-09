@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PosController;
 use App\Http\Controllers\SalesController;
-use App\Http\Controllers\Api\PosController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinanceReportController;
@@ -44,13 +45,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/{sale}/complete', [SalesController::class, 'complete'])->name('sales.complete');
     Route::patch('/sales/{sale}/restore', [SalesController::class, 'restore'])->name('sales.restore');
     Route::prefix('pos-api')->group(function () {
-        Route::get('/products', action: [PosController::class, 'searchProducts']);
+        Route::get('/products', [PosController::class, 'searchProducts']);
         Route::get('/customers', [PosController::class, 'searchCustomers']);
         Route::post('/customers', [PosController::class, 'storeCustomer']);
         Route::post('/sales', [PosController::class, 'storeSale']);
     });
 
-
+    // Internal API for TomSelect (Search) - Uses Web Session
+    Route::prefix('ajax')->group(function () {
+        Route::get('/products', [SearchController::class, 'searchProducts'])->name('ajax.products.search');
+        Route::get('/suppliers', [SearchController::class, 'searchSuppliers'])->name('ajax.suppliers.search');
+    });
 
     Route::resource('sales', SalesController::class);
 });

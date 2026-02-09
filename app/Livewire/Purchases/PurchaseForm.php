@@ -31,9 +31,9 @@ class PurchaseForm extends Component
     // Dynamic Items
     public $items = [];
 
-    // Searchable Select Data
-    public Collection $suppliers;
-    public Collection $products;
+    // Searchable Select Data - Now Handled via API
+    // public Collection $suppliers; (Removed for TomSelect API)
+    // public Collection $products; (Removed for TomSelect API)
 
     public ?int $purchaseId = null;
 
@@ -41,7 +41,7 @@ class PurchaseForm extends Component
     {
         return [
             'supplier_id' => ['required', 'exists:suppliers,id'],
-            'invoice_number' => ['nullable', 'string', Rule::unique('purchases', 'invoice_number')->ignore($this->purchaseId)],
+            'invoice_number' => ['nullable', 'string', 'max:255', Rule::unique('purchases', 'invoice_number')->ignore($this->purchaseId)],
             'purchase_date' => ['required', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:purchase_date'],
             'notes' => ['nullable', 'string'],
@@ -66,8 +66,7 @@ class PurchaseForm extends Component
 
     public function mount(?Purchase $purchase = null): void
     {
-        $this->suppliers = Supplier::orderBy('name')->get();
-        $this->products = Product::where('is_active', true)->orderBy('name')->get();
+        // No longer loading all products/suppliers
 
         if ($purchase && $purchase->exists) {
             $this->purchaseId = $purchase->id;
@@ -124,15 +123,22 @@ class PurchaseForm extends Component
     {
         // Handle direct Livewire updates for Quantity/Price changes
         $parts = explode('.', $key);
-        if (count($parts) === 2) {
-            $index = $parts[0];
+        if (count($parts) === 3) { // items.0.quantity
+            $index = $parts[1];
+            $field = $parts[2];
+
+            if ($field === 'product_id') {
+                // Fetch price from DB if updated directly via wire:model (fallback)
+                $this->updateProductPrice((int) $index, (int) $value);
+            }
+
             $this->calculateSubtotal((int) $index);
         }
         $this->saveToCache();
     }
 
     #[\Livewire\Attributes\On('option-selected')]
-    public function handleOptionSelected($name, $value): void
+    public function handleOptionSelected($name, $value, $item = []): void
     {
         // Name format: product_{index} or supplier_id
         if ($name === 'supplier_id') {
@@ -144,19 +150,45 @@ class PurchaseForm extends Component
         if (str_starts_with($name, 'product_')) {
             $index = (int) str_replace('product_', '', $name);
             $this->items[$index]['product_id'] = $value;
-            $this->updateProductPrice($index, (int) $value);
+
+            // Optimization: Use data from TomSelect if available
+            if (!empty($item)) {
+                $this->items[$index]['unit_price'] = $item['price'] ?? 0;
+                $this->items[$index]['selling_price'] = $item['selling_price'] ?? 0;
+            } else {
+                $this->updateProductPrice($index, (int) $value);
+            }
+
+            $this->calculateSubtotal($index);
             $this->saveToCache(); // Persist immediately
         }
     }
 
     public function updateProductPrice(int $index, int $productId): void
     {
-        $product = $this->products->firstWhere('id', $productId);
+        $product = Product::find($productId);
         if ($product) {
             $this->items[$index]['unit_price'] = $product->purchase_price;
             $this->items[$index]['selling_price'] = $product->selling_price;
         }
         $this->calculateSubtotal($index);
+    }
+
+    // Helpers for Initial Labels
+    public function getSupplierNameProperty(): string
+    {
+        if (!$this->supplier_id)
+            return '';
+        $supplier = Supplier::find($this->supplier_id);
+        return $supplier ? $supplier->name . ($supplier->phone ? ' | ' . $supplier->phone : '') : '';
+    }
+
+    public function getProductName(int $index): string
+    {
+        $id = $this->items[$index]['product_id'] ?? null;
+        if (!$id)
+            return '';
+        return Product::find($id)?->name ?? '';
     }
 
     public function calculateSubtotal(int $index): void

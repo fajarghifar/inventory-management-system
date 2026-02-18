@@ -67,8 +67,8 @@
                     {{ __('Close') }}
                 </x-secondary-button>
 
-                <x-primary-button wire:click="edit" class="bg-amber-500 hover:bg-amber-600 focus:ring-amber-500">
-                    <x-heroicon-o-pencil class="w-4 h-4 mr-2" />
+                <x-primary-button type="button" x-on:click="$dispatch('close-modal', { name: 'supplier-detail-modal' }); $dispatch('edit-supplier', { supplier: {{ $supplier->id }} })" class="bg-amber-500 hover:bg-amber-600 focus:ring-amber-500">
+                    <x-heroicon-o-pencil-square class="w-4 h-4 mr-2" />
                     {{ __('Edit Supplier') }}
                 </x-primary-button>
             </div>

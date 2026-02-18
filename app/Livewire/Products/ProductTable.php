@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Services\ProductService;
 use App\Exceptions\ProductException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -164,26 +165,59 @@ final class ProductTable extends PowerGridComponent
         ];
     }
 
+    private $categories;
+    private $units;
+
+    private function getCategories()
+    {
+        if (!$this->categories) {
+            $this->categories = Cache::rememberForever('categories_list_all', function () {
+                return Category::all()->map(function ($category) {
+                    return [
+                        'value' => $category->id,
+                        'text' => $category->name,
+                    ];
+                });
+            });
+        }
+        return $this->categories;
+    }
+
+    private function getUnits()
+    {
+        if (!$this->units) {
+            $this->units = Cache::rememberForever('units_list_all', function () {
+                return Unit::all()->map(function ($unit) {
+                    return [
+                        'value' => $unit->id,
+                        'text' => "{$unit->name} ({$unit->symbol})",
+                    ];
+                });
+            });
+        }
+        return $this->units;
+    }
+
     public function filters(): array
     {
         return [
             Filter::multiSelect('category_name', 'category_id')
-                ->dataSource(Category::all())
-                ->optionLabel('name')
-                ->optionValue('id'),
+                ->dataSource($this->getCategories())
+                ->optionValue('value')
+                ->optionLabel('text'),
 
             Filter::multiSelect('unit_symbol', 'unit_id')
-                ->dataSource(Unit::all()->map(function ($unit) {
-                    return [
-                        'id' => $unit->id,
-                        'name_with_symbol' => "{$unit->name} ({$unit->symbol})"
-                    ];
-                }))
-                ->optionLabel('name_with_symbol')
-                ->optionValue('id'),
+                ->dataSource($this->getUnits())
+                ->optionValue('value')
+                ->optionLabel('text'),
 
-            Filter::boolean('is_active_label', 'is_active')
-                ->label('Active', 'Inactive'), // Retain filter labels
+            Filter::multiSelect('is_active_label', 'is_active')
+                ->dataSource(collect([
+                    ['value' => 1, 'text' => 'Active'],
+                    ['value' => 0, 'text' => 'Inactive'],
+                ]))
+                ->optionValue('value')
+                ->optionLabel('text'),
         ];
     }
 

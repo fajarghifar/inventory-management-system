@@ -1,4 +1,4 @@
-@props(['options' => [], 'placeholder' => 'Select option...', 'url' => null])
+@props(['options' => [], 'placeholder' => 'Select option...', 'url' => null, 'method' => 'GET'])
 
 <div wire:ignore class="w-full">
     <select
@@ -58,15 +58,27 @@
 
                     if ('{{ $url }}') {
                         config.load = (query, callback) => {
-                            let url = '{{ $url }}' + ( '{{ $url }}'.includes('?') ? '&' : '?' ) + 'q=' + encodeURIComponent(query);
+                            let url = '{{ $url }}';
+                            const method = '{{ strtoupper($method) }}';
+                            let body = null;
+
+                            if (method === 'GET') {
+                                url += (url.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
+                            } else {
+                                body = JSON.stringify({ q: query });
+                            }
 
                             /* Check for dynamic params */
                             const dataParams = this.$el.getAttribute('data-params');
                             if (dataParams) {
                                 try {
                                     const params = JSON.parse(dataParams);
-                                    const queryString = new URLSearchParams(params).toString();
-                                    url += '&' + queryString;
+                                    if (method === 'GET') {
+                                        const queryString = new URLSearchParams(params).toString();
+                                        url += '&' + queryString;
+                                    } else {
+                                        body = JSON.stringify({ ...JSON.parse(body || '{}'), ...params });
+                                    }
                                 } catch (e) {
                                     console.error('Invalid data-params JSON', e);
                                 }
@@ -76,8 +88,11 @@
                             const csrfToken = document.querySelector('meta[name=\'csrf-token\']')?.getAttribute('content');
 
                             fetch(url, {
+                                method: method,
+                                body: body,
                                 credentials: 'include',
                                 headers: {
+                                    'Content-Type': 'application/json',
                                     'Accept': 'application/json',
                                     'X-Requested-With': 'XMLHttpRequest',
                                     'X-CSRF-TOKEN': csrfToken || ''

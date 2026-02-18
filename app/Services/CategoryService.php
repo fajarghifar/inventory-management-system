@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\DTOs\CategoryData;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CategoryException;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryService
 {
@@ -17,11 +18,15 @@ class CategoryService
     {
         return DB::transaction(function () use ($data) {
             try {
-                return Category::create([
+                $category = Category::create([
                     'name' => $data->name,
                     'slug' => $data->slug,
                     'description' => $data->description,
                 ]);
+
+                Cache::forget('categories_list_all');
+
+                return $category;
 
             } catch (Exception $e) {
                 throw CategoryException::creationFailed($e->getMessage(), [
@@ -44,6 +49,8 @@ class CategoryService
                     'slug' => $data->slug,
                     'description' => $data->description,
                 ]);
+
+                Cache::forget('categories_list_all');
 
                 return $category->refresh();
 
@@ -68,6 +75,8 @@ class CategoryService
                 }
 
                 $category->delete();
+
+                Cache::forget('categories_list_all');
 
             } catch (Exception $e) {
                 throw CategoryException::deletionFailed($e->getMessage(), ['id' => $category->id]);

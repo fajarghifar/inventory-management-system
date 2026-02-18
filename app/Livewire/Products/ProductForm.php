@@ -30,24 +30,13 @@ class ProductForm extends Component
     public string $description = '';
     public string $notes = '';
 
-    // Select Options
-    public array $categoryOptions = [];
-    public array $unitOptions = [];
+    // Select Options (Removed for AJAX)
+    public ?string $categoryName = null;
+    public ?string $unitName = null;
 
     public function mount()
     {
-        $this->loadOptions();
-    }
-
-    public function loadOptions()
-    {
-        $this->categoryOptions = Category::orderBy('name')->get()->map(function ($c) {
-            return ['value' => $c->id, 'label' => $c->name];
-        })->toArray();
-
-        $this->unitOptions = Unit::orderBy('name')->get()->map(function ($u) {
-            return ['value' => $u->id, 'label' => $u->name . ' (' . $u->symbol . ')'];
-        })->toArray();
+        // No options to load
     }
 
     public function render()
@@ -58,11 +47,8 @@ class ProductForm extends Component
     #[On('create-product')]
     public function create(): void
     {
-        $this->reset(['sku', 'name', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'description', 'notes', 'product', 'isEditing']);
+        $this->reset(['sku', 'name', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'description', 'notes', 'product', 'isEditing', 'categoryName', 'unitName']);
         $this->is_active = true;
-
-        // Reload options to ensure freshness
-        $this->loadOptions();
 
         $this->dispatch('open-modal', name: 'product-form-modal');
     }
@@ -83,10 +69,11 @@ class ProductForm extends Component
         $this->description = $product->description ?? '';
         $this->notes = $product->notes ?? '';
 
-        $this->isEditing = true;
+        // Set initial labels for TomSelect
+        $this->categoryName = $product->category ? $product->category->name : null;
+        $this->unitName = $product->unit ? "{$product->unit->name} ({$product->unit->symbol})" : null;
 
-        // Reload options
-        $this->loadOptions();
+        $this->isEditing = true;
 
         $this->dispatch('open-modal', name: 'product-form-modal');
     }

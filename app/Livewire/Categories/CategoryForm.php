@@ -5,6 +5,7 @@ namespace App\Livewire\Categories;
 use Livewire\Component;
 use App\Models\Category;
 use App\DTOs\CategoryData;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Illuminate\Validation\Rule;
 use App\Services\CategoryService;
@@ -56,9 +57,9 @@ class CategoryForm extends Component
 
     public function save(CategoryService $service): void
     {
-        $this->validate();
+        $validated = $this->validate();
 
-        $slug = \Illuminate\Support\Str::slug(str_replace('&', '', $this->name));
+        $slug = Str::slug(str_replace('&', '', $this->name));
 
         $validated['slug'] = $slug;
         $data = CategoryData::fromArray($validated);

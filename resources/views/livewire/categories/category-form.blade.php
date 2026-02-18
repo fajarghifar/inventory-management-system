@@ -1,4 +1,4 @@
-<x-modal name="category-form-modal" :title="''" maxWidth="2xl">
+<x-modal name="category-form-modal" :title="''">
     <div class="p-6">
         <!-- Custom Header -->
         <div class="mb-6 space-y-1.5 text-center sm:text-left border-b border-gray-200 pb-4">

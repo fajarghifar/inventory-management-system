@@ -46,29 +46,37 @@
             <!-- Row 2: Category & Unit -->
             <div class="flex flex-col sm:flex-row gap-6">
                 <!-- Category -->
-                <div class="w-full sm:w-1/2">
-                    <x-searchable-select
-                        id="category_id"
-                        name="category_id"
-                        label="Category"
-                        wire:model="category_id"
-                        :options="$categoryOptions"
-                        placeholder="Select Category"
-                        required
-                    />
+                <div class="w-full sm:w-1/2 space-y-2">
+                    <x-input-label for="category_id" :value="__('Category')" required />
+                    <div wire:ignore>
+                        <x-tom-select
+                            id="category_id"
+                            name="category_id"
+                            wire:model="category_id"
+                            :url="route('ajax.categories.search')"
+                            method="POST"
+                            placeholder="Select Category"
+                            data-initial-label="{{ $categoryName }}"
+                        />
+                    </div>
+                    <x-input-error :messages="$errors->get('category_id')" />
                 </div>
 
                 <!-- Unit -->
-                <div class="w-full sm:w-1/2">
-                    <x-searchable-select
-                        id="unit_id"
-                        name="unit_id"
-                        label="Unit"
-                        wire:model="unit_id"
-                        :options="$unitOptions"
-                        placeholder="Select Unit"
-                        required
-                    />
+                <div class="w-full sm:w-1/2 space-y-2">
+                    <x-input-label for="unit_id" :value="__('Unit')" required />
+                    <div wire:ignore>
+                        <x-tom-select
+                            id="unit_id"
+                            name="unit_id"
+                            wire:model="unit_id"
+                            :url="route('ajax.units.search')"
+                            method="POST"
+                            placeholder="Select Unit"
+                            data-initial-label="{{ $unitName }}"
+                        />
+                    </div>
+                    <x-input-error :messages="$errors->get('unit_id')" />
                 </div>
             </div>
 

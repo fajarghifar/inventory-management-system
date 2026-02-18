@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use Exception;
-use App\DTOs\UnitData;
 use App\Models\Unit;
+use App\DTOs\UnitData;
 use App\Exceptions\UnitException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class UnitService
 {
@@ -17,10 +18,14 @@ class UnitService
     {
         return DB::transaction(function () use ($data) {
             try {
-                return Unit::create([
+                $unit = Unit::create([
                     'name' => $data->name,
                     'symbol' => $data->symbol,
                 ]);
+
+                Cache::forget('units_list_all');
+
+                return $unit;
 
             } catch (Exception $e) {
                 throw UnitException::creationFailed($e->getMessage(), [
@@ -42,6 +47,8 @@ class UnitService
                     'name' => $data->name,
                     'symbol' => $data->symbol,
                 ]);
+
+                Cache::forget('units_list_all');
 
                 return $unit->refresh();
 
@@ -66,6 +73,8 @@ class UnitService
                 }
 
                 $unit->delete();
+
+                Cache::forget('units_list_all');
 
             } catch (Exception $e) {
                 throw UnitException::deletionFailed($e->getMessage(), ['id' => $unit->id]);

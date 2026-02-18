@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique(); // FTX.YYMMDD.0001
             $table->date('transaction_date');
-            $table->foreignId('finance_category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('finance_category_id')->constrained()->restrictOnDelete();
             $table->bigInteger('amount');
             $table->text('description')->nullable();
             $table->string('external_reference')->nullable(); // Optional external ref
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
             $table->timestamps();
         });
     }

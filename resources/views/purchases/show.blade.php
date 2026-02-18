@@ -167,8 +167,10 @@
                 confirmButtonClass: '',
 
                 confirmAction(url, method, title, message, btnText, btnClass) {
-                    this.actionUrl = url;
-                    this.actionMethod = method;
+                    // Manual DOM manipulation to ensure reliability
+                    document.getElementById('confirmation-form').action = url;
+                    document.getElementById('confirmation-method').value = method;
+
                     this.modalTitle = title;
                     this.modalMessage = message;
                     this.confirmButtonText = btnText;
@@ -181,6 +183,7 @@
 
                     {{-- Delete Action --}}
                     <x-danger-button
+                        type="button"
                         @click="confirmAction('{{ route('purchases.destroy', $purchase) }}', 'DELETE', 'Delete Draft', 'Are you sure you want to delete this draft? This action cannot be undone.', 'Delete Draft', '!bg-red-600 hover:!bg-red-700 focus:!ring-red-500')"
                     >
                         {{ __('Delete Draft') }}
@@ -188,6 +191,7 @@
 
                     {{-- Order Action --}}
                     <x-primary-button
+                        type="button"
                         class="!bg-sky-600 hover:!bg-sky-700 focus:!ring-sky-500"
                         @click="confirmAction('{{ route('purchases.mark-ordered', $purchase) }}', 'PATCH', 'Mark as Ordered', 'Are you sure you want to mark this purchase as ordered? The stock will not be updated until items are received.', 'Mark as Ordered', '!bg-sky-600 hover:!bg-sky-700 focus:!ring-sky-500')"
                     >
@@ -198,6 +202,7 @@
 
                     {{-- Cancel Action --}}
                     <x-secondary-button
+                        type="button"
                         class="text-red-600 hover:bg-red-50 border-red-200"
                         @click="confirmAction('{{ route('purchases.cancel', $purchase) }}', 'PATCH', 'Cancel Order', 'Are you sure you want to cancel this order?', 'Cancel Order', '!bg-red-600 hover:!bg-red-700 focus:!ring-red-500')"
                     >
@@ -226,7 +231,13 @@
                                     Receive Purchase #{{ $purchase->invoice_number ?? $purchase->id }}
                                 </h3>
 
-                                <form action="{{ route('purchases.mark-received', $purchase) }}" method="POST" enctype="multipart/form-data">
+                                <form
+                                    action="{{ route('purchases.mark-received', $purchase) }}"
+                                    method="POST"
+                                    enctype="multipart/form-data"
+                                    x-data="{ submitting: false }"
+                                    @submit="submitting = true"
+                                >
                                     @csrf
                                     @method('PATCH')
 
@@ -290,11 +301,19 @@
                                     </div>
 
                                     <div class="mt-6 flex justify-end gap-3">
-                                        <x-secondary-button type="button" @click="open = false">
+                                        <x-secondary-button type="button" @click="open = false" x-bind:disabled="submitting">
                                             Cancel
                                         </x-secondary-button>
-                                        <x-primary-button class="!bg-green-600 hover:!bg-green-700 focus:!ring-green-500">
-                                            Confirm Receipt
+                                        <x-primary-button
+                                            class="!bg-green-600 hover:!bg-green-700 focus:!ring-green-500"
+                                            x-bind:class="submitting ? 'opacity-75 cursor-not-allowed' : ''"
+                                            x-bind:disabled="submitting"
+                                        >
+                                            <svg x-show="submitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            {{ __('Confirm Receipt') }}
                                         </x-primary-button>
                                     </div>
                                 </form>
@@ -306,6 +325,7 @@
 
                     {{-- Pay Action --}}
                     <x-primary-button
+                        type="button"
                         class="!bg-emerald-600 hover:!bg-emerald-700 focus:!ring-emerald-500"
                         @click="confirmAction('{{ route('purchases.mark-paid', $purchase) }}', 'PATCH', 'Mark as Paid', 'Are you sure you want to mark this purchase as paid? This assumes the full amount has been paid.', 'Mark as Paid', '!bg-emerald-600 hover:!bg-emerald-700 focus:!ring-emerald-500')"
                     >
@@ -317,6 +337,7 @@
 
                     {{-- Restore Action --}}
                     <x-secondary-button
+                        type="button"
                         @click="confirmAction('{{ route('purchases.restore-draft', $purchase) }}', 'PATCH', 'Restore to Draft', 'Restore this purchase to Draft status? You can edit it again.', 'Restore to Draft', '!bg-gray-800 hover:!bg-gray-700 text-white')"
                     >
                         {{ __('Restore to Draft') }}
@@ -336,15 +357,16 @@
                                 {{ __('Cancel') }}
                             </x-secondary-button>
 
-                            <form :action="actionUrl" method="POST" class="ml-3" @submit="submitting = true">
+                            <form id="confirmation-form" method="POST" class="ml-3" x-ref="confirmForm" @submit.prevent>
                                 @csrf
-                                <input type="hidden" name="_method" :value="actionMethod">
+                                <input type="hidden" id="confirmation-method" name="_method" value="">
 
                                 <button
-                                    type="submit"
+                                    type="button"
                                     class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 text-white shadow-sm bg-primary"
                                     x-bind:class="confirmButtonClass + (submitting ? ' opacity-75 cursor-not-allowed' : '')"
                                     x-bind:disabled="submitting"
+                                    @click="submitting = true; $refs.confirmForm.submit()"
                                 >
                                     <svg x-show="submitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

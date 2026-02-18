@@ -40,6 +40,7 @@
         <x-toaster />
         <livewire:components.delete-modal />
         @livewireScripts
+        @stack('scripts')
         <script>
             document.addEventListener('livewire:initialized', () => {
                 Livewire.on('open-print-window', (event) => {

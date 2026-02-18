@@ -11,7 +11,7 @@ class UnitController extends Controller
 {
     public function search(Request $request)
     {
-        $query = $request->get('q');
+        $query = $request->input('q');
 
         $units = Cache::rememberForever('units_list_all', function () {
             return Unit::all()->map(function($unit) {

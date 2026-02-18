@@ -8,7 +8,6 @@ use App\Models\Purchase;
 use App\DTOs\PurchaseData;
 use App\Models\PurchaseItem;
 use App\Enums\PurchaseStatus;
-use App\DTOs\PurchaseItemData;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\PurchaseException;
 
@@ -19,14 +18,6 @@ class PurchaseService
     ) {
     }
 
-    /**
-     * Create a new purchase with items.
-     *
-     * @param PurchaseData $data
-     * @param int $userId
-     * @return Purchase
-     * @throws PurchaseException
-     */
     public function createPurchase(PurchaseData $data, int $userId): Purchase
     {
         return DB::transaction(function () use ($data, $userId) {
@@ -53,14 +44,6 @@ class PurchaseService
         });
     }
 
-    /**
-     * Update an existing purchase (Only if Draft).
-     *
-     * @param Purchase $purchase
-     * @param PurchaseData $data
-     * @return Purchase
-     * @throws PurchaseException
-     */
     public function updatePurchase(Purchase $purchase, PurchaseData $data): Purchase
     {
         return DB::transaction(function () use ($purchase, $data) {
@@ -92,13 +75,6 @@ class PurchaseService
         });
     }
 
-    /**
-     * Delete a purchase.
-     *
-     * @param Purchase $purchase
-     * @return void
-     * @throws PurchaseException
-     */
     public function deletePurchase(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
@@ -123,11 +99,6 @@ class PurchaseService
         });
     }
 
-    /**
-     * Mark purchase as Ordered.
-     *
-     * @throws PurchaseException
-     */
     public function markAsOrdered(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
@@ -143,11 +114,6 @@ class PurchaseService
         });
     }
 
-    /**
-     * Mark purchase as Received and update product stock.
-     *
-     * @throws PurchaseException
-     */
     public function markAsReceived(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
@@ -212,15 +178,10 @@ class PurchaseService
         });
     }
 
-    /**
-     * Mark purchase as Paid.
-     *
-     * @throws PurchaseException
-     */
     public function markAsPaid(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if ($purchase->status === PurchaseStatus::CANCELLED) {
+            if (!in_array($purchase->status, [PurchaseStatus::ORDERED, PurchaseStatus::RECEIVED])) {
                 throw PurchaseException::invalidStatus('pay', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -239,11 +200,6 @@ class PurchaseService
         });
     }
 
-    /**
-     * Cancel purchase.
-     *
-     * @throws PurchaseException
-     */
     public function cancelPurchase(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
@@ -257,11 +213,6 @@ class PurchaseService
         });
     }
 
-    /**
-     * Restore cancelled purchase to draft.
-     *
-     * @throws PurchaseException
-     */
     public function restoreToDraft(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
@@ -273,12 +224,6 @@ class PurchaseService
         });
     }
 
-    /**
-     * Internal helper to sync purchase items and calculate total.
-     *
-     * @param Purchase $purchase
-     * @param array<PurchaseItemData> $items
-     */
     private function syncItems(Purchase $purchase, array $items): void
     {
         $total = 0;

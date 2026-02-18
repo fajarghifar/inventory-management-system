@@ -11,7 +11,7 @@ class CategoryController extends Controller
 {
     public function search(Request $request)
     {
-        $query = $request->get('q');
+        $query = $request->input('q');
 
         $categories = Cache::rememberForever('categories_list_all', function () {
             return Category::all()->map(function($category) {

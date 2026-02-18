@@ -3,12 +3,13 @@
 namespace App\Livewire\Purchases;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Purchase;
 use App\Models\Supplier;
-use App\Models\User;
 use App\Enums\PurchaseStatus;
 use App\Services\PurchaseService;
 use App\Exceptions\PurchaseException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -107,30 +108,47 @@ final class PurchaseTable extends PowerGridComponent
         ];
     }
 
-    private ?\Illuminate\Support\Collection $suppliers = null;
-    private ?\Illuminate\Support\Collection $users = null;
+    private $suppliersCache;
+    private $usersCache;
+
+    private function getSuppliers()
+    {
+        if (!$this->suppliersCache) {
+            $this->suppliersCache = Cache::rememberForever('suppliers_list_all', function () {
+                return Supplier::query()->select('id', 'name')->orderBy('name')->get();
+            });
+        }
+        return $this->suppliersCache;
+    }
+
+    private function getUsers()
+    {
+        if (!$this->usersCache) {
+            $this->usersCache = Cache::rememberForever('users_list_all', function () {
+                return User::query()->select('id', 'name')->orderBy('name')->get();
+            });
+        }
+        return $this->usersCache;
+    }
 
     public function filters(): array
     {
-        $this->suppliers ??= Supplier::query()->select('id', 'name')->orderBy('name')->get();
-        $this->users ??= User::query()->select('id', 'name')->orderBy('name')->get();
-
         return [
             Filter::multiSelect('supplier_name', 'supplier_id')
-                ->dataSource($this->suppliers)
+                ->dataSource($this->getSuppliers())
                 ->optionLabel('name')
                 ->optionValue('id'),
 
-            Filter::select('status', 'status')
+            Filter::multiSelect('status', 'status')
                 ->dataSource(collect(PurchaseStatus::cases())->map(fn($status) => [
                     'value' => $status->value,
                     'label' => $status->label(),
-                ])->toArray())
+                ]))
                 ->optionLabel('label')
                 ->optionValue('value'),
 
             Filter::multiSelect('creator_name', 'created_by')
-                ->dataSource($this->users)
+                ->dataSource($this->getUsers())
                 ->optionLabel('name')
                 ->optionValue('id'),
 

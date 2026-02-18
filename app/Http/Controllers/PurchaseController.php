@@ -2,115 +2,211 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
 use App\Models\Purchase;
-use Illuminate\View\View;
+use App\DTOs\PurchaseData;
 use Illuminate\Http\Request;
 use App\Enums\PurchaseStatus;
 use App\Services\PurchaseService;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use App\Exceptions\PurchaseException;
+use App\Http\Requests\StorePurchaseRequest;
+use App\Http\Requests\UpdatePurchaseRequest;
 
 class PurchaseController extends Controller
 {
-    public function __construct(
-        protected PurchaseService $purchaseService
-    ) {}
+    protected PurchaseService $service;
 
-    public function index(): View
+    public function __construct(PurchaseService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function index()
     {
         return view('purchases.index');
     }
 
-    public function create(): View
+    public function create()
     {
-        return view('purchases.create');
+        return view('purchases.create', [
+            'purchase' => new Purchase(),
+            'statuses' => PurchaseStatus::cases(),
+        ]);
     }
 
-    public function edit(Purchase $purchase): View
+    public function store(StorePurchaseRequest $request)
+    {
+        try {
+            $proofPath = null;
+            if ($request->hasFile('proof_image')) {
+                $proofPath = $request->file('proof_image')->store('proofs', 'public');
+            }
+
+            $data = $request->validated();
+            $data['proof_image'] = $proofPath;
+            $data['status'] = PurchaseStatus::DRAFT->value; // Force Draft on Create
+
+            $purchaseData = PurchaseData::fromArray($data);
+
+            $purchase = $this->service->createPurchase($purchaseData, Auth::id());
+
+            return redirect()->route('purchases.show', $purchase)
+                ->with('success', 'Purchase created successfully.');
+
+        } catch (PurchaseException $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error creating purchase: ' . $e->getMessage());
+        }
+    }
+
+    public function show(Purchase $purchase)
+    {
+        $purchase->load(['supplier', 'creator', 'items.product.unit']);
+        return view('purchases.show', compact('purchase'));
+    }
+
+    public function edit(Purchase $purchase)
     {
         if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::ORDERED])) {
             abort(403, 'Only draft or ordered purchases can be edited.');
         }
-        return view('purchases.edit', compact('purchase'));
-    }
 
-    public function show(Purchase $purchase): View
-    {
-        $purchase->load(['supplier', 'items.product.unit', 'creator']);
-        return view('purchases.show', compact('purchase'));
-    }
+        // Load relationships needed for the form
+        $purchase->load('items.product', 'supplier');
 
-    public function destroy(Purchase $purchase): RedirectResponse
-    {
-        try {
-            $this->purchaseService->deletePurchase($purchase);
-            return redirect()->route('purchases.index')->with('success', 'Purchase deleted successfully.');
-        } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
-    }
-
-    public function markOrdered(Purchase $purchase): RedirectResponse
-    {
-        try {
-            $this->purchaseService->markAsOrdered($purchase);
-            return back()->with('success', 'Purchase marked as Ordered.');
-        } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
-    }
-
-    public function markReceived(Request $request, Purchase $purchase): RedirectResponse
-    {
-        $request->validate([
-            'invoice_number' => $purchase->invoice_number ? 'nullable|string|max:255' : 'required|string|max:255',
-            'proof_image' => $purchase->proof_image ? 'nullable|image|max:2048' : 'required|image|max:2048',
+        return view('purchases.edit', [
+            'purchase' => $purchase,
+            'statuses' => PurchaseStatus::cases(),
         ]);
+    }
+
+    public function update(UpdatePurchaseRequest $request, Purchase $purchase)
+    {
+        try {
+            $proofPath = $purchase->proof_image;
+            if ($request->hasFile('proof_image')) {
+                $proofPath = $request->file('proof_image')->store('proofs', 'public');
+            }
+
+            $data = $request->validated();
+            $data['proof_image'] = $proofPath;
+            $data['status'] = $purchase->status->value; // Preserve existing status
+
+            $purchaseData = PurchaseData::fromArray($data);
+
+            $this->service->updatePurchase($purchase, $purchaseData);
+
+            return redirect()->route('purchases.show', $purchase)
+                ->with('success', 'Purchase updated successfully.');
+
+        } catch (PurchaseException $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error updating purchase: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy(Purchase $purchase)
+    {
+        try {
+            $this->service->deletePurchase($purchase);
+            return redirect()->route('purchases.index')->with('success', 'Purchase deleted successfully.');
+        } catch (PurchaseException $e) {
+            return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error deleting purchase: ' . $e->getMessage());
+        }
+    }
+
+    public function markOrdered(Purchase $purchase)
+    {
+        try {
+            $this->service->markAsOrdered($purchase);
+            return back()->with('success', 'Purchase marked as ordered.');
+        } catch (PurchaseException $e) {
+            return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error marking as ordered: ' . $e->getMessage());
+        }
+    }
+
+    public function markReceived(Request $request, Purchase $purchase)
+    {
+        $rules = [];
+
+        // Only validate invoice_number if it's not already set on the purchase
+        if (empty($purchase->invoice_number)) {
+            $rules['invoice_number'] = 'required|string|max:255';
+        }
+
+        if (empty($purchase->proof_image)) {
+            $rules['proof_image'] = 'required|image|max:2048'; // 2MB Max
+        }
+
+        $request->validate($rules);
+
+        $request->validate($rules);
 
         try {
-            if ($request->hasFile('proof_image')) {
-                $path = $request->file('proof_image')->store('purchase-proofs', 'public');
-                $purchase->update(['proof_image' => $path]);
-            }
+            $updateData = [];
 
             if ($request->filled('invoice_number')) {
-                $purchase->update(['invoice_number' => $request->invoice_number]);
+                $updateData['invoice_number'] = $request->invoice_number;
             }
 
-            $this->purchaseService->markAsReceived($purchase);
+            if ($request->hasFile('proof_image')) {
+                $updateData['proof_image'] = $request->file('proof_image')->store('proofs', 'public');
+            }
+
+            if (!empty($updateData)) {
+                $purchase->update($updateData);
+            }
+
+            $this->service->markAsReceived($purchase);
+
             return back()->with('success', 'Purchase received and stock updated.');
-        } catch (Exception $e) {
+
+        } catch (PurchaseException $e) {
             return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error receiving purchase: ' . $e->getMessage());
         }
     }
 
-    public function markPaid(Purchase $purchase): RedirectResponse
+    public function cancel(Purchase $purchase)
     {
         try {
-            $this->purchaseService->markAsPaid($purchase);
-            return back()->with('success', 'Purchase marked as Paid.');
-        } catch (Exception $e) {
+            $this->service->cancelPurchase($purchase);
+            return back()->with('success', 'Purchase order cancelled.');
+        } catch (PurchaseException $e) {
             return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error cancelling purchase: ' . $e->getMessage());
         }
     }
 
-    public function cancel(Purchase $purchase): RedirectResponse
+    public function markPaid(Purchase $purchase)
     {
         try {
-            $this->purchaseService->cancelPurchase($purchase);
-            return back()->with('success', 'Purchase cancelled.');
-        } catch (Exception $e) {
+            $this->service->markAsPaid($purchase);
+            return back()->with('success', 'Purchase marked as paid.');
+        } catch (PurchaseException $e) {
             return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error marking as paid: ' . $e->getMessage());
         }
     }
 
-    public function restoreToDraft(Purchase $purchase): RedirectResponse
+    public function restoreToDraft(Purchase $purchase)
     {
         try {
-            $this->purchaseService->restoreToDraft($purchase);
+            $this->service->restoreToDraft($purchase);
             return back()->with('success', 'Purchase restored to draft.');
-        } catch (Exception $e) {
+        } catch (PurchaseException $e) {
             return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error restoring purchase: ' . $e->getMessage());
         }
     }
 }

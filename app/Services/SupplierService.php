@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use Exception;
-use App\DTOs\SupplierData;
 use App\Models\Supplier;
-use App\Exceptions\SupplierException;
+use App\DTOs\SupplierData;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\SupplierException;
+use Illuminate\Support\Facades\Cache;
 
 class SupplierService
 {
@@ -17,7 +18,7 @@ class SupplierService
     {
         return DB::transaction(function () use ($data) {
             try {
-                return Supplier::create([
+                $supplier = Supplier::create([
                     'name' => $data->name,
                     'contact_person' => $data->contact_person,
                     'email' => $data->email,
@@ -25,6 +26,10 @@ class SupplierService
                     'address' => $data->address,
                     'notes' => $data->notes,
                 ]);
+
+                Cache::forget('suppliers_list_all');
+
+                return $supplier;
 
             } catch (Exception $e) {
                 throw SupplierException::creationFailed($e->getMessage(), [
@@ -51,6 +56,8 @@ class SupplierService
                     'notes' => $data->notes,
                 ]);
 
+                Cache::forget('suppliers_list_all');
+
                 return $supplier->refresh();
 
             } catch (Exception $e) {
@@ -74,6 +81,8 @@ class SupplierService
                 }
 
                 $supplier->delete();
+
+                Cache::forget('suppliers_list_all');
 
             } catch (Exception $e) {
                 throw SupplierException::deletionFailed($e->getMessage(), ['id' => $supplier->id]);

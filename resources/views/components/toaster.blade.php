@@ -39,7 +39,7 @@
         Stack Container: Top Center
     -->
     <div
-        class="relative w-full max-w-sm h-auto flex flex-col items-center justify-start"
+        class="relative w-full max-w-lg h-auto flex flex-col items-center justify-start"
         x-data="{ expanded: false }"
         x-on:mouseenter="expanded = true"
         x-on:mouseleave="expanded = false"

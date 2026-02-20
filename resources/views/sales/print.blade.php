@@ -30,7 +30,7 @@
 
         .container {
             width: 100%;
-            border: 0px solid #000; /* Optional outer box? Reference doesn't show full box */
+            border: 0px solid #000;
         }
 
         /* HEADER GRID */
@@ -93,7 +93,7 @@
         .header-row {
             display: flex;
             margin-bottom: 5px;
-            align-items: flex-end; /* Align bottom to match dotted line */
+            align-items: flex-end;
         }
 
         .header-right .header-row {
@@ -115,10 +115,8 @@
             flex-grow: 0;
             min-width: 150px;
         }
-        /* Remove border for date if desired? User just said align right.
-           But consistent look usually keeps the line.
-           For Date row, I removed the label earlier.
-         */
+            min-width: 150px;
+        }
 
         /* INVOICE NO ROW */
         .invoice-row {
@@ -154,8 +152,10 @@
             padding: 5px;
             text-align: center;
             font-weight: bold;
-            background: #f0f0f0; /* Slight gray background like reference */
-            font-size: 8pt; /* Slightly smaller to fit 7 cols */
+            text-align: center;
+            font-weight: bold;
+            background: #f0f0f0;
+            font-size: 8pt;
             white-space: nowrap;
         }
 
@@ -170,7 +170,7 @@
         }
 
         .col-name { width: 43%; text-align: left; }
-        /* .col-unit removed */
+        .col-name { width: 43%; text-align: left; }
         .col-qty { width: 8%; text-align: center; }
         .col-price { width: 16%; text-align: right; }
         .col-disc { width: 15%; text-align: right; }
@@ -274,7 +274,6 @@
             <thead>
                 <tr>
                     <th class="col-name">Nama Barang</th>
-                    <!-- <th class="col-unit">Satuan</th> -->
                     <th class="col-qty">Qty</th>
                     <th class="col-price">Harga</th>
                     <th class="col-disc">Diskon</th>
@@ -288,7 +287,6 @@
                 @endphp
                 <tr>
                     <td class="col-name">{{ $item->product->name }}</td>
-                    <!-- <td class="col-unit">{{ $item->product->unit->symbol ?? '-' }}</td> -->
                     <td class="col-qty">{{ $item->quantity }}</td>
                     <td class="col-price">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
                     <td class="col-disc">{{ $item->discount > 0 ? number_format($item->discount, 0, ',', '.') : '-' }}</td>
@@ -300,7 +298,6 @@
                 @for($i = 0; $i < max(0, 8 - count($sale->items)); $i++)
                 <tr>
                     <td>&nbsp;</td>
-                    <!-- <td></td> -->
                     <td></td>
                     <td></td>
                     <td></td>
@@ -325,6 +322,16 @@
             </div>
 
             <div class="footer-right">
+                <div class="amount-row">
+                    <span class="amount-label">Subtotal</span>
+                    <span class="amount-value">Rp. {{ number_format($sale->total + $sale->global_discount, 0, ',', '.') }}</span>
+                </div>
+                @if($sale->global_discount > 0)
+                <div class="amount-row">
+                    <span class="amount-label">Diskon Extra</span>
+                    <span class="amount-value">- Rp. {{ number_format($sale->global_discount, 0, ',', '.') }}</span>
+                </div>
+                @endif
                 <div class="amount-row">
                     <span class="amount-label">Total</span>
                     <span class="amount-value">Rp. {{ number_format($sale->total, 0, ',', '.') }}</span>

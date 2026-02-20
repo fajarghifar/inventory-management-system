@@ -126,10 +126,11 @@ final class FinanceTransactionTable extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::multiSelect('category_name', 'finance_category_id')
-                ->dataSource(FinanceCategory::all())
-                ->optionLabel('name')
-                ->optionValue('id'),
+            Filter::multiSelectAsync('category_name', 'finance_category_id')
+                ->url(route('ajax.finance-categories.search'))
+                ->method('POST')
+                ->optionLabel('text')
+                ->optionValue('value'),
 
             Filter::datepicker('transaction_date_formatted', 'transaction_date')
                 ->params([

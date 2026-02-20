@@ -45,4 +45,24 @@ class SaleException extends Exception
         Log::warning($message);
         return new self($message);
     }
+
+    public static function productNotFound(int $productId): self
+    {
+        $message = "Product with ID {$productId} not found during sale processing.";
+        Log::error($message);
+        return new self($message);
+    }
+
+    public static function invalidDiscount(string $reason): self
+    {
+        Log::warning("Invalid discount applied: {$reason}");
+        return new self("Invalid discount: {$reason}");
+    }
+
+    public static function insufficientPayment(float $total, float $received): self
+    {
+        $message = "Insufficient payment. Total: {$total}, Received: {$received}";
+        Log::warning($message);
+        return new self("Payment is insufficient. Please collect the full amount.");
+    }
 }

@@ -30,7 +30,7 @@
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                                     <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
                                     <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Disc/Unit</th>
                                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                                     <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                 </tr>
@@ -44,13 +44,15 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500" x-text="formatCurrency(item.price)"></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center">
-                                            <input
-                                                type="number"
-                                                x-model.number="item.quantity"
-                                                @change="validateQty(index)"
-                                                class="w-16 text-center border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm py-1"
-                                                min="1"
-                                            >
+                                            <div class="flex items-center justify-center">
+                                                <input type="number" x-model="item.quantity" min="1" :max="item.max_stock"
+                                                    @input="validateQty(index)"
+                                                    class="w-20 text-center border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm shadow-sm"
+                                                    placeholder="1">
+                                            </div>
+                                            <div x-show="item.quantity > item.max_stock" class="text-xs text-red-600 mt-1">
+                                                Max: <span x-text="item.max_stock"></span>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500" x-text="item.unit"></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right">
@@ -67,7 +69,7 @@
                                                 >
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900" x-text="formatCurrency((item.price * item.quantity) - item.discount)"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900" x-text="formatCurrency((item.price - item.discount) * item.quantity)"></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                             <button @click="removeFromCart(index)" class="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 focus:outline-none transition-colors mx-auto">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -133,9 +135,24 @@
 
                     <!-- Totals Section -->
                     <div class="space-y-3">
-                        <div class="flex justify-between text-gray-600 text-sm font-medium">
+                        <div class="flex justify-between items-center text-gray-600 text-sm font-medium">
                             <span>Subtotal</span>
                             <span x-text="formatCurrency(subtotal)"></span>
+                        </div>
+                        <div class="flex justify-between items-center mt-2">
+                             <span class="text-sm font-medium text-gray-500">Discount (Global)</span>
+                             <div class="relative w-32">
+                                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-xs">Rp</span>
+                                </div>
+                                <input
+                                    type="text"
+                                    :value="formatNumber(globalDiscount)"
+                                    @input="globalDiscount = unformatNumber($event.target.value)"
+                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-2 sm:text-sm border-gray-300 rounded-md text-right py-1"
+                                    placeholder="0"
+                                >
+                             </div>
                         </div>
                         <div class="flex justify-between text-red-500 text-sm" x-show="totalDiscount > 0">
                             <span>Total Discount</span>
@@ -160,9 +177,9 @@
                                     CASH
                                 </button>
                                 <button
-                                    @click="payment.method = 'credit'"
+                                    @click="payment.method = 'transfer'"
                                     class="px-4 py-2 text-sm font-medium rounded-md border"
-                                    :class="payment.method === 'credit' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                                    :class="payment.method === 'transfer' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
                                 >
                                     TRANSFER
                                 </button>
@@ -268,6 +285,7 @@
                         cash_received: 0,
                         notes: ''
                     },
+                    globalDiscount: 0,
                     saleStatus: 'completed',
                     isSubmitting: false,
 
@@ -288,10 +306,14 @@
                         const savedPayment = localStorage.getItem('pos_payment');
                         if (savedPayment) this.payment = JSON.parse(savedPayment);
 
+                        const savedGlobalDiscount = localStorage.getItem('pos_globalDiscount');
+                        if (savedGlobalDiscount) this.globalDiscount = parseInt(savedGlobalDiscount);
+
                         // Watchers
                         this.$watch('cart', (val) => localStorage.setItem('pos_cart', JSON.stringify(val)));
                         this.$watch('selectedCustomer', (val) => localStorage.setItem('pos_customer', JSON.stringify(val)));
                         this.$watch('payment', (val) => localStorage.setItem('pos_payment', JSON.stringify(val)));
+                        this.$watch('globalDiscount', (val) => localStorage.setItem('pos_globalDiscount', val));
 
                         this.initProductSelect();
                         this.initCustomerSelect();
@@ -311,10 +333,18 @@
                             searchField: ['name', 'sku'],
                             closeAfterSelect: false,
                             openOnFocus: true,
+                            preload: 'focus', // UX Improvement
                             load: (query, callback) => {
-                                this.lastSearchQuery = query; // Capture query
-                                if(query.length < 2) return callback();
-                                fetch(`/pos-api/products?query=${query}`)
+                                this.lastSearchQuery = query;
+
+                                fetch('{{ route("ajax.products.search") }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    },
+                                    body: JSON.stringify({ q: query })
+                                })
                                     .then(response => response.json())
                                     .then(json => {
                                         callback(json);
@@ -375,12 +405,22 @@
                         }
 
                         this.customerTs = new TomSelect(this.$refs.customerSelect, {
-                            valueField: 'id',
-                            labelField: 'name',
-                            searchField: ['name', 'phone'],
+                            valueField: 'value',
+                            labelField: 'text',
+                            searchField: 'text',
+                            preload: 'focus', // UX Improvement
+                            openOnFocus: true, // UX Improvement
                             load: (query, callback) => {
-                                if(query.length < 2) return callback();
-                                fetch(`/pos-api/customers?query=${query}`)
+                                var url = '{{ route("ajax.customers.search") }}';
+
+                                fetch(url, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    },
+                                    body: JSON.stringify({ q: query })
+                                })
                                     .then(response => response.json())
                                     .then(json => {
                                         callback(json);
@@ -402,9 +442,19 @@
                                 if (value) {
                                     const item = this.customerTs.options[value];
                                     if(item) {
-                                        this.selectedCustomer = item;
-                                        // Once selected, the div toggles to show selectedCustomer details.
-                                        // We might want to clear TS value if we ever un-select.
+                                        // Update selected customer object structure to match what UI expects
+                                        // The UI expects { id, name, phone, ... }
+                                        // Our controller returns { value, text, name, phone }
+                                        // So we map value to id for consistency if needed, or just use item.
+                                        this.selectedCustomer = {
+                                            id: item.value,
+                                            name: item.name,
+                                            phone: item.phone,
+                                            // email and address are not returned by search currently.
+                                            // If needed we should add them to controller.
+                                            email: item.email || '',
+                                            address: item.address || ''
+                                        };
                                         this.customerTs.clear();
                                     }
                                 }
@@ -423,6 +473,7 @@
                         localStorage.removeItem('pos_cart');
                         localStorage.removeItem('pos_customer');
                         localStorage.removeItem('pos_payment');
+                        localStorage.removeItem('pos_globalDiscount');
                     },
 
                     // Cart Management
@@ -431,6 +482,7 @@
                         if (existing) {
                             if (existing.quantity < product.quantity) {
                                 existing.quantity++;
+                                this.$dispatch('toast', { message: 'Product already exists. Quantity updated.', type: 'info' });
                             } else {
                                 this.$dispatch('toast', { message: 'Insufficient stock!', type: 'error' });
                             }
@@ -446,6 +498,7 @@
                                     unit: product.unit ? product.unit.symbol : '',
                                     discount: 0
                                 });
+                                this.$dispatch('toast', { message: 'Product "' + product.name + '" added to cart.', type: 'success' });
                             } else {
                                 this.$dispatch('toast', { message: 'Out of Stock!', type: 'error' });
                             }
@@ -462,7 +515,9 @@
                     },
 
                     removeFromCart(index) {
+                        const removedItem = this.cart[index];
                         this.cart.splice(index, 1);
+                        this.$dispatch('toast', { message: 'Product "' + removedItem.name + '" removed from cart.', type: 'info' });
                     },
 
                     // Customer Modal Open
@@ -477,16 +532,15 @@
 
                     // Computed properties (simulated getters in Alpine)
                     get subtotal() {
-                        // "Subtotal" in this context (requested by user) refers to Gross Total
                         return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     },
 
                     get totalDiscount() {
-                        return this.cart.reduce((sum, item) => sum + (item.discount || 0), 0);
+                        return this.cart.reduce((sum, item) => sum + (item.discount * item.quantity), 0);
                     },
 
                     get total() {
-                        return this.subtotal - this.totalDiscount;
+                        return this.subtotal - this.totalDiscount - this.globalDiscount;
                     },
 
                     get change() {
@@ -515,30 +569,39 @@
                             return;
                         }
 
-                        // Open Modal
                         this.$dispatch('open-modal', { name: 'confirmation-modal' });
                     },
 
-                    // Submit (now uses local saleStatus)
+                    // Submit Sale
                     async submitSale() {
                         this.isSubmitting = true;
 
                         try {
+                            const items = this.cart.map(item => ({
+                                product_id: item.id,
+                                quantity: item.quantity,
+                                unit_price: item.price,
+                                discount: item.discount
+                            }));
+
                             const payload = {
                                 customer_id: this.selectedCustomer?.id,
-                                items: this.cart,
+                                items: items,
                                 payment_method: this.payment.method,
                                 cash_received: this.payment.cash_received,
                                 notes: this.payment.notes,
+                                global_discount: this.globalDiscount,
                                 status: this.saleStatus,
-                                _token: '{{ csrf_token() }}' // Blade injection
+                                sale_date: new Date().toISOString().slice(0, 10),
+                                _token: '{{ csrf_token() }}'
                             };
 
-                            const res = await fetch('/pos-api/sales', {
+                            const res = await fetch('{{ route("sales.store") }}', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'Accept': 'application/json'
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                                 },
                                 body: JSON.stringify(payload)
                             });
@@ -548,16 +611,13 @@
                             if (res.ok && data.success) {
                                 this.$dispatch('close-modal', { name: 'confirmation-modal' });
 
-                                // 1. Open Print (if available) - Only if completed? (Logic: Print defaults to yes, user can close)
                                 if (data.print_url) {
                                     window.open(data.print_url, '_blank');
                                 }
 
-                                // 2. Clear Storage & Reset State (No Reload)
                                 this.clearStorage();
                                 this.resetForm();
 
-                                // Optional: Show success notification or toast here
                                 this.$dispatch('toast', { message: 'Transaction Successful!', type: 'success' });
 
                             } else {
@@ -580,6 +640,7 @@
                             cash_received: 0,
                             notes: ''
                         };
+                        this.globalDiscount = 0;
                         // Reset TomSelects
                         this.productTs && this.productTs.clear();
                         this.customerTs && this.customerTs.clear();
@@ -605,7 +666,7 @@
                 <div class="grid gap-4 py-4">
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">Total Items</span>
-                        <span class="font-semibold" x-text="cart.reduce((sum, item) => sum + item.quantity, 0)"></span>
+                        <span class="font-semibold" x-text="cart.reduce((sum, item) => sum + parseInt(item.quantity), 0)"></span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-sm font-medium text-gray-500">Subtotal</span>
@@ -614,6 +675,10 @@
                     <div class="flex items-center justify-between text-red-600" x-show="totalDiscount > 0">
                         <span class="text-sm font-medium">Discount</span>
                         <span class="font-semibold" x-text="'- ' + formatCurrency(totalDiscount)"></span>
+                    </div>
+                    <div class="flex items-center justify-between text-red-600" x-show="globalDiscount > 0">
+                        <span class="text-sm font-medium">Extra Discount (Global)</span>
+                        <span class="font-semibold" x-text="'- ' + formatCurrency(globalDiscount)"></span>
                     </div>
                     <div class="flex items-center justify-between border-t border-gray-100 pt-2 mt-2">
                         <span class="text-lg font-bold">Total Bill</span>
@@ -668,12 +733,13 @@
                         <span x-text="isSubmitting ? 'Processing...' : 'PROCESS SALE'"></span>
                     </button>
 
-                    <button
+                    <x-secondary-button
+                        type="button"
                         @click="$dispatch('close-modal', { name: 'confirmation-modal' })"
-                        class="w-full flex justify-center items-center py-2 px-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+                        class="w-full justify-center"
                     >
                         Back
-                    </button>
+                    </x-secondary-button>
                 </div>
             </div>
         </x-modal>
@@ -694,7 +760,7 @@
 
                     this.loading = true;
                     try {
-                        const res = await fetch('/pos-api/customers', {
+                        const res = await fetch('{{ route("ajax.customers.store") }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

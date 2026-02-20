@@ -134,9 +134,17 @@
                                 </tr>
                                 @if($sale->total_discount > 0)
                                     <tr>
-                                        <td colspan="6" class="px-6 py-4 text-right text-red-600">Total Discount</td>
+                                        <td colspan="6" class="px-6 py-4 text-right text-red-600">Total Discount (Items)</td>
                                         <td class="px-6 py-4 text-right text-red-600">
-                                            - Rp {{ number_format($sale->total_discount, 0, ',', '.') }}
+                                            - Rp {{ number_format($sale->total_discount - $sale->global_discount, 0, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endif
+                                @if($sale->global_discount > 0)
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-4 text-right text-red-600">Global Discount (Transaction)</td>
+                                        <td class="px-6 py-4 text-right text-red-600">
+                                            - Rp {{ number_format($sale->global_discount, 0, ',', '.') }}
                                         </td>
                                     </tr>
                                 @endif

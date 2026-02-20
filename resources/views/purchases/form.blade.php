@@ -113,65 +113,58 @@
 
     <!-- Items Section -->
     <div class="space-y-4">
-        <div class="flex justify-between items-center border-b border-gray-200 pb-2">
-            <h3 class="text-lg font-medium leading-6 text-gray-900">
-                {{ __('Items') }}
-            </h3>
-            <span class="text-sm text-muted-foreground" x-text="items.length + ' items'"></span>
-        </div>
-
-        <!-- Master Search -->
-        <div class="w-full">
-            <select
+        <!-- Search Bar -->
+        <div class="relative z-20">
+             <select
                 id="master_product_search"
                 x-init="initMasterSearch($el)"
-                placeholder="Search and add product..."
+                placeholder="Search Product to Add..."
                 autocomplete="off"
             ></select>
         </div>
 
-        <div class="rounded-md border border-gray-200 overflow-visible">
-            <div class="overflow-x-auto md:overflow-visible">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50/50 border-b border-gray-200">
+        <!-- Cart Table -->
+        <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden flex flex-col">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0 z-10">
                         <tr>
-                            <th class="px-4 py-3 min-w-[250px] font-medium">{{ __('Product') }}</th>
-                            <th class="px-4 py-3 w-28 text-center font-medium">{{ __('Qty') }}</th>
-                            <th class="px-4 py-3 w-40 text-right font-medium">{{ __('Buy Price') }}</th>
-                            <th class="px-4 py-3 w-40 text-right font-medium">{{ __('Sell Price') }}</th>
-                            <th class="px-4 py-3 w-40 text-right font-medium">{{ __('Subtotal') }}</th>
-                            <th class="px-4 py-3 w-12 text-center"></th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Buy Price</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Sell Price</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
+                    <tbody class="bg-white divide-y divide-gray-200">
                         <template x-for="(item, index) in items" :key="item.key">
-                             <tr class="group hover:bg-gray-50/50">
-                                <td class="px-4 py-2 align-top pt-3">
-                                    <div class="w-full">
-                                        <input
-                                            type="text"
-                                            :name="`items[${index}][product_name]`"
-                                            x-model="item.product_name"
-                                            class="flex h-10 w-full rounded-md border border-input bg-gray-50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                                            readonly
-                                        />
-                                        <input type="hidden" :name="`items[${index}][product_id]`" :value="item.product_id">
-                                    </div>
+                            <tr :class="index % 2 === 0 ? 'bg-white' : 'bg-gray-50'" class="hover:bg-indigo-50 transition-colors group">
+                                <!-- Product Name -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900" x-text="item.product_name"></div>
+                                    <div class="text-xs text-gray-500" x-text="item.product_code || 'ID: ' + item.product_id"></div>
+                                    <input type="hidden" :name="`items[${index}][product_name]`" :value="item.product_name">
+                                    <input type="hidden" :name="`items[${index}][product_id]`" :value="item.product_id">
+                                    <input type="hidden" :name="`items[${index}][product_code]`" :value="item.product_code">
                                 </td>
-                                <td class="px-4 py-2 align-top pt-3">
+
+                                <!-- Qty -->
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <input
                                         type="number"
                                         :name="`items[${index}][quantity]`"
                                         x-model.number="item.quantity"
                                         @input="calculateLine(index)"
+                                        class="w-20 text-center border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 text-sm shadow-sm"
                                         min="1"
-                                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-center"
                                         placeholder="1"
-                                    />
-                                    <p x-show="hasError(`items.${index}.quantity`)" x-text="getError(`items.${index}.quantity`)" class="text-sm text-red-600 mt-1 space-y-1"></p>
+                                    >
+                                    <p x-show="hasError(`items.${index}.quantity`)" x-text="getError(`items.${index}.quantity`)" class="text-xs text-red-600 mt-1"></p>
                                 </td>
-                                <!-- Buy Price Currency Input -->
-                                <td class="px-4 py-2 align-top pt-3" x-data="{
+
+                                <!-- Buy Price -->
+                                <td class="px-6 py-4 whitespace-nowrap text-right" x-data="{
                                     display: '',
                                     init() {
                                         this.display = new Intl.NumberFormat('id-ID').format(item.unit_price || 0);
@@ -184,18 +177,24 @@
                                         calculateLine(index);
                                     }
                                 }">
-                                    <input
-                                        type="text"
-                                        x-model="display"
-                                        @input="update($event)"
-                                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-right"
-                                        placeholder="0"
-                                    />
+                                    <div class="relative rounded-md shadow-sm w-32 ml-auto">
+                                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-xs">Rp</span>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            x-model="display"
+                                            @input="update($event)"
+                                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-2 sm:text-sm border-gray-300 rounded-md text-right"
+                                            placeholder="0"
+                                        >
+                                    </div>
                                     <input type="hidden" :name="`items[${index}][unit_price]`" :value="item.unit_price">
-                                    <p x-show="hasError(`items.${index}.unit_price`)" x-text="getError(`items.${index}.unit_price`)" class="text-sm text-red-600 mt-1 space-y-1"></p>
+                                    <p x-show="hasError(`items.${index}.unit_price`)" x-text="getError(`items.${index}.unit_price`)" class="text-xs text-red-600 mt-1"></p>
                                 </td>
-                                <!-- Sell Price Currency Input -->
-                                <td class="px-4 py-2 align-top pt-3" x-data="{
+
+                                <!-- Sell Price -->
+                                <td class="px-6 py-4 whitespace-nowrap text-right" x-data="{
                                     display: '',
                                     init() {
                                         this.display = new Intl.NumberFormat('id-ID').format(item.selling_price || 0);
@@ -207,15 +206,20 @@
                                         this.display = new Intl.NumberFormat('id-ID').format(item.selling_price);
                                     }
                                 }">
-                                    <input
-                                        type="text"
-                                        x-model="display"
-                                        @input="update($event)"
-                                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-right"
-                                        placeholder="0"
-                                    />
+                                    <div class="relative rounded-md shadow-sm w-32 ml-auto">
+                                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-xs">Rp</span>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            x-model="display"
+                                            @input="update($event)"
+                                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-2 sm:text-sm border-gray-300 rounded-md text-right"
+                                            placeholder="0"
+                                        >
+                                    </div>
                                     <input type="hidden" :name="`items[${index}][selling_price]`" :value="item.selling_price">
-                                    <p x-show="hasError(`items.${index}.selling_price`)" x-text="getError(`items.${index}.selling_price`)" class="text-sm text-red-600 mt-1 space-y-1"></p>
+
                                     <template x-if="(parseInt(item.selling_price) || 0) < (parseInt(item.unit_price) || 0) && (parseInt(item.selling_price) || 0) > 0">
                                         <div class="text-xs text-amber-600 mt-1 flex items-center justify-end font-medium">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 mr-1">
@@ -225,38 +229,36 @@
                                         </div>
                                     </template>
                                 </td>
-                                <td class="px-4 py-2 text-right font-medium text-gray-900 align-top pt-4">
+
+                                <!-- Subtotal -->
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">
                                     <span x-text="'Rp ' + new Intl.NumberFormat('id-ID').format( parseInt(item.subtotal) || 0 )"></span>
                                 </td>
-                                <td class="px-4 py-2 text-center align-top pt-3">
-                                    <button
-                                        type="button"
-                                        @click="removeItem(index)"
-                                        class="text-muted-foreground hover:text-destructive transition-colors p-1 rounded-md hover:bg-gray-100"
-                                        title="Remove Item"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
+
+                                <!-- Action -->
+                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    <button @click="removeItem(index)" type="button" class="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 focus:outline-none transition-colors mx-auto">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </td>
                             </tr>
                         </template>
                         <template x-if="items.length === 0">
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-500 italic">
-                                    No items added. Search products above to add.
+                                <td colspan="6" class="px-6 py-20 text-center text-gray-500">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                        <p class="text-base font-medium">No items added</p>
+                                        <p class="text-sm text-gray-400">Search products above to add to purchase list</p>
+                                    </div>
                                 </td>
                             </tr>
                         </template>
                     </tbody>
-                    <tfoot class="bg-gray-50/50 font-medium">
-                        <!-- Removed the Add Button row -->
-                        <tr class="bg-gray-100 border-t border-gray-200">
-                            <td colspan="4" class="px-4 py-4 text-right font-bold text-gray-900 text-base flex-1">
-                                {{ __('Total Purchase') }}:
-                            </td>
-                            <td class="px-4 py-4 text-right font-bold text-primary text-xl whitespace-nowrap">
+                    <tfoot class="bg-gray-50 border-t border-gray-200">
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-right font-bold text-gray-900 text-base">Total Purchase:</td>
+                            <td class="px-6 py-4 text-right font-bold text-blue-600 text-lg">
                                 <span x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(total)"></span>
                             </td>
                             <td></td>
@@ -400,6 +402,7 @@
                         key: Math.random().toString(36).substr(2, 9),
                         product_id: product.value,
                         product_name: product.text,
+                        product_code: product.sku,
                         quantity: 1,
                         unit_price: product.price || 0,
                         selling_price: product.selling_price || 0,

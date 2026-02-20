@@ -26,7 +26,7 @@ class SalesController extends Controller
     {
         try {
             $validated = $request->validated();
-            $validated['created_by'] = Auth::id(); // Enforce current user
+            $validated['created_by'] = Auth::id();
 
             $saleData = SaleData::fromArray($validated);
 
@@ -34,8 +34,11 @@ class SalesController extends Controller
 
             if ($request->wantsJson()) {
                 return response()->json([
+                    'success' => true,
                     'message' => 'Sale created successfully',
-                    'data' => $sale
+                    'data' => $sale,
+                    'print_url' => route('sales.print', $sale->id),
+                    'redirect' => route('sales.create')
                 ], 201);
             }
 
@@ -50,8 +53,6 @@ class SalesController extends Controller
 
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
-                // Log the confusing error for debugging but return generic message if strict
-                // return response()->json(['message' => 'Internal Error'], 500);
                 return response()->json(['message' => $e->getMessage()], 400);
             }
             return back()->with('error', $e->getMessage())->withInput();
@@ -60,18 +61,8 @@ class SalesController extends Controller
 
     public function show(Sale $sale)
     {
-        $sale->load(['items.product', 'customer', 'creator']);
+        $sale->load(['items.product.unit', 'customer', 'creator']);
         return view('sales.show', compact('sale'));
-    }
-
-    public function edit(Sale $sale)
-    {
-        return view('sales.edit', compact('sale'));
-    }
-
-    public function update(Request $request, Sale $sale)
-    {
-        // Implement if needed.
     }
 
     public function destroy(Request $request, Sale $sale, SaleService $saleService)

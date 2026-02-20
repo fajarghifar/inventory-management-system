@@ -21,6 +21,7 @@ readonly class SaleData
         public ?string $notes = null,
         public int $cash_received = 0,
         public int $change = 0,
+        public int $global_discount = 0,
     ) {}
 
     public static function fromArray(array $data): self
@@ -35,6 +36,7 @@ readonly class SaleData
             notes: $data['notes'] ?? null,
             cash_received: (int) ($data['cash_received'] ?? 0),
             change: (int) ($data['change'] ?? 0),
+            global_discount: (int) ($data['global_discount'] ?? 0),
         );
     }
 
@@ -50,6 +52,7 @@ readonly class SaleData
             'notes' => $this->notes,
             'cash_received' => $this->cash_received,
             'change' => $this->change,
+            'global_discount' => $this->global_discount,
         ];
     }
 }

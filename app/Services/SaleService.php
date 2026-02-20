@@ -4,9 +4,10 @@ namespace App\Services;
 
 use Exception;
 use App\Models\Sale;
-use App\Models\Product;
 use App\DTOs\SaleData;
+use App\Models\Product;
 use App\Enums\SaleStatus;
+use App\Enums\PaymentMethod;
 use App\Exceptions\SaleException;
 use Illuminate\Support\Facades\DB;
 
@@ -24,7 +25,7 @@ class SaleService
     {
         return DB::transaction(function () use ($data) {
             try {
-                // Collect and sort products for locking
+                // Lock products for update
                 $productIds = collect($data->items)->pluck('product_id')->sort()->values()->all();
 
                 $products = Product::whereIn('id', $productIds)
@@ -43,21 +44,23 @@ class SaleService
                     'cash_received' => $data->cash_received,
                     'change' => $data->change,
                     'subtotal' => 0,
+                    'global_discount' => $data->global_discount,
                     'total_discount' => 0,
                     'total' => 0,
                 ]);
 
                 $totalSubtotal = 0;
                 $totalDiscount = 0;
+                $timestamp = now();
+                $saleItems = [];
 
                 foreach ($data->items as $itemData) {
                     $product = $products->get($itemData->product_id);
 
                     if (!$product) {
-                        throw new Exception("Product ID {$itemData->product_id} not found.");
+                        throw SaleException::productNotFound($itemData->product_id);
                     }
 
-                    // Stock validation
                     if ($product->quantity < $itemData->quantity) {
                         throw SaleException::insufficientStock(
                             $product->name,
@@ -65,36 +68,70 @@ class SaleService
                             $product->quantity
                         );
                     }
-                    $product->decrement('quantity', $itemData->quantity);
 
-                    // Financials
+                    // Update stock
+                    $product->quantity -= $itemData->quantity;
+                    $product->save();
+
                     $unitPrice = $product->selling_price;
                     $quantity = $itemData->quantity;
                     $discount = $itemData->discount;
+
+                    if ($discount > $unitPrice) {
+                        throw SaleException::invalidDiscount("Item discount (" . number_format($discount) . ") cannot exceed unit price (" . number_format($unitPrice) . ") for product '{$product->name}'.");
+                    }
+
                     $finalPrice = $unitPrice - $discount;
                     $subtotal   = $finalPrice * $quantity;
 
-                    $sale->items()->create([
-                        'product_id'  => $product->id,
-                        'quantity'    => $quantity,
+                    $saleItems[] = [
+                        'sale_id' => $sale->id,
+                        'product_id' => $product->id,
+                        'quantity' => $quantity,
                         'cost_price' => $product->purchase_price,
-                        'unit_price'  => $unitPrice,
-                        'discount'    => $discount,
+                        'unit_price' => $unitPrice,
+                        'discount' => $discount,
                         'final_price' => $finalPrice,
-                        'subtotal'    => $subtotal,
-                    ]);
+                        'subtotal' => $subtotal,
+                        'created_at' => $timestamp,
+                        'updated_at' => $timestamp,
+                    ];
 
                     $totalSubtotal += $subtotal;
                     $totalDiscount += $discount * $quantity;
                 }
 
+                // Batch insert items
+                if (!empty($saleItems)) {
+                    \App\Models\SaleItem::insert($saleItems);
+                }
+
+                if ($data->global_discount > $totalSubtotal) {
+                    throw SaleException::invalidDiscount("Global discount (" . number_format($data->global_discount) . ") cannot exceed subtotal (" . number_format($totalSubtotal) . ").");
+                }
+
+                $total = $totalSubtotal - $data->global_discount;
+
+                if ($data->status === SaleStatus::COMPLETED) {
+                    if ($data->payment_method === \App\Enums\PaymentMethod::CASH && $data->cash_received < $total) {
+                        throw SaleException::insufficientPayment($total, $data->cash_received);
+                    }
+                }
+                $change = 0;
+
+                // Calculate change if payment method is cash
+                if ($data->payment_method === \App\Enums\PaymentMethod::CASH && $data->cash_received >= $total) {
+                    $change = $data->cash_received - $total;
+                }
+
                 $sale->update([
                     'subtotal' => $totalSubtotal + $totalDiscount,
-                    'total_discount' => $totalDiscount,
-                    'total'          => $totalSubtotal,
+                    'total_discount' => $totalDiscount + $data->global_discount,
+                    'global_discount' => $data->global_discount,
+                    'total' => $total,
+                    'change' => $change,
                 ]);
 
-                // Sync Finance if Completed
                 if ($sale->status === SaleStatus::COMPLETED) {
                     $this->financeService->recordIncomeFromSale($sale);
                 }
@@ -166,7 +203,17 @@ class SaleService
 
             if (!empty($paymentData)) {
                 $updateData['cash_received'] = $paymentData['cash_received'] ?? $sale->cash_received;
-                $updateData['change'] = $paymentData['change'] ?? $sale->change;
+
+                if ($sale->payment_method === PaymentMethod::CASH && $updateData['cash_received'] < $sale->total) {
+                    throw SaleException::insufficientPayment($sale->total, $updateData['cash_received']);
+                }
+
+                // Calculate Change
+                if ($sale->payment_method === PaymentMethod::CASH && $updateData['cash_received'] >= $sale->total) {
+                    $updateData['change'] = $updateData['cash_received'] - $sale->total;
+                } else {
+                    $updateData['change'] = 0;
+                }
             }
 
             $sale->update($updateData);
@@ -195,7 +242,7 @@ class SaleService
                 $product = $item->product()->lockForUpdate()->find($item->product_id);
 
                 if (!$product) {
-                    throw new Exception("Product ID {$item->product_id} not found.");
+                    throw SaleException::productNotFound($item->product_id);
                 }
 
                 if ($product->quantity < $item->quantity) {

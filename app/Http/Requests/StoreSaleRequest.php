@@ -32,13 +32,23 @@ class StoreSaleRequest extends FormRequest
             'notes' => ['nullable', 'string'],
             'cash_received' => ['nullable', 'numeric', 'min:0'],
             'change' => ['nullable', 'numeric', 'min:0'],
+            'global_discount' => ['nullable', 'numeric', 'min:0'],
 
-            // Items
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0'],
             'items.*.discount' => ['nullable', 'numeric', 'min:0'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'items.*.product_id.exists' => 'The selected product does not exist.',
+            'items.*.quantity.min' => 'Quantity must be at least 1.',
+            'items.*.unit_price.min' => 'Unit price must be at least 0.',
+            'items.*.discount.min' => 'Discount must be at least 0.',
         ];
     }
 }

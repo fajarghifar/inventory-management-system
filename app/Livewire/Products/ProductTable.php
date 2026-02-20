@@ -2,12 +2,9 @@
 
 namespace App\Livewire\Products;
 
-use App\Models\Unit;
 use App\Models\Product;
-use App\Models\Category;
 use App\Services\ProductService;
 use App\Exceptions\ProductException;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
@@ -165,49 +162,18 @@ final class ProductTable extends PowerGridComponent
         ];
     }
 
-    private $categories;
-    private $units;
-
-    private function getCategories()
-    {
-        if (!$this->categories) {
-            $this->categories = Cache::rememberForever('categories_list_all', function () {
-                return Category::all()->map(function ($category) {
-                    return [
-                        'value' => $category->id,
-                        'text' => $category->name,
-                    ];
-                });
-            });
-        }
-        return $this->categories;
-    }
-
-    private function getUnits()
-    {
-        if (!$this->units) {
-            $this->units = Cache::rememberForever('units_list_all', function () {
-                return Unit::all()->map(function ($unit) {
-                    return [
-                        'value' => $unit->id,
-                        'text' => "{$unit->name} ({$unit->symbol})",
-                    ];
-                });
-            });
-        }
-        return $this->units;
-    }
-
     public function filters(): array
     {
         return [
-            Filter::multiSelect('category_name', 'category_id')
-                ->dataSource($this->getCategories())
+            Filter::multiSelectAsync('category_name', 'category_id')
+                ->url(route('ajax.categories.search'))
+                ->method('POST')
                 ->optionValue('value')
                 ->optionLabel('text'),
 
-            Filter::multiSelect('unit_symbol', 'unit_id')
-                ->dataSource($this->getUnits())
+            Filter::multiSelectAsync('unit_symbol', 'unit_id')
+                ->url(route('ajax.units.search'))
+                ->method('POST')
                 ->optionValue('value')
                 ->optionLabel('text'),
 

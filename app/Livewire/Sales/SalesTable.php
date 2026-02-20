@@ -4,7 +4,6 @@ namespace App\Livewire\Sales;
 
 use Carbon\Carbon;
 use App\Models\Sale;
-use App\Models\Customer;
 use App\Enums\SaleStatus;
 use App\Services\SaleService;
 use App\Exceptions\SaleException;
@@ -65,14 +64,16 @@ final class SalesTable extends PowerGridComponent
             ->add('status_badge', function(Sale $model) {
                 return view('components.status-badge', ['status' => $model->status])->render();
             })
-            ->add('date_period', fn() => '') // Virtual field for filter
-            ->add('created_by_name', fn(Sale $model) => $model->creator->name)
+            ->add('date_period', fn() => '')
+            ->add('creator_name', fn(Sale $model) => $model->creator ? $model->creator->name : '-')
             ->add('created_at');
     }
 
     public function columns(): array
     {
         return [
+            Column::action('Action'),
+
             Column::make('ID', 'id')->hidden(),
 
             Column::make('Invoice', 'invoice_number')
@@ -83,13 +84,13 @@ final class SalesTable extends PowerGridComponent
                 ->searchable()
                 ->sortable(),
 
-            Column::make('Created By', 'created_by_name', 'created_by')
+            Column::make('Created By', 'creator_name', 'created_by')
                 ->sortable(),
 
             Column::make('Date', 'sale_date_formatted', 'sale_date')
                 ->sortable(),
 
-            Column::make('Period', 'date_period') // Hidden column for filter
+            Column::make('Period', 'date_period')
                 ->hidden(),
 
             Column::make('Total', 'total_formatted', 'total')
@@ -98,27 +99,42 @@ final class SalesTable extends PowerGridComponent
                 ->bodyAttribute('text-right'),
 
             Column::make('Status', 'status_badge', 'status')
-                ->sortable(),
+                ->sortable()
+                ->headerAttribute('text-center')
+                ->bodyAttribute('text-center'),
 
-            Column::action('Action'),
+        ];
+    }
+
+    public function relationSearch(): array
+    {
+        return [
+            'customer' => ['name'],
         ];
     }
 
     public function filters(): array
     {
         return [
-            Filter::multiSelect('customer_name', 'customer_id')
-                ->dataSource(Customer::all())
-                ->optionLabel('name')
-                ->optionValue('id'),
+            Filter::multiSelectAsync('customer_name', 'customer_id')
+                ->url(route('ajax.customers.search'))
+                ->method('POST')
+                ->optionValue('value')
+                ->optionLabel('text'),
 
-            Filter::select('status', 'status')
+            Filter::multiSelect('status', 'status')
                 ->dataSource(collect(SaleStatus::cases())->map(fn($status) => [
                     'value' => $status->value,
                     'label' => $status->label(),
                 ])->toArray())
                 ->optionLabel('label')
                 ->optionValue('value'),
+
+            Filter::multiSelectAsync('creator_name', 'created_by')
+                ->url(route('ajax.users.search'))
+                ->method('POST')
+                ->optionValue('value')
+                ->optionLabel('text'),
 
             Filter::datepicker('sale_date_formatted', 'sale_date')
                 ->params([

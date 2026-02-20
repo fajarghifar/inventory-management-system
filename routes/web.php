@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PosController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\DashboardController;
@@ -43,19 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Sales
-    Route::resource('sales', SalesController::class);
+    Route::resource('sales', SalesController::class)->except(['edit', 'update']);
     Route::prefix('sales/{sale}')->name('sales.')->controller(SalesController::class)->group(function () {
         Route::get('print', 'print')->name('print');
         Route::patch('complete', 'complete')->name('complete');
         Route::patch('restore', 'restore')->name('restore');
-    });
-
-    // POS API (Bridge for Frontend)
-    Route::prefix('pos-api')->controller(PosController::class)->group(function () {
-        Route::get('products', 'searchProducts');
-        Route::get('customers', 'searchCustomers');
-        Route::post('customers', 'storeCustomer');
-        Route::post('sales', 'storeSale');
     });
 
     // =========================================================================
@@ -79,8 +70,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('ajax')->name('ajax.')->group(function () {
         Route::post('products', [\App\Http\Controllers\Api\ProductController::class, 'search'])->name('products.search');
         Route::post('suppliers', [\App\Http\Controllers\Api\SupplierController::class, 'search'])->name('suppliers.search');
+        Route::post('customers', [\App\Http\Controllers\Api\CustomerController::class, 'search'])->name('customers.search');
+        Route::post('customers/store', [\App\Http\Controllers\Api\CustomerController::class, 'store'])->name('customers.store');
         Route::post('categories', [\App\Http\Controllers\Api\CategoryController::class, 'search'])->name('categories.search');
         Route::post('units', [\App\Http\Controllers\Api\UnitController::class, 'search'])->name('units.search');
+        Route::post('users', [\App\Http\Controllers\Api\UserController::class, 'search'])->name('users.search');
+        Route::post('finance-categories', [\App\Http\Controllers\Api\FinanceCategoryController::class, 'search'])->name('finance-categories.search');
     });
 });
 

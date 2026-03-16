@@ -63,6 +63,11 @@ class FinanceCategoryForm extends Component
     {
         $this->validate();
 
+        if ($this->isEditing && $this->category && in_array($this->category->name, ['Product Sales', 'Product Purchases'])) {
+            $this->dispatch('toast', ['message' => 'System categories cannot be edited.', 'type' => 'error']);
+            return;
+        }
+
         $slug = Str::slug($this->name);
 
         $data = new FinanceCategoryData(

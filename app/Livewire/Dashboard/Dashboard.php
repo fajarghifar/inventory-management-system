@@ -17,10 +17,12 @@ class Dashboard extends Component
     public array $lowStockProducts = [];
     public array $recentSales = [];
     public array $topProducts = [];
+    public array $topCustomers = [];
 
     // Charts Data
     public array $salesChart = [];
     public array $cashFlowChart = [];
+    public array $expenseChart = [];
 
     public function mount(DashboardStatsService $service)
     {
@@ -69,6 +71,7 @@ class Dashboard extends Component
         $this->lowStockProducts = $service->getLowStockProducts(5);
         $this->topProducts = $service->getTopProducts($startDate, $endDate, 5);
         $this->recentSales = $service->getRecentSales(5);
+        $this->topCustomers = $service->getTopCustomers($startDate, $endDate, 5);
 
         // 4. Prepare Chart Data
         $salesTrend = $service->getSalesTrend($startDate, $endDate);
@@ -86,9 +89,16 @@ class Dashboard extends Component
             'expense' => array_values($cashFlowTrend['expense']),
         ];
 
+        $expenseBreakdown = $service->getExpenseBreakdown($startDate, $endDate);
+        $this->expenseChart = [
+            'labels' => array_column($expenseBreakdown, 'category_name'),
+            'series' => array_column($expenseBreakdown, 'total_amount'),
+        ];
+
         $this->dispatch('stats-updated', [
             'sales' => $this->salesChart,
-            'cashFlow' => $this->cashFlowChart
+            'cashFlow' => $this->cashFlowChart,
+            'expense' => $this->expenseChart,
         ]);
     }
 

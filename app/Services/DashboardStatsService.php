@@ -21,14 +21,15 @@ class DashboardStatsService
         $cacheKey = "dashboard_sales_{$periodKey}_{$startDate->format('Ymd')}_{$endDate->format('Ymd')}";
 
         return Cache::remember($cacheKey, now()->addMinutes(15), function () use ($startDate, $endDate) {
-            $sales = Sale::whereBetween('sale_date', [$startDate, $endDate])
+            // Optimize: Use aggregate queries instead of loading all models into memory
+            $salesData = Sale::whereBetween('sale_date', [$startDate, $endDate])
                 ->where('status', 'completed')
-                ->get();
+                ->selectRaw('COUNT(*) as count, SUM(total) as total_revenue')
+                ->first();
 
-            $totalRevenue = $sales->sum('total');
-            $count = $sales->count();
+            $totalRevenue = $salesData->total_revenue ?? 0;
+            $count = $salesData->count ?? 0;
 
-            // Calculate Gross Profit: Revenue - COGS
             // COGS = Sum of (Sales Item Quantity * Recorded Cost Price)
             // Using `cost_price` from sale_items ensures we use the HPP at the time of sale.
             $cogs = SaleItem::whereHas('sale', function ($query) use ($startDate, $endDate) {
@@ -40,9 +41,9 @@ class DashboardStatsService
             $grossProfit = $totalRevenue - $cogs;
 
             return [
-                'total_revenue' => $totalRevenue,
-                'count' => $count,
-                'gross_profit' => $grossProfit,
+                'total_revenue' => (float) $totalRevenue,
+                'count' => (int) $count,
+                'gross_profit' => (float) $grossProfit,
             ];
         });
     }
@@ -55,16 +56,15 @@ class DashboardStatsService
         $cacheKey = "dashboard_cashflow_{$periodKey}_{$startDate->format('Ymd')}_{$endDate->format('Ymd')}";
 
         return Cache::remember($cacheKey, now()->addMinutes(15), function () use ($startDate, $endDate) {
-            // Calculate Income and Expense based on Transaction Category type.
-            // Income = Transactions where category type is 'income'
-            // Expense = Transactions where category type is 'expense'
+            // Optimize: Calculate Income and Expense directly in the DB using joins
+            $totals = FinanceTransaction::join('finance_categories', 'finance_transactions.finance_category_id', '=', 'finance_categories.id')
+                ->whereBetween('finance_transactions.transaction_date', [$startDate, $endDate])
+                ->selectRaw('finance_categories.type, SUM(finance_transactions.amount) as total')
+                ->groupBy('finance_categories.type')
+                ->pluck('total', 'finance_categories.type');
 
-            $transactions = FinanceTransaction::with('category')
-                ->whereBetween('transaction_date', [$startDate, $endDate])
-                ->get();
-
-            $income = $transactions->filter(fn($t) => $t->category?->type->value === 'income')->sum('amount');
-            $expense = $transactions->filter(fn($t) => $t->category?->type->value === 'expense')->sum('amount');
+            $income = (float) ($totals['income'] ?? 0);
+            $expense = (float) ($totals['expense'] ?? 0);
 
             return [
                 'income' => $income,
@@ -171,14 +171,18 @@ class DashboardStatsService
          $cacheKey = "dashboard_cashflow_trend_{$startDate->format('Ymd')}_{$endDate->format('Ymd')}";
 
          return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($startDate, $endDate) {
-            $transactions = FinanceTransaction::with('category')
-                ->whereBetween('transaction_date', [$startDate, $endDate])
+            // Optimize: Group by date and type at the database level instead of memory
+            $transactions = FinanceTransaction::join('finance_categories', 'finance_transactions.finance_category_id', '=', 'finance_categories.id')
+                ->whereBetween('finance_transactions.transaction_date', [$startDate, $endDate])
+                ->selectRaw('DATE(finance_transactions.transaction_date) as date, finance_categories.type, SUM(finance_transactions.amount) as total')
+                ->groupBy('date', 'finance_categories.type')
                 ->get();
 
-            // Group by date
-            $grouped = $transactions->groupBy(function($item) {
-                return $item->transaction_date->format('Y-m-d');
-            });
+            // Structure data
+            $grouped = [];
+            foreach ($transactions as $t) {
+                $grouped[$t->date][$t->type] = $t->total;
+            }
 
             // Fill missing dates
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
@@ -187,16 +191,69 @@ class DashboardStatsService
 
             foreach ($period as $date) {
                 $formattedDate = $date->format('Y-m-d');
-                $dayTransactions = $grouped->get($formattedDate, collect());
-
-                $incomeData[$formattedDate] = $dayTransactions->filter(fn($t) => $t->category?->type->value === 'income')->sum('amount');
-                $expenseData[$formattedDate] = $dayTransactions->filter(fn($t) => $t->category?->type->value === 'expense')->sum('amount');
+                $incomeData[$formattedDate] = (float) ($grouped[$formattedDate]['income'] ?? 0);
+                $expenseData[$formattedDate] = (float) ($grouped[$formattedDate]['expense'] ?? 0);
             }
 
             return [
                 'income' => $incomeData,
                 'expense' => $expenseData,
             ];
+         });
+    }
+
+    /**
+     * Get Top Customers by Revenue
+     */
+    public function getTopCustomers(Carbon $startDate, Carbon $endDate, int $limit = 5): array
+    {
+         $cacheKey = "dashboard_top_customers_{$startDate->format('Ymd')}_{$endDate->format('Ymd')}";
+
+         return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($startDate, $endDate, $limit) {
+            return Sale::select('customer_id', DB::raw('SUM(total) as total_spent'))
+                ->whereBetween('sale_date', [$startDate, $endDate])
+                ->where('status', 'completed')
+                ->whereNotNull('customer_id')
+                ->with('customer:id,name,phone')
+                ->groupBy('customer_id')
+                ->orderByDesc('total_spent')
+                ->limit($limit)
+                ->get()
+                ->map(function ($item) {
+                     return [
+                         'customer_name' => $item->customer->name ?? 'Unknown',
+                         'phone' => $item->customer->phone ?? '-',
+                         'total_spent' => $item->total_spent
+                     ];
+                })
+                ->toArray();
+         });
+    }
+
+    /**
+     * Get Expense Breakdown by Category
+     */
+    public function getExpenseBreakdown(Carbon $startDate, Carbon $endDate): array
+    {
+         $cacheKey = "dashboard_expense_breakdown_{$startDate->format('Ymd')}_{$endDate->format('Ymd')}";
+
+         return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($startDate, $endDate) {
+            return FinanceTransaction::select('finance_category_id', DB::raw('SUM(amount) as total_amount'))
+                ->whereBetween('transaction_date', [$startDate, $endDate])
+                ->whereHas('category', function ($query) {
+                    $query->where('type', 'expense');
+                })
+                ->with('category:id,name,type')
+                ->groupBy('finance_category_id')
+                ->orderByDesc('total_amount')
+                ->get()
+                ->map(function ($item) {
+                     return [
+                         'category_name' => $item->category->name ?? 'Uncategorized',
+                         'total_amount' => $item->total_amount
+                     ];
+                })
+                ->toArray();
          });
     }
 }

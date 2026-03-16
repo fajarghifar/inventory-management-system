@@ -60,11 +60,12 @@ final class FinanceTransactionTable extends PowerGridComponent
             ->add('code')
             ->add('transaction_date_formatted', fn(FinanceTransaction $model) => Carbon::parse($model->transaction_date)->format('d/m/Y'))
             ->add('reference_display', function (FinanceTransaction $model) {
-                // Show External Ref (Invoice) if available, otherwise Ledger Code
+                $tag = $model->reference_type ? '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Auto</span>' : '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-800">Manual</span>';
+                
                 if (!empty($model->external_reference)) {
-                    return $model->external_reference;
+                    return $tag . ' ' . $model->external_reference;
                 }
-                return $model->code;
+                return $tag . ' ' . $model->code;
             })
             ->add('category_name', fn(FinanceTransaction $model) => $model->category->name)
             ->add('type_badge', function(FinanceTransaction $model) {
@@ -185,8 +186,23 @@ final class FinanceTransactionTable extends PowerGridComponent
                 ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>')
                 ->class('bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md flex items-center justify-center')
                 ->dispatch('view-finance-transaction', ['transaction' => $row->id])
-                ->tooltip('View Transaction'),
+                ->tooltip('View Detail'),
         ];
+
+        // View Source Button for System Generated
+        if ($row->reference_type === \App\Models\Sale::class) {
+            $actions[] = Button::add('view-source')
+                ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>')
+                ->class('bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-md flex items-center justify-center')
+                ->route('sales.show', ['sale' => $row->reference_id])
+                ->tooltip('Go to Sale');
+        } elseif ($row->reference_type === \App\Models\Purchase::class) {
+            $actions[] = Button::add('view-source')
+                ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>')
+                ->class('bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-md flex items-center justify-center')
+                ->route('purchases.show', ['purchase' => $row->reference_id])
+                ->tooltip('Go to Purchase');
+        }
 
         // Only allow edit/delete for Manual Transactions (where reference_type is null)
         if (is_null($row->reference_type)) {

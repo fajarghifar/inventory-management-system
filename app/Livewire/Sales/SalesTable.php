@@ -60,7 +60,7 @@ final class SalesTable extends PowerGridComponent
             ->add('invoice_number', fn(Sale $model) => $model->invoice_number ?: '-')
             ->add('customer_name', fn(Sale $model) => $model->customer ? $model->customer->name : 'Guest')
             ->add('sale_date_formatted', fn(Sale $model) => Carbon::parse($model->sale_date)->format('d/m/Y'))
-            ->add('total_formatted', fn(Sale $model) => 'Rp ' . number_format($model->total, 0, ',', '.'))
+            ->add('total_formatted', fn(Sale $model) => format_money($model->total))
             ->add('status_badge', function(Sale $model) {
                 return view('components.status-badge', ['status' => $model->status])->render();
             })

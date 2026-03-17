@@ -64,15 +64,15 @@ final class ProductTable extends PowerGridComponent
             ->add('category_slug', fn(Product $model) => $model->category ? $model->category->slug : '-')
             ->add('category_name', fn(Product $model) => $model->category ? $model->category->name : '-')
             ->add('unit_symbol', fn(Product $model) => $model->unit ? $model->unit->symbol : '-')
-            ->add('purchase_price_formatted', fn(Product $model) => 'Rp ' . number_format($model->purchase_price, 0, ',', '.'))
-            ->add('selling_price_formatted', fn(Product $model) => 'Rp ' . number_format($model->selling_price, 0, ',', '.'))
+            ->add('purchase_price_formatted', fn(Product $model) => format_money($model->purchase_price))
+            ->add('selling_price_formatted', fn(Product $model) => format_money($model->selling_price))
             ->add('margin_formatted', function(Product $model) {
                 // Calculate margin
                 $margin = $model->selling_price - $model->purchase_price;
                 $percentage = $model->purchase_price > 0 ? ($margin / $model->purchase_price) * 100 : 0;
 
                 // Format with percentage
-                return 'Rp ' . number_format($margin, 0, ',', '.') .
+                return format_money($margin) .
                     ' <span class="text-xs text-gray-500">(' . round($percentage, 1) . '%)</span>';
             })
             ->add('quantity')

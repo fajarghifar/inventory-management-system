@@ -288,9 +288,9 @@
                 <tr>
                     <td class="col-name">{{ $item->product->name }}</td>
                     <td class="col-qty">{{ $item->quantity }}</td>
-                    <td class="col-price">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                    <td class="col-disc">{{ $item->discount > 0 ? number_format($item->discount, 0, ',', '.') : '-' }}</td>
-                    <td class="col-total">{{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                    <td class="col-price">@money($item->unit_price)</td>
+                    <td class="col-disc">{!! $item->discount > 0 ? "<span>" . format_money($item->discount) . "</span>" : '-' !!}</td>
+                    <td class="col-total">@money($item->subtotal)</td>
                 </tr>
                 @endforeach
 
@@ -324,25 +324,25 @@
             <div class="footer-right">
                 <div class="amount-row">
                     <span class="amount-label">Subtotal</span>
-                    <span class="amount-value">Rp. {{ number_format($sale->total + $sale->global_discount, 0, ',', '.') }}</span>
+                    <span class="amount-value">@money($sale->total + $sale->global_discount)</span>
                 </div>
                 @if($sale->global_discount > 0)
                 <div class="amount-row">
                     <span class="amount-label">Diskon Extra</span>
-                    <span class="amount-value">- Rp. {{ number_format($sale->global_discount, 0, ',', '.') }}</span>
+                    <span class="amount-value">- @money($sale->global_discount)</span>
                 </div>
                 @endif
                 <div class="amount-row">
                     <span class="amount-label">Total</span>
-                    <span class="amount-value">Rp. {{ number_format($sale->total, 0, ',', '.') }}</span>
+                    <span class="amount-value">@money($sale->total)</span>
                 </div>
                 <div class="amount-row">
                     <span class="amount-label">Uang Diterima</span>
-                    <span class="amount-value">Rp. {{ number_format($sale->cash_received, 0, ',', '.') }}</span>
+                    <span class="amount-value">@money($sale->cash_received)</span>
                 </div>
                 <div class="amount-row">
                     <span class="amount-label">Kembalian</span>
-                    <span class="amount-value">Rp. {{ number_format($sale->change, 0, ',', '.') }}</span>
+                    <span class="amount-value">@money($sale->change)</span>
                 </div>
             </div>
         </div>

@@ -114,13 +114,13 @@
                                             {{ number_format($item->quantity) }}
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            Rp {{ number_format($item->unit_price, 0, ',', '.') }}
+                                            @money($item->unit_price)
                                         </td>
                                         <td class="px-6 py-4 text-right text-red-500">
-                                            {{ $item->discount > 0 ? '- Rp ' . number_format($item->discount, 0, ',', '.') : '-' }}
+                                            {!! $item->discount > 0 ? "- <span>" . format_money($item->discount) . "</span>" : '-' !!}
                                         </td>
                                         <td class="px-6 py-4 text-right font-medium">
-                                            Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                            @money($item->subtotal)
                                         </td>
                                     </tr>
                                 @endforeach
@@ -129,14 +129,14 @@
                                 <tr>
                                     <td colspan="6" class="px-6 py-4 text-right">Subtotal</td>
                                     <td class="px-6 py-4 text-right text-gray-700">
-                                        Rp {{ number_format($sale->subtotal, 0, ',', '.') }}
+                                        @money($sale->subtotal)
                                     </td>
                                 </tr>
                                 @if($sale->total_discount > 0)
                                     <tr>
                                         <td colspan="6" class="px-6 py-4 text-right text-red-600">Total Discount (Items)</td>
                                         <td class="px-6 py-4 text-right text-red-600">
-                                            - Rp {{ number_format($sale->total_discount - $sale->global_discount, 0, ',', '.') }}
+                                            - @money($sale->total_discount - $sale->global_discount)
                                         </td>
                                     </tr>
                                 @endif
@@ -144,26 +144,26 @@
                                     <tr>
                                         <td colspan="6" class="px-6 py-4 text-right text-red-600">Global Discount (Transaction)</td>
                                         <td class="px-6 py-4 text-right text-red-600">
-                                            - Rp {{ number_format($sale->global_discount, 0, ',', '.') }}
+                                            - @money($sale->global_discount)
                                         </td>
                                     </tr>
                                 @endif
                                 <tr>
                                     <td colspan="6" class="px-6 py-4 text-right">Total</td>
                                     <td class="px-6 py-4 text-right text-indigo-600 text-lg">
-                                        Rp {{ number_format($sale->total, 0, ',', '.') }}
+                                        @money($sale->total)
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="6" class="px-6 py-4 text-right text-gray-600">Cash Received</td>
                                     <td class="px-6 py-4 text-right text-gray-800">
-                                        Rp {{ number_format($sale->cash_received, 0, ',', '.') }}
+                                        @money($sale->cash_received)
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="6" class="px-6 py-4 text-right text-gray-600">Change</td>
                                     <td class="px-6 py-4 text-right text-green-600">
-                                        Rp {{ number_format($sale->change, 0, ',', '.') }}
+                                        @money($sale->change)
                                     </td>
                                 </tr>
                             </tfoot>

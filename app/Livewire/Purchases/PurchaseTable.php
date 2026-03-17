@@ -60,7 +60,7 @@ final class PurchaseTable extends PowerGridComponent
             ->add('invoice_number', fn(Purchase $model) => $model->invoice_number ?: '<span class="italic text-gray-400">-</span>')
             ->add('supplier_name', fn(Purchase $model) => $model->supplier ? $model->supplier->name : '-')
             ->add('purchase_date_formatted', fn(Purchase $model) => Carbon::parse($model->purchase_date)->format('d/m/Y'))
-            ->add('total_formatted', fn(Purchase $model) => 'Rp ' . number_format((float) $model->total, 0, ',', '.'))
+            ->add('total_formatted', fn(Purchase $model) => format_money((float) $model->total))
             ->add('status_badge', function(Purchase $model) {
                 return view('components.status-badge', ['status' => $model->status])->render();
             })

@@ -72,7 +72,7 @@
 
             <!-- Amount -->
             <div class="space-y-2">
-                <x-input-label for="amount" value="Amount (Rp)" :required="true" />
+                <x-input-label for="amount" :value="__('Amount') . ' (' . \App\Models\Setting::get('currency_symbol', 'Rp') . ')'" :required="true" />
                 <x-currency-input
                     id="amount"
                     wire:model.live.debounce.500ms="amount"

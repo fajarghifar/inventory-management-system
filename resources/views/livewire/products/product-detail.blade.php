@@ -41,12 +41,12 @@
 
                     <div class="space-y-1">
                         <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Selling Price') }}</label>
-                        <p class="text-sm text-foreground font-medium">{{ 'Rp ' . number_format($product->selling_price, 0, ',', '.') }}</p>
+                        <p class="text-sm text-foreground font-medium">@money($product->selling_price)</p>
                     </div>
 
                     <div class="space-y-1">
                         <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Purchase Price') }}</label>
-                        <p class="text-sm text-foreground font-medium">{{ 'Rp ' . number_format($product->purchase_price, 0, ',', '.') }}</p>
+                        <p class="text-sm text-foreground font-medium">@money($product->purchase_price)</p>
                     </div>
 
                     <div class="space-y-1">

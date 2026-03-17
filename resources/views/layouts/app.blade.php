@@ -59,6 +59,39 @@
                     }
                 });
             });
+
+            // Global Currency Formatter
+            window.currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'Rp') }}";
+            window.currencyPosition = "{{ \App\Models\Setting::get('currency_position', 'left') }}";
+            window.currencyFraction = parseInt("{{ \App\Models\Setting::get('currency_fraction_digits', 0) }}");
+            window.thousandSeparator = "{{ \App\Models\Setting::get('currency_thousand_separator', '.') }}";
+            window.decimalSeparator = "{{ \App\Models\Setting::get('currency_decimal_separator', ',') }}";
+
+            window.formatMoney = function(val) {
+                let amount = parseFloat(val) || 0;
+                let isNegative = amount < 0;
+                amount = Math.abs(amount);
+
+                // Calculate fraction
+                let strAmount = amount.toFixed(window.currencyFraction);
+                let parts = strAmount.split('.');
+                let integerPart = parts[0];
+                let decimalPart = parts.length > 1 ? window.decimalSeparator + parts[1] : '';
+
+                // Add thousand separators
+                let rgx = /(\d+)(\d{3})/;
+                while (rgx.test(integerPart)) {
+                    integerPart = integerPart.replace(rgx, '$1' + window.thousandSeparator + '$2');
+                }
+
+                let num = integerPart + decimalPart;
+                if (isNegative) num = '-' + num;
+
+                return window.currencyPosition === 'left' ? window.currencySymbol + ' ' + num : num + ' ' + window.currencySymbol;
+            };
+
+            // Alias for consistency across older components
+            window.formatCurrency = window.formatMoney;
         </script>
 
     </body>

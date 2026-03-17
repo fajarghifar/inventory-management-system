@@ -61,7 +61,7 @@
             </div>
             <div class="p-4 pt-0">
                 <div class="text-xl sm:text-2xl font-bold">
-                    {{ 'Rp ' . number_format($stats['total_sales'] ?? 0, 0, ',', '.') }}
+                    @money($stats['total_sales'] ?? 0)
                 </div>
                 <p class="text-xs text-muted-foreground mt-1">
                     {{ $stats['sales_count'] ?? 0 }} transactions
@@ -77,7 +77,7 @@
             </div>
             <div class="p-4 pt-0">
                 <div class="text-xl sm:text-2xl font-bold">
-                    {{ 'Rp ' . number_format($stats['gross_profit'] ?? 0, 0, ',', '.') }}
+                    @money($stats['gross_profit'] ?? 0)
                 </div>
                 <p class="text-xs text-muted-foreground mt-1">
                     Estimated based on COGS
@@ -93,14 +93,14 @@
             </div>
             <div class="p-4 pt-0">
                 <div class="text-xl sm:text-2xl font-bold {{ ($stats['net_cash_flow'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                    {{ 'Rp ' . number_format($stats['net_cash_flow'] ?? 0, 0, ',', '.') }}
+                    @money($stats['net_cash_flow'] ?? 0)
                 </div>
                 <div class="flex justify-between text-[11px] sm:text-xs text-muted-foreground mt-1">
                     <span class="text-emerald-600 flex items-center gap-1" title="Total Income">
-                        <x-heroicon-s-arrow-up class="w-3 h-3" /> {{ number_format($stats['income'] ?? 0, 0, ',', '.') }}
+                        <x-heroicon-s-arrow-up class="w-3 h-3" /> @money($stats['income'] ?? 0)
                     </span>
                     <span class="text-red-600 flex items-center gap-1" title="Total Expense">
-                        <x-heroicon-s-arrow-down class="w-3 h-3" /> {{ number_format($stats['expense'] ?? 0, 0, ',', '.') }}
+                        <x-heroicon-s-arrow-down class="w-3 h-3" /> @money($stats['expense'] ?? 0)
                     </span>
                 </div>
             </div>
@@ -172,7 +172,7 @@
                                         {{ $sale['invoice_number'] }}
                                         <div class="text-[11px] text-muted-foreground font-normal">{{ $sale['customer']['name'] ?? 'Guest' }}</div>
                                     </td>
-                                    <td class="px-4 py-2 align-middle text-right font-medium text-emerald-600">{{ 'Rp ' . number_format($sale['total'], 0, ',', '.') }}</td>
+                                    <td class="px-4 py-2 align-middle text-right font-medium text-emerald-600">@money($sale['total'])</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -238,7 +238,7 @@
                                 <p class="text-[11px] text-muted-foreground">{{ $customer['phone'] }}</p>
                             </div>
                             <div class="font-semibold text-sm text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md whitespace-nowrap">
-                                {{ 'Rp ' . number_format($customer['total_spent'], 0, ',', '.') }}
+                                @money($customer['total_spent'])
                             </div>
                         </div>
                     @empty
@@ -267,6 +267,14 @@
     document.addEventListener('livewire:initialized', () => {
         let salesChart = null;
         let cashFlowChart = null;
+        
+        const currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'Rp') }}";
+        const currencyPosition = "{{ \App\Models\Setting::get('currency_position', 'left') }}";
+
+        const formatMoney = (val) => {
+            let num = new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(val);
+            return currencyPosition === 'left' ? currencySymbol + ' ' + num : num + ' ' + currencySymbol;
+        };
 
         const initCharts = (data) => {
             // Sales Chart
@@ -294,13 +302,13 @@
                 },
                 yaxis: {
                     labels: {
-                        style: { cssClass: 'text-[10px] text-muted-foreground' },
-                        formatter: (val) => {
-                            return new Intl.NumberFormat('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR',
-                                minimumFractionDigits: 0
-                            }).format(val);
+                        style: { cssClass: 'text-[10px] text-muted-foreground' }
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                             return formatMoney(val);
                         }
                     }
                 },
@@ -317,11 +325,7 @@
                 tooltip: {
                     y: {
                         formatter: function (val) {
-                             return new Intl.NumberFormat('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR',
-                                minimumFractionDigits: 0
-                            }).format(val);
+                             return formatMoney(val);
                         }
                     }
                 }
@@ -374,11 +378,7 @@
                 tooltip: {
                     y: {
                         formatter: function (val) {
-                             return new Intl.NumberFormat('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR',
-                                minimumFractionDigits: 0
-                            }).format(val);
+                             return formatMoney(val);
                         }
                     }
                 }
@@ -408,11 +408,7 @@
                     enabled: hasExpenseData,
                     y: {
                         formatter: function (val) {
-                             return new Intl.NumberFormat('id-ID', {
-                                style: 'currency',
-                                currency: 'IDR',
-                                minimumFractionDigits: 0
-                            }).format(val);
+                             return formatMoney(val);
                         }
                     }
                 },

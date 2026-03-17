@@ -146,9 +146,9 @@ class PurchaseService
                     // Check for Purchase Price Change
                     if ((float) $product->purchase_price !== (float) $item->unit_price) {
                         $hasPriceChange = true;
-                        $oldBuy = number_format($product->purchase_price ?? 0, 0, ',', '.');
-                        $newBuy = number_format($item->unit_price, 0, ',', '.');
-                        $priceChangeLog .= "\n- Buying Price: Rp {$oldBuy} -> Rp {$newBuy}";
+                        $oldBuy = format_money($product->purchase_price ?? 0);
+                        $newBuy = format_money($item->unit_price);
+                        $priceChangeLog .= "\n- Buying Price: {$oldBuy} -> {$newBuy}";
                     }
 
                     // Check for Selling Price Change
@@ -156,9 +156,9 @@ class PurchaseService
                         $updateData['selling_price'] = $item->selling_price;
                         if ((float) $product->selling_price !== (float) $item->selling_price) {
                             $hasPriceChange = true;
-                            $oldSell = number_format($product->selling_price ?? 0, 0, ',', '.');
-                            $newSell = number_format($item->selling_price, 0, ',', '.');
-                            $priceChangeLog .= "\n- Selling Price: Rp {$oldSell} -> Rp {$newSell}";
+                            $oldSell = format_money($product->selling_price ?? 0);
+                            $newSell = format_money($item->selling_price);
+                            $priceChangeLog .= "\n- Selling Price: {$oldSell} -> {$newSell}";
                         }
                     }
 

@@ -57,16 +57,17 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500" x-text="item.unit"></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right">
                                             <div class="relative rounded-md shadow-sm w-32 ml-auto">
-                                                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                                                    <span class="text-gray-500 sm:text-xs">Rp</span>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    :value="formatNumber(item.discount)"
-                                                    @input="item.discount = unformatNumber($event.target.value)"
-                                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-2 sm:text-sm border-gray-300 rounded-md text-right"
-                                                    placeholder="0"
-                                                >
+                                        <div class="absolute inset-y-0 flex items-center pointer-events-none" :class="window.currencyPosition === 'left' ? 'left-0 pl-2' : 'right-0 pr-2'">
+                                            <span class="text-gray-500 sm:text-xs" x-text="window.currencySymbol"></span>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            :value="formatNumber(item.discount)"
+                                            @input="item.discount = unformatNumber($event.target.value)"
+                                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                            :class="window.currencyPosition === 'left' ? 'pl-8 pr-2 text-right' : 'pr-8 pl-2 text-left'"
+                                            placeholder="0"
+                                        >
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900" x-text="formatCurrency((item.price - item.discount) * item.quantity)"></td>
@@ -142,14 +143,15 @@
                         <div class="flex justify-between items-center mt-2">
                              <span class="text-sm font-medium text-gray-500">Discount (Global)</span>
                              <div class="relative w-32">
-                                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-xs">Rp</span>
+                                <div class="absolute inset-y-0 flex items-center pointer-events-none" :class="window.currencyPosition === 'left' ? 'left-0 pl-2' : 'right-0 pr-2'">
+                                    <span class="text-gray-500 sm:text-xs" x-text="window.currencySymbol"></span>
                                 </div>
                                 <input
                                     type="text"
                                     :value="formatNumber(globalDiscount)"
                                     @input="globalDiscount = unformatNumber($event.target.value)"
-                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-2 sm:text-sm border-gray-300 rounded-md text-right py-1"
+                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md py-1"
+                                    :class="window.currencyPosition === 'left' ? 'pl-8 pr-2 text-right' : 'pr-8 pl-2 text-left'"
                                     placeholder="0"
                                 >
                              </div>
@@ -190,14 +192,15 @@
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cash Received</label>
                                 <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 font-bold">Rp</span>
+                                    <div class="absolute inset-y-0 flex items-center pointer-events-none" :class="window.currencyPosition === 'left' ? 'left-0 pl-3' : 'right-0 pr-3'">
+                                        <span class="text-gray-500 font-bold" x-text="window.currencySymbol"></span>
                                     </div>
                                     <input
                                         type="text"
                                         :value="formatNumber(payment.cash_received)"
                                         @input="payment.cash_received = unformatNumber($event.target.value)"
-                                        class="block w-full pl-10 pr-3 py-3 text-lg font-bold text-gray-900 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                        class="block w-full py-3 text-lg font-bold text-gray-900 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                        :class="window.currencyPosition === 'left' ? 'pl-10 pr-3 text-left' : 'pr-10 pl-3 text-right'"
                                         placeholder="0"
                                     >
                                 </div>
@@ -550,15 +553,71 @@
 
                     // Helpers
                     formatCurrency(value) {
-                        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value).replace('Rp', 'Rp ');
-                    },
-
-                    formatNumber(value) {
-                        return new Intl.NumberFormat('id-ID').format(value);
+                        return window.formatMoney(value);
                     },
 
                     unformatNumber(value) {
-                        return parseInt(value.replace(/\./g, '')) || 0;
+                        if(typeof value !== 'string') return value || 0;
+                        
+                        // Let's strip out the thousand separator safely
+                        // e.g. "1,000.50" with thousand="," -> "1000.50"
+                        let raw = value;
+                        if(window.thousandSeparator) {
+                            raw = raw.split(window.thousandSeparator).join('');
+                        }
+                        
+                        // Replace the designated decimal separator with a standard dot for JS parsing
+                        if(window.decimalSeparator && window.decimalSeparator !== '.') {
+                            raw = raw.replace(window.decimalSeparator, '.');
+                        }
+
+                        // Remove any characters that aren't numbers, dot, or minus sign
+                        raw = raw.replace(/[^0-9\.-]/g, '');
+                        
+                        // If it ends with a dot or dot-zero(s), we don't want to parse it yet 
+                        // as it breaks the user's typing experience (e.g. typing "10." becomes "10" instantly)
+                        // However, for pure JS calculation, we must return a number.
+                        // The trick here is handled in the formatNumber/binding, but unformat must return string if it ends with dot
+                        
+                        if (raw === '' || raw === '-') return 0;
+                        // Return the raw string if the user is actively typing a decimal
+                        if (raw.endsWith('.')) return raw;
+                        
+                        return parseFloat(raw) || 0;
+                    },
+
+                    formatNumber(value) {
+                        // If the user is mid-typing a decimal (e.g "10."), just return as is
+                        // to prevent the cursor from jumping and erasing the dot.
+                        if (typeof value === 'string' && value.endsWith('.')) {
+                             return value.replace('.', window.decimalSeparator);
+                        }
+                        
+                        let amount = parseFloat(value) || 0;
+                        let isNegative = amount < 0;
+                        amount = Math.abs(amount);
+
+                        // Only force fraction digits if we are NOT actively typing
+                        // Because formatting actively typing "0.5" might force "0.50" immediately.
+                        // We will just let `Math.abs` Handle it unless formatting for display.
+                        
+                        let strAmount = amount.toString();
+                        // if we want to force fraction, use toFixed here. 
+                        // But for active input fields, forcing .toFixed(2) while typing is bad UX.
+                        // For display fields (Total), it's fine. 
+                        // Since this is used in BOTH, we check if it's an integer.
+                        
+                        let parts = strAmount.split('.');
+                        let integerPart = parts[0];
+                        let decimalPart = parts.length > 1 ? window.decimalSeparator + parts[1] : '';
+
+                        let rgx = /(\d+)(\d{3})/;
+                        while (rgx.test(integerPart)) {
+                            integerPart = integerPart.replace(rgx, '$1' + window.thousandSeparator + '$2');
+                        }
+
+                        let num = integerPart + decimalPart;
+                        return isNegative ? '-' + num : num;
                     },
 
                     // Confirmation

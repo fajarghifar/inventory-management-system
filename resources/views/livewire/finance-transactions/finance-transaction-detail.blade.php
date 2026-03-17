@@ -36,7 +36,7 @@
 
                     <div class="space-y-1">
                         <label class="text-sm font-medium leading-none text-muted-foreground">{{ __('Amount') }}</label>
-                        <p class="text-sm text-foreground font-medium">Rp {{ number_format($transaction->amount, 0, ',', '.') }}</p>
+                        <p class="text-sm text-foreground font-medium">@money($transaction->amount)</p>
                     </div>
                 </div>
 

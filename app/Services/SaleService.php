@@ -78,7 +78,7 @@ class SaleService
                     $discount = $itemData->discount;
 
                     if ($discount > $unitPrice) {
-                        throw SaleException::invalidDiscount("Item discount (" . number_format($discount) . ") cannot exceed unit price (" . number_format($unitPrice) . ") for product '{$product->name}'.");
+                        throw SaleException::invalidDiscount("Item discount (" . format_money($discount) . ") cannot exceed unit price (" . format_money($unitPrice) . ") for product '{$product->name}'.");
                     }
 
                     $finalPrice = $unitPrice - $discount;
@@ -107,7 +107,7 @@ class SaleService
                 }
 
                 if ($data->global_discount > $totalSubtotal) {
-                    throw SaleException::invalidDiscount("Global discount (" . number_format($data->global_discount) . ") cannot exceed subtotal (" . number_format($totalSubtotal) . ").");
+                    throw SaleException::invalidDiscount("Global discount (" . format_money($data->global_discount) . ") cannot exceed subtotal (" . format_money($totalSubtotal) . ").");
                 }
 
                 $total = $totalSubtotal - $data->global_discount;

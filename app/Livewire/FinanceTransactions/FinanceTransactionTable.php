@@ -77,7 +77,7 @@ final class FinanceTransactionTable extends PowerGridComponent
                 $type = $model->category->type->value ?? '';
                 $color = $type === 'income' ? 'text-emerald-600' : 'text-red-600';
                 $prefix = $type === 'income' ? '+' : '-';
-                return "<div class=\"text-right {$color} font-medium\">{$prefix} Rp " . number_format($model->amount, 0, ',', '.') . "</div>";
+                return "<div class=\"text-right {$color} font-medium\">{$prefix} " . format_money($model->amount) . "</div>";
             })
             ->add('creator_name', fn(FinanceTransaction $model) => $model->creator->name)
             ->add('created_at')

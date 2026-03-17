@@ -66,7 +66,7 @@
                         </div>
 
                         <!-- Total Amount -->
-                        <x-detail-item label="Total Amount" :value="'Rp ' . number_format($purchase->total, 0, ',', '.')">
+                        <x-detail-item label="Total Amount" :value="format_money($purchase->total)">
                             <x-heroicon-o-banknotes class="w-4 h-4 text-gray-400" />
                         </x-detail-item>
 
@@ -133,13 +133,13 @@
                                             {{ number_format($item->quantity) }}
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            Rp {{ number_format($item->unit_price, 0, ',', '.') }}
+                                            @money($item->unit_price)
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            Rp {{ number_format($item->selling_price, 0, ',', '.') }}
+                                            @money($item->selling_price)
                                         </td>
                                         <td class="px-6 py-4 text-right font-medium">
-                                            Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                            @money($item->subtotal)
                                         </td>
                                     </tr>
                                 @endforeach
@@ -148,7 +148,7 @@
                                 <tr>
                                     <td colspan="6" class="px-6 py-4 text-right">Total</td>
                                     <td class="px-6 py-4 text-right text-indigo-600 text-lg">
-                                        Rp {{ number_format($purchase->total, 0, ',', '.') }}
+                                        @money($purchase->total)
                                     </td>
                                 </tr>
                             </tfoot>

@@ -167,25 +167,57 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right" x-data="{
                                     display: '',
                                     init() {
-                                        this.display = new Intl.NumberFormat('id-ID').format(item.unit_price || 0);
-                                        this.$watch('item.unit_price', value => this.display = new Intl.NumberFormat('id-ID').format(value || 0));
+                                        this.display = this.formatNumber(item.unit_price || 0);
+                                        this.$watch('item.unit_price', value => this.display = this.formatNumber(value || 0));
                                     },
                                     update(e) {
-                                        let raw = e.target.value.replace(/[^0-9]/g, '');
-                                        item.unit_price = raw ? parseInt(raw) : 0;
-                                        this.display = new Intl.NumberFormat('id-ID').format(item.unit_price);
+                                        let raw = e.target.value;
+                                        if(window.thousandSeparator) raw = raw.split(window.thousandSeparator).join('');
+                                        if(window.decimalSeparator && window.decimalSeparator !== '.') raw = raw.replace(window.decimalSeparator, '.');
+                                        raw = raw.replace(/[^0-9\.-]/g, '');
+                                        
+                                        if (raw.endsWith('.')) {
+                                            item.unit_price = raw; 
+                                        } else {
+                                            item.unit_price = raw ? parseFloat(raw) : 0;
+                                        }
+                                        
+                                        this.display = this.formatNumber(item.unit_price);
                                         calculateLine(index);
+                                    },
+                                    formatNumber(value) {
+                                        if (typeof value === 'string' && value.endsWith('.')) {
+                                             return value.replace('.', window.decimalSeparator);
+                                        }
+                                        
+                                        let amount = parseFloat(value) || 0;
+                                        let isNegative = amount < 0;
+                                        amount = Math.abs(amount);
+
+                                        let strAmount = amount.toString();
+                                        let parts = strAmount.split('.');
+                                        let integerPart = parts[0];
+                                        let decimalPart = parts.length > 1 ? window.decimalSeparator + parts[1] : '';
+
+                                        let rgx = /(\d+)(\d{3})/;
+                                        while (rgx.test(integerPart)) {
+                                            integerPart = integerPart.replace(rgx, '$1' + window.thousandSeparator + '$2');
+                                        }
+
+                                        let num = integerPart + decimalPart;
+                                        return isNegative ? '-' + num : num;
                                     }
                                 }">
                                     <div class="relative rounded-md shadow-sm w-32 ml-auto">
-                                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-xs">Rp</span>
+                                        <div class="absolute inset-y-0 flex items-center pointer-events-none" :class="window.currencyPosition === 'left' ? 'left-0 pl-2' : 'right-0 pr-2'">
+                                            <span class="text-gray-500 sm:text-xs" x-text="window.currencySymbol"></span>
                                         </div>
                                         <input
                                             type="text"
                                             x-model="display"
                                             @input="update($event)"
-                                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-2 sm:text-sm border-gray-300 rounded-md text-right"
+                                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                            :class="window.currencyPosition === 'left' ? 'pl-8 pr-2 text-right' : 'pr-8 pl-2 text-left'"
                                             placeholder="0"
                                         >
                                     </div>
@@ -197,30 +229,62 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right" x-data="{
                                     display: '',
                                     init() {
-                                        this.display = new Intl.NumberFormat('id-ID').format(item.selling_price || 0);
-                                        this.$watch('item.selling_price', value => this.display = new Intl.NumberFormat('id-ID').format(value || 0));
+                                        this.display = this.formatNumber(item.selling_price || 0);
+                                        this.$watch('item.selling_price', value => this.display = this.formatNumber(value || 0));
                                     },
                                     update(e) {
-                                        let raw = e.target.value.replace(/[^0-9]/g, '');
-                                        item.selling_price = raw ? parseInt(raw) : 0;
-                                        this.display = new Intl.NumberFormat('id-ID').format(item.selling_price);
+                                        let raw = e.target.value;
+                                        if(window.thousandSeparator) raw = raw.split(window.thousandSeparator).join('');
+                                        if(window.decimalSeparator && window.decimalSeparator !== '.') raw = raw.replace(window.decimalSeparator, '.');
+                                        raw = raw.replace(/[^0-9\.-]/g, '');
+                                        
+                                        if (raw.endsWith('.')) {
+                                            item.selling_price = raw; 
+                                        } else {
+                                            item.selling_price = raw ? parseFloat(raw) : 0;
+                                        }
+                                        
+                                        this.display = this.formatNumber(item.selling_price);
+                                    },
+                                    formatNumber(value) {
+                                        if (typeof value === 'string' && value.endsWith('.')) {
+                                             return value.replace('.', window.decimalSeparator);
+                                        }
+                                        
+                                        let amount = parseFloat(value) || 0;
+                                        let isNegative = amount < 0;
+                                        amount = Math.abs(amount);
+
+                                        let strAmount = amount.toString();
+                                        let parts = strAmount.split('.');
+                                        let integerPart = parts[0];
+                                        let decimalPart = parts.length > 1 ? window.decimalSeparator + parts[1] : '';
+
+                                        let rgx = /(\d+)(\d{3})/;
+                                        while (rgx.test(integerPart)) {
+                                            integerPart = integerPart.replace(rgx, '$1' + window.thousandSeparator + '$2');
+                                        }
+
+                                        let num = integerPart + decimalPart;
+                                        return isNegative ? '-' + num : num;
                                     }
                                 }">
                                     <div class="relative rounded-md shadow-sm w-32 ml-auto">
-                                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-xs">Rp</span>
+                                        <div class="absolute inset-y-0 flex items-center pointer-events-none" :class="window.currencyPosition === 'left' ? 'left-0 pl-2' : 'right-0 pr-2'">
+                                            <span class="text-gray-500 sm:text-xs" x-text="window.currencySymbol"></span>
                                         </div>
                                         <input
                                             type="text"
                                             x-model="display"
                                             @input="update($event)"
-                                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-2 sm:text-sm border-gray-300 rounded-md text-right"
+                                            class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                            :class="window.currencyPosition === 'left' ? 'pl-8 pr-2 text-right' : 'pr-8 pl-2 text-left'"
                                             placeholder="0"
                                         >
                                     </div>
                                     <input type="hidden" :name="`items[${index}][selling_price]`" :value="item.selling_price">
 
-                                    <template x-if="(parseInt(item.selling_price) || 0) < (parseInt(item.unit_price) || 0) && (parseInt(item.selling_price) || 0) > 0">
+                                    <template x-if="(parseFloat(item.selling_price) || 0) < (parseFloat(item.unit_price) || 0) && (parseFloat(item.selling_price) || 0) > 0">
                                         <div class="text-xs text-amber-600 mt-1 flex items-center justify-end font-medium">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 mr-1">
                                                 <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
@@ -232,7 +296,7 @@
 
                                 <!-- Subtotal -->
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">
-                                    <span x-text="'Rp ' + new Intl.NumberFormat('id-ID').format( parseInt(item.subtotal) || 0 )"></span>
+                                    <span x-text="window.formatMoney(item.subtotal)"></span>
                                 </td>
 
                                 <!-- Action -->
@@ -259,7 +323,7 @@
                         <tr>
                             <td colspan="4" class="px-6 py-4 text-right font-bold text-gray-900 text-base">Total Purchase:</td>
                             <td class="px-6 py-4 text-right font-bold text-blue-600 text-lg">
-                                <span x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(total)"></span>
+                                <span x-text="window.formatMoney(total)"></span>
                             </td>
                             <td></td>
                         </tr>

@@ -1,59 +1,135 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ✨ Comprehensive Inventory Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A robust, enterprise-grade **Inventory Management System** built with **Laravel 12** and **Livewire**. Designed specifically to streamline inventory tracking, sales, purchasing processes, and financial ledger management with dynamic localization.
 
-## About Laravel
+![Dashboard Preview](public/images/screenshot.png)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🌟 Key Modules & Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **📊 Advanced Analytics Dashboard**
+  - Real-time Total Sales & Net Cash Flow tracking.
+  - Interactive ApexCharts for Sales & Cash Flow trends.
+  - Quick insights: Top Selling Products, Top Customers, and Low Stock Alerts.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **💳 Sales & POS (Point of Sale)**
+  - Fast, intuitive POS interface designed for rapid checkouts.
+  - Support for Global Discounts, Exact Cash computation, and Change tracking.
+  - Direct integration with Invoice/Receipt printing.
+  - Persistent cart state across sessions.
 
-## Learning Laravel
+- **📦 Purchases & Receiving**
+  - End-to-end Purchase Order workflow.
+  - Seamless "Receive Items" action that updates real inventory balances automatically.
+  - Supplier tracking and history filtering.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **🗃️ Master Data Management**
+  - **Products**: Manage stock, pricing (Buy/Sell margins), and associations.
+  - **Categories & Units**: Structured tagging for efficient reporting.
+  - **Customers & Suppliers**: Comprehensive contact books integrated globally.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **💰 Finance Ledger & Cash Flow**
+  - Integrated Double-entry style tracking for all Income and Expenses.
+  - Dynamic Cash Flow reporting mapping POS sales to Income and Purchases to Expenses automatically.
+  - Custom Income/Expense categorization.
 
-## Laravel Sponsors
+- **⚙️ Dynamic Localization & Settings**
+  - Global Store Information management.
+  - **Fully Dynamic Currency Framework**: Customizable currency symbols, positions (left/right), thousands separators, decimal separators, and fractional precision. Changes apply globally to charts, tables, inputs, and receipts instantly.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🛠️ Tech Stack & Library Used
 
-### Premium Partners
+- **Framework**: Laravel 12.x
+- **Frontend/Reactivity**: Laravel Livewire 3 + Alpine.js
+- **Styling**: Tailwind CSS (Shadcn-inspired components)
+- **Data Tables**: Livewire PowerGrid (with customized AJAX filters)
+- **Charts**: ApexCharts
+- **Icons**: Blade Heroicons
+- **Database**: MySQL
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🚀 Quick Start
 
-## Contributing
+Follow these steps to set up the project locally for development or testing.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Prerequisites
+- PHP 8.2 or higher
+- Composer
+- Node.js & NPM
+- MySQL Database
 
-## Code of Conduct
+### Installation Steps
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/fajarghifar/inventory-management-system.git
+    ```
 
-## Security Vulnerabilities
+2. **Navigate to the project folder:**
+    ```bash
+    cd inventory-management-system
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Install PHP dependencies:**
+    ```bash
+    composer install
+    ```
 
-## License
+4. **Copy `.env` configuration:**
+    ```bash
+    cp .env.example .env
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. **Generate application key:**
+    ```bash
+    php artisan key:generate
+    ```
+
+6. **Configure your Database:**
+    Open the `.env` file and set up your MySQL connection credentials:
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=your_database_name
+    DB_USERNAME=root
+    DB_PASSWORD=
+    ```
+
+7. **Run database migrations and seeders:**
+    This command will migrate all tables and inject default users, settings, products, and categories.
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
+
+8. **Link storage for media/image files:**
+    ```bash
+    php artisan storage:link
+    ```
+
+9. **Install node modules and compile assets:**
+    ```bash
+    npm install
+    npm run build
+    ```
+
+10. **Start the Laravel development server:**
+    ```bash
+    php artisan serve
+    ```
+
+11. **Login using the default admin credentials:**
+    - **Username:** `admin`
+    - **Password:** `password`
+
+## 💡 Contributing
+
+Have ideas to improve the system? Architecture enhancements, UI tweaks, or bug reports are welcome!
+- Submit a **Pull Request (PR)**
+- Create an **Issue** for feature requests or structural bugs
+
+## 📄 License
+
+Licensed under the [MIT License](LICENSE).
+
+---
+
+> Crafted by [Fajar Ghifar](https://github.com/fajarghifar) &nbsp;&middot;&nbsp; [YouTube](https://www.youtube.com/@fajarghifar) &nbsp;&middot;&nbsp; [Instagram](https://instagram.com/fajarghifar) &nbsp;&middot;&nbsp; [LinkedIn](https://www.linkedin.com/in/fajarghifar/)

@@ -26,11 +26,21 @@ fi
 echo "Waiting for PostgreSQL..."
 for i in $(seq 1 30); do
     if php -r "
-        \$host = getenv('DB_HOST') ?: 'postgres';
-        \$port = getenv('DB_PORT') ?: '5432';
-        \$db = getenv('DB_DATABASE') ?: 'inventory';
-        \$user = getenv('DB_USERNAME') ?: 'inventory';
-        \$pass = getenv('DB_PASSWORD') ?: 'secret';
+        \$dbUrl = getenv('DATABASE_URL') ?: getenv('DB_URL');
+        if (\$dbUrl) {
+            \$parts = parse_url(\$dbUrl);
+            \$host = \$parts['host'] ?? 'postgres';
+            \$port = \$parts['port'] ?? '5432';
+            \$db   = ltrim(\$parts['path'] ?? 'inventory', '/');
+            \$user = \$parts['user'] ?? 'inventory';
+            \$pass = \$parts['pass'] ?? '';
+        } else {
+            \$host = getenv('DB_HOST') ?: 'postgres';
+            \$port = getenv('DB_PORT') ?: '5432';
+            \$db = getenv('DB_DATABASE') ?: 'inventory';
+            \$user = getenv('DB_USERNAME') ?: 'inventory';
+            \$pass = getenv('DB_PASSWORD') ?: 'secret';
+        }
         new PDO(\"pgsql:host=\$host;port=\$port;dbname=\$db\", \$user, \$pass);
     " 2>/dev/null; then
         echo "PostgreSQL is ready."
@@ -47,11 +57,21 @@ php artisan storage:link --force --no-interaction
 php artisan migrate --force --no-interaction
 
 USER_COUNT=$(php -r "
-    \$host = getenv('DB_HOST') ?: 'postgres';
-    \$port = getenv('DB_PORT') ?: '5432';
-    \$db = getenv('DB_DATABASE') ?: 'inventory';
-    \$user = getenv('DB_USERNAME') ?: 'inventory';
-    \$pass = getenv('DB_PASSWORD') ?: 'secret';
+    \$dbUrl = getenv('DATABASE_URL') ?: getenv('DB_URL');
+    if (\$dbUrl) {
+        \$parts = parse_url(\$dbUrl);
+        \$host = \$parts['host'] ?? 'postgres';
+        \$port = \$parts['port'] ?? '5432';
+        \$db   = ltrim(\$parts['path'] ?? 'inventory', '/');
+        \$user = \$parts['user'] ?? 'inventory';
+        \$pass = \$parts['pass'] ?? '';
+    } else {
+        \$host = getenv('DB_HOST') ?: 'postgres';
+        \$port = getenv('DB_PORT') ?: '5432';
+        \$db = getenv('DB_DATABASE') ?: 'inventory';
+        \$user = getenv('DB_USERNAME') ?: 'inventory';
+        \$pass = getenv('DB_PASSWORD') ?: 'secret';
+    }
     \$pdo = new PDO(\"pgsql:host=\$host;port=\$port;dbname=\$db\", \$user, \$pass);
     echo (int) \$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
 ")

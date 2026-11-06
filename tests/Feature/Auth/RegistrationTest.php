@@ -27,6 +27,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
+        $this->assertTrue(auth()->user()->isAdmin());
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 }

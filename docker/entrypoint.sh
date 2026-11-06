@@ -17,6 +17,38 @@ if [ ! -f .env ]; then
     cp .env.docker .env
 fi
 
+# If DATABASE_URL or DB_URL is provided in container environment, inject parsed credentials into .env
+DB_URL_VAL="${DATABASE_URL:-$DB_URL}"
+if [ -n "$DB_URL_VAL" ]; then
+    php -r "
+        \$url = getenv('DATABASE_URL') ?: getenv('DB_URL');
+        \$parts = parse_url(\$url);
+        \$host = \$parts['host'] ?? '';
+        \$port = \$parts['port'] ?? '5432';
+        \$user = \$parts['user'] ?? '';
+        \$pass = \$parts['pass'] ?? '';
+        \$db   = ltrim(\$parts['path'] ?? '', '/');
+
+        \$env = file_get_contents('.env');
+        \$replacements = [
+            'DB_CONNECTION' => 'pgsql',
+            'DB_HOST' => \$host,
+            'DB_PORT' => \$port,
+            'DB_DATABASE' => \$db,
+            'DB_USERNAME' => \$user,
+            'DB_PASSWORD' => \$pass,
+        ];
+        foreach (\$replacements as \$key => \$val) {
+            if (preg_match(\"/^{\$key}=/m\", \$env)) {
+                \$env = preg_replace(\"/^{\$key}=.*/m\", \"{\$key}={\$val}\", \$env);
+            } else {
+                \$env .= PHP_EOL . \"{\$key}={\$val}\";
+            }
+        }
+        file_put_contents('.env', \$env);
+    "
+fi
+
 # Ensure APP_KEY is set
 if ! grep -q '^APP_KEY=base64:' .env; then
     php artisan key:generate --force --no-interaction

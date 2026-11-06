@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +25,8 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('money', function ($expression) {
             return "<?php echo format_money($expression); ?>";
         });
+
+        Gate::define('admin', fn (User $user) => $user->isAdmin());
+        Gate::define('staff', fn (User $user) => $user->isStaff() || $user->isAdmin());
     }
 }

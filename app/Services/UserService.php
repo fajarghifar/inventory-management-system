@@ -21,6 +21,7 @@ class UserService
                 'name' => $data->name,
                 'username' => $data->username,
                 'email' => $data->email,
+                'role' => $data->role ?? 'staff',
                 'password' => Hash::make($data->password),
             ]);
 
@@ -37,6 +38,7 @@ class UserService
                 'name' => $data->name,
                 'username' => $data->username,
                 'email' => $data->email,
+                'role' => $data->role ?? $user->role->value,
             ];
 
             if ($data->password) {

@@ -22,6 +22,7 @@ readonly class SaleData
         public float $cash_received = 0,
         public float $change = 0,
         public float $global_discount = 0,
+        public ?string $offline_uuid = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -37,6 +38,7 @@ readonly class SaleData
             cash_received: (float) ($data['cash_received'] ?? 0),
             change: (float) ($data['change'] ?? 0),
             global_discount: (float) ($data['global_discount'] ?? 0),
+            offline_uuid: $data['offline_uuid'] ?? null,
         );
     }
 
@@ -53,6 +55,7 @@ readonly class SaleData
             'cash_received' => $this->cash_received,
             'change' => $this->change,
             'global_discount' => $this->global_discount,
+            'offline_uuid' => $this->offline_uuid,
         ];
     }
 }

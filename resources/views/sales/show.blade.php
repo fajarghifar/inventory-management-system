@@ -1,15 +1,15 @@
 <x-app-layout title="Sale Details">
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-foreground leading-tight">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h2 class="font-semibold text-lg sm:text-xl text-foreground leading-tight">
                 {{ __('Sale Details') }} #{{ $sale->invoice_number ?: $sale->id }}
             </h2>
-            <div class="flex items-center gap-2">
-                <x-secondary-button href="{{ route('sales.index') }}">
+            <div class="flex flex-wrap items-center gap-2">
+                <x-secondary-button href="{{ route('sales.index') }}" class="text-xs sm:text-sm py-2 px-3 sm:px-4">
                     &larr; {{ __('Back to List') }}
                 </x-secondary-button>
-                <x-primary-button href="{{ route('sales.print', $sale) }}" target="_blank">
-                    <x-heroicon-o-printer class="w-4 h-4 mr-2" />
+                <x-primary-button href="{{ route('sales.print', $sale) }}" target="_blank" class="text-xs sm:text-sm py-2 px-3 sm:px-4">
+                    <x-heroicon-o-printer class="w-4 h-4 mr-1.5 sm:mr-2" />
                     {{ __('Print Invoice') }}
                 </x-primary-button>
             </div>
@@ -17,7 +17,7 @@
     </x-slot>
 
     <div class="py-4">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-6">
             <!-- Main Info Card -->
             <div class="bg-white shadow-sm sm:rounded-lg overflow-hidden border border-gray-200">
                 <div class="p-6">

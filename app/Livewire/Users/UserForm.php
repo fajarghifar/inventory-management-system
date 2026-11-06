@@ -17,6 +17,7 @@ class UserForm extends Component
     public $name;
     public $username;
     public $email;
+    public $role = 'staff';
     public $password;
     public $password_confirmation;
 
@@ -26,6 +27,7 @@ class UserForm extends Component
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', Rule::unique('users', 'username')->ignore($this->user?->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->user?->id)],
+            'role' => ['required', 'in:admin,staff'],
             'password' => [$this->isEditing ? 'nullable' : 'required', 'string', 'min:8', 'confirmed'],
         ];
     }
@@ -41,6 +43,7 @@ class UserForm extends Component
     public function create(): void
     {
         $this->reset(['user', 'isEditing', 'name', 'username', 'email', 'password', 'password_confirmation']);
+        $this->role = 'staff';
         $this->dispatch('open-modal', name: 'user-form-modal');
     }
 
@@ -53,6 +56,7 @@ class UserForm extends Component
         $this->name = $user->name;
         $this->username = $user->username;
         $this->email = $user->email;
+        $this->role = $user->role instanceof \App\Enums\UserRole ? $user->role->value : ($user->role ?? 'staff');
         $this->password = '';
         $this->password_confirmation = '';
 
@@ -68,6 +72,7 @@ class UserForm extends Component
             username: $this->username,
             email: $this->email,
             password: $this->password ?: null, // Pass null if empty in edit mode
+            role: $this->role,
         );
 
         try {

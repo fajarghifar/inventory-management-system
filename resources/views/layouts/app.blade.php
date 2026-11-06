@@ -15,15 +15,21 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
+
+        <!-- PWA Configuration -->
+        <x-pwa-meta />
     </head>
     <body class="font-sans antialiased bg-background text-foreground">
-        <div class="min-h-screen bg-background flex flex-col">
+        <!-- Connectivity Offline/Online Banner -->
+        <x-connectivity-banner />
+
+        <div class="min-h-screen bg-background flex flex-col pb-24 lg:pb-0">
             <div class="flex-1">
                 @include('layouts.navigation')
 
                 <!-- Page Heading -->
                 @isset($header)
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-7xl mx-auto py-3 sm:py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 @endisset
@@ -34,9 +40,14 @@
                 </main>
             </div>
 
-            <!-- Footer -->
-            @include('layouts.footer')
+            <!-- Footer (Desktop only) -->
+            <div class="hidden lg:block">
+                @include('layouts.footer')
+            </div>
         </div>
+
+        <!-- Mobile Bottom Navigation Bar -->
+        <x-mobile-bottom-nav />
         <x-toaster />
         <livewire:components.delete-modal />
         @livewireScripts
@@ -94,5 +105,7 @@
             window.formatCurrency = window.formatMoney;
         </script>
 
+        <!-- PWA Install Experience -->
+        <x-pwa-install-prompt />
     </body>
 </html>

@@ -111,3 +111,87 @@
     max-height: 300px !important;
     @apply p-1; /* Add internal padding for options container */
 }
+
+/* ==========================================================================
+   Mobile Touch & Responsive Table Enhancements
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+    /* PowerGrid table container smooth touch scrolling */
+    #power-grid-table-container,
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch !important;
+        overflow-x: auto !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #power-grid-table-base {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+        min-width: 100% !important;
+    }
+
+    /* Prevent table columns from squishing to 1 letter */
+    .power-grid-table,
+    #power-grid-table-container table {
+        min-width: max-content !important;
+        width: 100% !important;
+    }
+
+    /* Ensure headers and data cells remain readable and do not truncate awkwardly */
+    .power-grid-table th,
+    .power-grid-table td,
+    #power-grid-table-container table th,
+    #power-grid-table-container table td {
+        white-space: nowrap !important;
+        font-size: 0.8125rem !important; /* 13px */
+        padding-left: 0.625rem !important;
+        padding-right: 0.625rem !important;
+    }
+
+    /* Subtle touch scrollbar affordance for mobile users */
+    #power-grid-table-container::-webkit-scrollbar,
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 4px !important;
+    }
+
+    #power-grid-table-container::-webkit-scrollbar-thumb,
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background-color: rgba(99, 102, 241, 0.4) !important;
+        border-radius: 9999px !important;
+    }
+
+    #power-grid-table-container::-webkit-scrollbar-track,
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background-color: rgba(0, 0, 0, 0.04) !important;
+    }
+
+    /* Mobile action buttons inside tables */
+    .power-grid-table button,
+    .power-grid-table a {
+        touch-action: manipulation;
+        padding: 0.375rem 0.5rem !important;
+    }
+}
+
+/* ==========================================================================
+   POS Camera Barcode Scanner Viewport
+   ========================================================================== */
+#pos-camera-viewfinder video {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 320px;
+    max-height: 440px;
+    object-fit: cover !important;
+}
+
+#pos-camera-viewfinder {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #000000;
+}
+

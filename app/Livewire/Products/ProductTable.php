@@ -89,7 +89,7 @@ final class ProductTable extends PowerGridComponent
 
     public function columns(): array
     {
-        return [
+        $columns = [
             Column::action('Action'),
 
             Column::make('ID', 'id')
@@ -120,19 +120,27 @@ final class ProductTable extends PowerGridComponent
             Column::make('Unit', 'unit_symbol', 'unit_id')
                 ->sortable()
                 ->searchable(),
+        ];
 
-            Column::make('Buying Price', 'purchase_price_formatted', 'purchase_price')
+        // Buying Price is confidential to Owner/Admin
+        if (auth()->user()?->isAdmin()) {
+            $columns[] = Column::make('Buying Price', 'purchase_price_formatted', 'purchase_price')
                 ->sortable()
-                ->bodyAttribute('text-right'),
+                ->bodyAttribute('text-right');
+        }
 
-            Column::make('Selling Price', 'selling_price_formatted', 'selling_price')
-                ->sortable()
-                ->bodyAttribute('text-right'),
+        $columns[] = Column::make('Selling Price', 'selling_price_formatted', 'selling_price')
+            ->sortable()
+            ->bodyAttribute('text-right');
 
-            Column::make('Margin', 'margin_formatted')
+        // Margin is confidential to Owner/Admin
+        if (auth()->user()?->isAdmin()) {
+            $columns[] = Column::make('Margin', 'margin_formatted')
                 ->bodyAttribute('text-right text-indigo-600')
-                ->visibleInExport(false),
+                ->visibleInExport(false);
+        }
 
+        return array_merge($columns, [
             Column::make('Qty', 'quantity')
                 ->sortable()
                 ->bodyAttribute('text-center'),
@@ -159,7 +167,7 @@ final class ProductTable extends PowerGridComponent
             Column::make('Created At', 'created_at_formatted', 'created_at')
                 ->hidden()
                 ->visibleInExport(true),
-        ];
+        ]);
     }
 
     public function filters(): array
@@ -189,8 +197,13 @@ final class ProductTable extends PowerGridComponent
 
     public function actions(Product $row): array
     {
-        // Use the new fields but keep the styled DeleteModal
         return [
+            Button::add('quick-sell')
+                ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" /></svg>')
+                ->class('bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-md flex items-center justify-center')
+                ->dispatch('open-quick-sale-modal', ['productId' => $row->id])
+                ->tooltip('Quick Direct Sale'),
+
             Button::add('view')
                 ->slot('<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>')
                 ->class('bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md flex items-center justify-center')

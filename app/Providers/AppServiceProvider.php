@@ -28,5 +28,9 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('admin', fn (User $user) => $user->isAdmin());
         Gate::define('staff', fn (User $user) => $user->isStaff() || $user->isAdmin());
+
+        if ($this->app->environment('production') || str_contains(request()->url(), 'onrender.com')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }

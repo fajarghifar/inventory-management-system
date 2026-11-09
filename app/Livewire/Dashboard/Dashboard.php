@@ -14,6 +14,7 @@ class Dashboard extends Component
     public ?string $customEndDate = null;
 
     public array $stats = [];
+    public array $inventoryCounts = [];
     public array $lowStockProducts = [];
     public array $recentSales = [];
     public array $topProducts = [];
@@ -57,11 +58,19 @@ class Dashboard extends Component
         // 2. Cash Flow Stats
         $cashFlowStats = $service->getCashFlowStats($startDate, $endDate, $this->dateFilter);
 
+        // 3. Inventory Overview
+        $this->inventoryCounts = $service->getInventoryCounts();
+
+        $grossProfit = $salesStats['gross_profit'];
+        $operatingExpense = $cashFlowStats['operating_expense'] ?? 0;
+        $netProfit = $grossProfit - $operatingExpense;
 
         $this->stats = [
             'total_sales' => $salesStats['total_revenue'],
             'sales_count' => $salesStats['count'],
-            'gross_profit' => $salesStats['gross_profit'],
+            'gross_profit' => $grossProfit,
+            'operating_expense' => $operatingExpense,
+            'estimated_net_profit' => $netProfit,
             'income' => $cashFlowStats['income'],
             'expense' => $cashFlowStats['expense'],
             'net_cash_flow' => $cashFlowStats['net_cash_flow'],

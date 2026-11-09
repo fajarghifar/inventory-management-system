@@ -47,7 +47,11 @@ class SalesController extends Controller
 
         } catch (SaleException $e) {
             if ($request->wantsJson()) {
-                return response()->json(['message' => $e->getMessage()], 400);
+                return response()->json([
+                    'success' => false,
+                    'conflict' => true,
+                    'message' => $e->getMessage(),
+                ], 409);
             }
             return back()->with('error', $e->getMessage())->withInput();
 
@@ -80,6 +84,12 @@ class SalesController extends Controller
     {
         $sale->load(['items.product.unit', 'customer', 'creator']);
         return view('sales.print', compact('sale'));
+    }
+
+    public function receipt(Sale $sale)
+    {
+        $sale->load(['items.product.unit', 'customer', 'creator']);
+        return view('sales.receipt-thermal', compact('sale'));
     }
 
     public function restore(Sale $sale, SaleService $saleService)

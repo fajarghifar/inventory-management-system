@@ -1,157 +1,264 @@
 <div>
     <div class="space-y-6">
+
+        <!-- Quick Actions Header Strip -->
+        <div class="flex flex-wrap items-center justify-between gap-3 p-4 bg-card rounded-lg border border-border shadow-sm print:hidden">
+            <div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Quick Actions</span>
+                <div class="text-sm font-bold text-foreground">Operational Shortcuts</div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('sales.create') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3 py-1 gap-1.5 shadow-sm">
+                    <x-heroicon-o-computer-desktop class="w-3.5 h-3.5 text-indigo-400" />
+                    POS Register [F1]
+                </a>
+                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 h-8 px-3 py-1 gap-1.5 shadow-sm">
+                    <x-heroicon-o-bolt class="w-3.5 h-3.5 text-emerald-600" />
+                    ⚡ Quick Direct Sell
+                </a>
+                @can('admin')
+                    <a href="{{ route('purchases.create') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
+                        <x-heroicon-o-shopping-bag class="w-3.5 h-3.5" />
+                        New Purchase Order
+                    </a>
+                    <button x-data x-on:click="$dispatch('open-stock-adjustment-modal')" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
+                        <x-heroicon-o-adjustments-vertical class="w-3.5 h-3.5" />
+                        Stock Adjustment
+                    </button>
+                    <a href="{{ route('reports.profit-loss') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
+                        <x-heroicon-o-scale class="w-3.5 h-3.5" />
+                        Profit & Loss
+                    </a>
+                    <a href="{{ route('reports.slow-moving') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
+                        <x-heroicon-o-clock class="w-3.5 h-3.5" />
+                        Slow-Moving Items
+                    </a>
+                @endcan
+            </div>
+        </div>
+
         <!-- Filter Section -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-4 rounded-lg border border-border shadow-sm">
-        <div>
-            <h2 class="text-lg font-semibold text-foreground">Overview</h2>
-            <p class="text-sm text-muted-foreground">Monitor your business performance at a glance.</p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-            <!-- Period Selector -->
-            <select wire:model.live="dateFilter" class="h-9 w-[180px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                @foreach(\App\Enums\DatePeriod::cases() as $period)
-                    <option value="{{ $period->value }}">{{ $period->label() }}</option>
-                @endforeach
-            </select>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-4 rounded-lg border border-border shadow-sm">
+            <div>
+                <h2 class="text-lg font-semibold text-foreground">Executive Overview</h2>
+                <p class="text-sm text-muted-foreground">Monitor performance, profitability, and inventory metrics.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Period Selector -->
+                <select wire:model.live="dateFilter" class="h-9 w-[180px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                    @foreach(\App\Enums\DatePeriod::cases() as $period)
+                        <option value="{{ $period->value }}">{{ $period->label() }}</option>
+                    @endforeach
+                </select>
 
-            <!-- Custom Date Range -->
-            <!-- Custom Date Range (Flatpickr) -->
-            <div x-show="$wire.dateFilter === 'custom'" x-transition class="flex items-center gap-2"
-                 x-data="{
-                     init() {
-                         flatpickr(this.$refs.picker, {
-                             mode: 'range',
-                             dateFormat: 'Y-m-d',
-                             defaultDate: [this.$wire.customStartDate, this.$wire.customEndDate],
-                             onChange: (selectedDates, dateStr, instance) => {
-                                 if (selectedDates.length === 2) {
-                                     this.$wire.updateCustomRange(
-                                         instance.formatDate(selectedDates[0], 'Y-m-d'),
-                                         instance.formatDate(selectedDates[1], 'Y-m-d')
-                                     );
+                <!-- Custom Date Range (Flatpickr) -->
+                <div x-show="$wire.dateFilter === 'custom'" x-transition class="flex items-center gap-2"
+                     x-data="{
+                         init() {
+                             flatpickr(this.$refs.picker, {
+                                 mode: 'range',
+                                 dateFormat: 'Y-m-d',
+                                 defaultDate: [this.$wire.customStartDate, this.$wire.customEndDate],
+                                 onChange: (selectedDates, dateStr, instance) => {
+                                     if (selectedDates.length === 2) {
+                                         this.$wire.updateCustomRange(
+                                             instance.formatDate(selectedDates[0], 'Y-m-d'),
+                                             instance.formatDate(selectedDates[1], 'Y-m-d')
+                                         );
+                                     }
                                  }
-                             }
-                         });
-                     }
-                 }"
-            >
-                <input x-ref="picker" type="text" class="h-9 w-[240px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Select date range...">
-            </div>
-
-             <!-- Refresh Button -->
-             <button wire:click="$refresh" class="print:hidden inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9">
-                <x-heroicon-o-arrow-path wire:loading.class="animate-spin" class="h-4 w-4" />
-            </button>
-            
-            <!-- Print Button -->
-            <button onclick="window.print()" class="print:hidden inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 gap-2">
-                <x-heroicon-o-printer class="h-4 w-4" />
-                <span class="hidden sm:inline">Print Report</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <!-- Total Sales -->
-        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 class="tracking-tight text-sm font-medium">Total Sales</h3>
-                <x-heroicon-o-banknotes class="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div class="p-4 pt-0">
-                <div class="text-xl sm:text-2xl font-bold">
-                    @money($stats['total_sales'] ?? 0)
+                             });
+                         }
+                     }"
+                >
+                    <input x-ref="picker" type="text" class="h-9 w-[240px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Select date range...">
                 </div>
-                <p class="text-xs text-muted-foreground mt-1">
-                    {{ $stats['sales_count'] ?? 0 }} transactions
-                </p>
+
+                 <!-- Refresh Button -->
+                 <button wire:click="$refresh" class="print:hidden inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9">
+                    <x-heroicon-o-arrow-path wire:loading.class="animate-spin" class="h-4 w-4" />
+                </button>
+                
+                <!-- Print Button -->
+                <button onclick="window.print()" class="print:hidden inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 gap-2">
+                    <x-heroicon-o-printer class="h-4 w-4" />
+                    <span class="hidden sm:inline">Print Report</span>
+                </button>
             </div>
         </div>
 
-        <!-- Gross Profit -->
-        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 class="tracking-tight text-sm font-medium">Gross Profit</h3>
-                <x-heroicon-o-arrow-trending-up class="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div class="p-4 pt-0">
-                <div class="text-xl sm:text-2xl font-bold">
-                    @money($stats['gross_profit'] ?? 0)
+        <!-- Inventory Master Summary Ribbon -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-muted-foreground font-medium">Active Products</span>
+                    <div class="text-xl font-bold text-foreground mt-0.5">{{ number_format($inventoryCounts['total_products'] ?? 0) }}</div>
                 </div>
-                <p class="text-xs text-muted-foreground mt-1">
-                    Estimated based on COGS
-                </p>
-            </div>
-        </div>
-
-        <!-- Net Cash Flow -->
-        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 class="tracking-tight text-sm font-medium">Net Cash Flow</h3>
-                 <x-heroicon-o-currency-dollar class="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div class="p-4 pt-0">
-                <div class="text-xl sm:text-2xl font-bold {{ ($stats['net_cash_flow'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                    @money($stats['net_cash_flow'] ?? 0)
-                </div>
-                <div class="flex justify-between text-[11px] sm:text-xs text-muted-foreground mt-1">
-                    <span class="text-emerald-600 flex items-center gap-1" title="Total Income">
-                        <x-heroicon-s-arrow-up class="w-3 h-3" /> @money($stats['income'] ?? 0)
-                    </span>
-                    <span class="text-red-600 flex items-center gap-1" title="Total Expense">
-                        <x-heroicon-s-arrow-down class="w-3 h-3" /> @money($stats['expense'] ?? 0)
-                    </span>
+                <div class="p-2 bg-blue-50 text-blue-700 rounded-md">
+                    <x-heroicon-o-cube class="w-5 h-5" />
                 </div>
             </div>
-        </div>
 
-         <!-- Low Stock Alert -->
-         <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 class="tracking-tight text-sm font-medium">Low Stock Alert</h3>
-                <x-heroicon-o-exclamation-triangle class="h-4 w-4 text-orange-500" />
-            </div>
-            <div class="p-4 pt-0">
-                <div class="text-xl sm:text-2xl font-bold">
-                    {{ count($lowStockProducts) }}
+            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-muted-foreground font-medium">Product Categories</span>
+                    <div class="text-xl font-bold text-foreground mt-0.5">{{ number_format($inventoryCounts['total_categories'] ?? 0) }}</div>
                 </div>
-                <div class="flex justify-between items-center">
-                 <p class="text-xs text-muted-foreground mt-1">
-                    Items below min stock
-                </p>
+                <div class="p-2 bg-purple-50 text-purple-700 rounded-md">
+                    <x-heroicon-o-tag class="w-5 h-5" />
+                </div>
+            </div>
 
+            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-muted-foreground font-medium">Total On-Hand Units</span>
+                    <div class="text-xl font-bold text-foreground mt-0.5">{{ number_format($inventoryCounts['total_units'] ?? 0) }}</div>
+                </div>
+                <div class="p-2 bg-emerald-50 text-emerald-700 rounded-md">
+                    <x-heroicon-o-archive-box class="w-5 h-5" />
+                </div>
+            </div>
 
-                  <a href="{{ route('low-stock.index') }}" class="cursor-pointer text-bold text-xs text-black">View</a>
-               </div>
+            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-muted-foreground font-medium">Low Stock Items</span>
+                    <div class="text-xl font-bold {{ count($lowStockProducts) > 0 ? 'text-red-600' : 'text-foreground' }} mt-0.5">
+                        {{ count($lowStockProducts) }}
+                    </div>
+                </div>
+                <a href="{{ route('low-stock.index') }}" class="p-2 bg-rose-50 text-rose-700 rounded-md hover:bg-rose-100 transition-colors" title="View Low Stock">
+                    <x-heroicon-o-exclamation-triangle class="w-5 h-5" />
+                </a>
             </div>
         </div>
-    </div>
 
-    <!-- Charts Section -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <!-- Sales Trend -->
-        <div class="col-span-1 lg:col-span-2 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-            <div class="p-4 flex flex-col space-y-1.5 pb-2">
-                <h3 class="font-semibold leading-none tracking-tight">Sales Trend</h3>
-                <p class="text-xs text-muted-foreground">Daily sales performance.</p>
-            </div>
-            <div class="p-4 pt-0" wire:ignore>
-                <div id="salesChart" class="w-full h-[250px]"></div>
-            </div>
-        </div>
+        <!-- Financial & Sales Performance Grid -->
+        @can('admin')
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <!-- Total Sales -->
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
+                        <h3 class="tracking-tight text-sm font-medium">Total Sales Revenue</h3>
+                        <x-heroicon-o-banknotes class="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div class="p-4 pt-0">
+                        <div class="text-xl sm:text-2xl font-bold">
+                            @money($stats['total_sales'] ?? 0)
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-1">
+                            {{ $stats['sales_count'] ?? 0 }} completed sales
+                        </p>
+                    </div>
+                </div>
 
-        <!-- Cash Flow -->
-        <div class="col-span-1 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-            <div class="p-4 flex flex-col space-y-1.5 pb-2">
-                <h3 class="font-semibold leading-none tracking-tight">Income vs Expense</h3>
-                <p class="text-xs text-muted-foreground">Financial overview.</p>
+                <!-- Gross Profit -->
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
+                        <h3 class="tracking-tight text-sm font-medium">Gross Profit</h3>
+                        <x-heroicon-o-arrow-trending-up class="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div class="p-4 pt-0">
+                        <div class="text-xl sm:text-2xl font-bold text-foreground">
+                            @money($stats['gross_profit'] ?? 0)
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-1">
+                            Revenue minus COGS
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Estimated Net Profit -->
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
+                        <h3 class="tracking-tight text-sm font-medium">Estimated Net Profit</h3>
+                        <x-heroicon-o-scale class="h-4 w-4 {{ ($stats['estimated_net_profit'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}" />
+                    </div>
+                    <div class="p-4 pt-0">
+                        <div class="text-xl sm:text-2xl font-bold {{ ($stats['estimated_net_profit'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                            @money($stats['estimated_net_profit'] ?? 0)
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-1">
+                            Gross Profit minus Operating Expenses
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Net Cash Flow -->
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
+                        <h3 class="tracking-tight text-sm font-medium">Net Cash Flow</h3>
+                        <x-heroicon-o-currency-dollar class="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div class="p-4 pt-0">
+                        <div class="text-xl sm:text-2xl font-bold {{ ($stats['net_cash_flow'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                            @money($stats['net_cash_flow'] ?? 0)
+                        </div>
+                        <div class="flex justify-between text-[11px] sm:text-xs text-muted-foreground mt-1">
+                            <span class="text-emerald-600 flex items-center gap-1" title="Total Income">
+                                <x-heroicon-s-arrow-up class="w-3 h-3" /> @money($stats['income'] ?? 0)
+                            </span>
+                            <span class="text-red-600 flex items-center gap-1" title="Total Expense">
+                                <x-heroicon-s-arrow-down class="w-3 h-3" /> @money($stats['expense'] ?? 0)
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="p-4 pt-0" wire:ignore>
-                <div id="cashFlowChart" class="w-full h-[250px]"></div>
+        @else
+            <!-- Staff Operations Overview (Confidential Business Profitability Hidden) -->
+            <div class="grid gap-4 md:grid-cols-2">
+                <div class="rounded-xl border bg-card text-card-foreground p-4 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Store Operations</span>
+                        <div class="text-2xl font-bold text-foreground mt-1">{{ number_format($stats['sales_count'] ?? 0) }} Sales</div>
+                        <p class="text-xs text-muted-foreground mt-1">Total recorded transactions in this period</p>
+                    </div>
+                    <div class="p-3 bg-indigo-50 text-indigo-700 rounded-lg">
+                        <x-heroicon-o-shopping-bag class="w-6 h-6" />
+                    </div>
+                </div>
+
+                <div class="rounded-xl border bg-card text-card-foreground p-4 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Cashier Terminal</span>
+                        <div class="text-base font-bold text-foreground mt-1">POS Ready for Orders</div>
+                        <a href="{{ route('sales.create') }}" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-800 mt-2 gap-1">
+                            Open POS Register &rarr;
+                        </a>
+                    </div>
+                    <div class="p-3 bg-emerald-50 text-emerald-700 rounded-lg">
+                        <x-heroicon-o-computer-desktop class="w-6 h-6" />
+                    </div>
+                </div>
             </div>
+        @endcan
+
+        <!-- Charts Section -->
+        <div class="grid gap-4 @can('admin') md:grid-cols-2 lg:grid-cols-3 @else grid-cols-1 @endcan">
+            <!-- Sales Trend -->
+            <div class="@can('admin') col-span-1 lg:col-span-2 @else col-span-1 @endcan rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
+                <div class="p-4 flex flex-col space-y-1.5 pb-2">
+                    <h3 class="font-semibold leading-none tracking-tight">Sales Trend</h3>
+                    <p class="text-xs text-muted-foreground">Daily sales performance.</p>
+                </div>
+                <div class="p-4 pt-0" wire:ignore>
+                    <div id="salesChart" class="w-full h-[250px]"></div>
+                </div>
+            </div>
+
+            @can('admin')
+                <!-- Cash Flow (Admin Only) -->
+                <div class="col-span-1 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
+                    <div class="p-4 flex flex-col space-y-1.5 pb-2">
+                        <h3 class="font-semibold leading-none tracking-tight">Income vs Expense</h3>
+                        <p class="text-xs text-muted-foreground">Financial overview.</p>
+                    </div>
+                    <div class="p-4 pt-0" wire:ignore>
+                        <div id="cashFlowChart" class="w-full h-[250px]"></div>
+                    </div>
+                </div>
+            @endcan
         </div>
-    </div>
 
     <!-- Data Tables Section -->
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

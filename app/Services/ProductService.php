@@ -7,10 +7,15 @@ use App\Models\Product;
 use Illuminate\Support\Str;
 use App\DTOs\ProductData;
 use App\Exceptions\ProductException;
+use App\Enums\StockMovementType;
 use Illuminate\Support\Facades\DB;
 
 class ProductService
 {
+    public function __construct(
+        protected StockMovementService $stockMovementService
+    ) {}
+
     /**
      * Create a new product.
      */
@@ -20,19 +25,31 @@ class ProductService
             try {
                 $sku = $data->sku ?? $this->generateUniqueSku();
 
-                return Product::create([
+                $product = Product::create([
                     'category_id' => $data->category_id,
                     'unit_id' => $data->unit_id,
                     'sku' => $sku,
                     'name' => $data->name,
                     'purchase_price' => $data->purchase_price,
                     'selling_price' => $data->selling_price,
-                    'quantity' => $data->quantity,
+                    'quantity' => 0, // Set to 0 initially, updated by recordMovement
                     'min_stock' => $data->min_stock,
                     'is_active' => $data->is_active,
                     'description' => $data->description,
                     'notes' => $data->notes,
                 ]);
+
+                if ($data->quantity > 0) {
+                    $this->stockMovementService->recordMovement(
+                        product: $product,
+                        quantityChange: (int) $data->quantity,
+                        movementType: StockMovementType::OPENING_STOCK,
+                        notes: 'Initial opening stock recorded on product creation'
+                    );
+                    $product->refresh();
+                }
+
+                return $product;
 
             } catch (Exception $e) {
                 throw ProductException::creationFailed($e->getMessage(), [

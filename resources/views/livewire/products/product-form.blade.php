@@ -13,23 +13,14 @@
         <form wire:submit="save" class="space-y-6">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- SKU -->
-                @if($isEditing)
-                    <x-form-input
-                        name="sku"
-                        label="SKU (Stock Keeping Unit)"
-                        type="text"
-                        wire:model="sku"
-                        readonly
-                        placeholder="e.g. SKU-1234-ABCD"
-                        class="bg-muted text-muted-foreground cursor-not-allowed"
-                    />
-                @else
-                    <!-- SKU Auto Generated -->
-                    <div class="hidden">
-                        <input type="hidden" wire:model="sku">
-                    </div>
-                @endif
+                <!-- SKU / Barcode -->
+                <x-form-input
+                    name="sku"
+                    label="Barcode / SKU"
+                    type="text"
+                    wire:model="sku"
+                    placeholder="Scan or enter barcode (leave blank to auto-generate)"
+                />
 
                 <!-- Name -->
                 <x-form-input
@@ -39,7 +30,6 @@
                     type="text"
                     wire:model="name"
                     required
-                    class="{{ !$isEditing ? 'col-span-2' : '' }}"
                 />
             </div>
 

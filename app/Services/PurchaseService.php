@@ -8,13 +8,15 @@ use App\Models\Purchase;
 use App\DTOs\PurchaseData;
 use App\Models\PurchaseItem;
 use App\Enums\PurchaseStatus;
+use App\Enums\StockMovementType;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\PurchaseException;
 
 class PurchaseService
 {
     public function __construct(
-        protected FinanceTransactionService $financeService
+        protected FinanceTransactionService $financeService,
+        protected StockMovementService $stockMovementService
     ) {
     }
 
@@ -130,13 +132,20 @@ class PurchaseService
                 throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
             }
 
-            // Update Stock
+            // Update Stock via centralized audit ledger
             foreach ($purchase->items as $item) {
                 // Lock the product row for update to prevent race conditions
                 $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
 
                 if ($product) {
-                    $product->increment('quantity', $item->quantity);
+                    $this->stockMovementService->recordMovement(
+                        product: $product,
+                        quantityChange: (int) $item->quantity,
+                        movementType: StockMovementType::PURCHASE_RECEIVE,
+                        reference: $purchase,
+                        referenceNumber: $purchase->invoice_number,
+                        notes: "Received from purchase order Invoice #{$purchase->invoice_number}"
+                    );
 
                     // Update latest purchase price and selling price
                     $updateData = ['purchase_price' => $item->unit_price];

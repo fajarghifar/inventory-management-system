@@ -50,6 +50,9 @@ final class UserTable extends PowerGridComponent
             ->add('name')
             ->add('username')
             ->add('email')
+            ->add('role_badge', fn (User $model) => $model->role === \App\Enums\UserRole::ADMIN
+                ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-800">Admin</span>'
+                : '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800">Staff</span>')
             ->add('created_at_formatted', fn (User $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i'));
     }
 
@@ -70,6 +73,9 @@ final class UserTable extends PowerGridComponent
 
             Column::make('Email', 'email')
                 ->searchable()
+                ->sortable(),
+
+            Column::make('Role', 'role_badge')
                 ->sortable(),
 
             Column::make('Created At', 'created_at_formatted', 'created_at')

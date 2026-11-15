@@ -37,13 +37,8 @@ class PurchaseController extends Controller
     public function store(StorePurchaseRequest $request)
     {
         try {
-            $proofPath = null;
-            if ($request->hasFile('proof_image')) {
-                $proofPath = $request->file('proof_image')->store('proofs', 'public');
-            }
-
             $data = $request->validated();
-            $data['proof_image'] = $proofPath;
+            $data['proof_image'] = $this->storeProofImage($request);
             $data['status'] = PurchaseStatus::DRAFT->value; // Force Draft on Create
 
             $purchaseData = PurchaseData::fromArray($data);
@@ -84,13 +79,8 @@ class PurchaseController extends Controller
     public function update(UpdatePurchaseRequest $request, Purchase $purchase)
     {
         try {
-            $proofPath = $purchase->proof_image;
-            if ($request->hasFile('proof_image')) {
-                $proofPath = $request->file('proof_image')->store('proofs', 'public');
-            }
-
             $data = $request->validated();
-            $data['proof_image'] = $proofPath;
+            $data['proof_image'] = $this->storeProofImage($request, $purchase->proof_image);
             $data['status'] = $purchase->status->value; // Preserve existing status
 
             $purchaseData = PurchaseData::fromArray($data);
@@ -153,8 +143,9 @@ class PurchaseController extends Controller
                 $updateData['invoice_number'] = $request->invoice_number;
             }
 
-            if ($request->hasFile('proof_image')) {
-                $updateData['proof_image'] = $request->file('proof_image')->store('proofs', 'public');
+            $proofPath = $this->storeProofImage($request);
+            if ($proofPath !== null) {
+                $updateData['proof_image'] = $proofPath;
             }
 
             if (!empty($updateData)) {
@@ -206,5 +197,17 @@ class PurchaseController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Error restoring purchase: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Simpan bukti pembayaran bila ada file baru; jika tidak, kembalikan path lama.
+     */
+    private function storeProofImage(Request $request, ?string $currentPath = null): ?string
+    {
+        if (!$request->hasFile('proof_image')) {
+            return $currentPath;
+        }
+
+        return $request->file('proof_image')->store('proofs', 'public');
     }
 }

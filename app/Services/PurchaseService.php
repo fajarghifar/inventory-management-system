@@ -123,52 +123,69 @@ class PurchaseService
 
             $this->ensureHasRequiredReferences($purchase);
 
-            // Update Stock
             foreach ($purchase->items as $item) {
                 // Lock the product row for update to prevent race conditions
                 $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
 
                 if ($product) {
-                    $product->increment('quantity', $item->quantity);
-
-                    // Update latest purchase price and selling price
-                    $updateData = ['purchase_price' => $item->unit_price];
-                    $priceChangeLog = "";
-                    $hasPriceChange = false;
-
-                    // Check for Purchase Price Change
-                    if ((float) $product->purchase_price !== (float) $item->unit_price) {
-                        $hasPriceChange = true;
-                        $oldBuy = format_money($product->purchase_price ?? 0);
-                        $newBuy = format_money($item->unit_price);
-                        $priceChangeLog .= "\n- Buying Price: {$oldBuy} -> {$newBuy}";
-                    }
-
-                    // Check for Selling Price Change
-                    if ($item->selling_price) {
-                        $updateData['selling_price'] = $item->selling_price;
-                        if ((float) $product->selling_price !== (float) $item->selling_price) {
-                            $hasPriceChange = true;
-                            $oldSell = format_money($product->selling_price ?? 0);
-                            $newSell = format_money($item->selling_price);
-                            $priceChangeLog .= "\n- Selling Price: {$oldSell} -> {$newSell}";
-                        }
-                    }
-
-                    // Append to Notes if prices changed
-                    if ($hasPriceChange) {
-                        $timestamp = now()->format('Y-m-d H:i');
-                        $ref = $purchase->invoice_number ? "Invoice #{$purchase->invoice_number}" : "Purchase #{$purchase->id}";
-                        $logHeader = "\n\n[System Log - {$timestamp}] Price update via {$ref}:";
-                        $updateData['notes'] = TRIM(($product->notes ?? '') . $logHeader . $priceChangeLog);
-                    }
-
-                    $product->update($updateData);
+                    $this->receiveItemIntoStock($product, $item, $purchase);
                 }
             }
 
             $purchase->update(['status' => PurchaseStatus::RECEIVED]);
         });
+    }
+
+    private function receiveItemIntoStock(Product $product, PurchaseItem $item, Purchase $purchase): void
+    {
+        $product->increment('quantity', $item->quantity);
+
+        $updateData = ['purchase_price' => $item->unit_price];
+
+        if ($item->selling_price) {
+            $updateData['selling_price'] = $item->selling_price;
+        }
+
+        // Dihitung SEBELUM $product->update() agar harga lama yang tercatat
+        $priceChangeLog = $this->buildPriceChangeLog($product, $item);
+
+        if ($priceChangeLog !== '') {
+            $updateData['notes'] = $this->appendPriceLogToNotes($product->notes, $purchase, $priceChangeLog);
+        }
+
+        $product->update($updateData);
+    }
+
+    private function buildPriceChangeLog(Product $product, PurchaseItem $item): string
+    {
+        $log = '';
+
+        if ((float) $product->purchase_price !== (float) $item->unit_price) {
+            $log .= $this->formatPriceChange('Buying Price', $product->purchase_price, $item->unit_price);
+        }
+
+        if ($item->selling_price && (float) $product->selling_price !== (float) $item->selling_price) {
+            $log .= $this->formatPriceChange('Selling Price', $product->selling_price, $item->selling_price);
+        }
+
+        return $log;
+    }
+
+    private function formatPriceChange(string $label, $oldPrice, $newPrice): string
+    {
+        return "\n- {$label}: " . format_money($oldPrice ?? 0) . ' -> ' . format_money($newPrice);
+    }
+
+    /**
+     * invoice_number dijamin terisi oleh ensureHasRequiredReferences(),
+     * sehingga cabang lama "Purchase #id" adalah dead code dan dihapus.
+     */
+    private function appendPriceLogToNotes(?string $notes, Purchase $purchase, string $priceChangeLog): string
+    {
+        $timestamp = now()->format('Y-m-d H:i');
+        $header = "\n\n[System Log - {$timestamp}] Price update via Invoice #{$purchase->invoice_number}:";
+
+        return trim(($notes ?? '') . $header . $priceChangeLog);
     }
 
     public function markAsPaid(Purchase $purchase): void

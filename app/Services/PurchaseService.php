@@ -121,14 +121,7 @@ class PurchaseService
                 throw PurchaseException::invalidStatus('receive', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
-            if (empty($purchase->invoice_number)) {
-                throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
-            }
-
-            // Enforce Proof Image
-            if (empty($purchase->proof_image)) {
-                throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
-            }
+            $this->ensureHasRequiredReferences($purchase);
 
             // Update Stock
             foreach ($purchase->items as $item) {
@@ -185,14 +178,7 @@ class PurchaseService
                 throw PurchaseException::invalidStatus('pay', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
-            // Strict Validation for Payment
-            if (empty($purchase->invoice_number)) {
-                throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
-            }
-
-            if (empty($purchase->proof_image)) {
-                throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
-            }
+            $this->ensureHasRequiredReferences($purchase);
 
             $purchase->update(['status' => PurchaseStatus::PAID]);
 
@@ -244,5 +230,19 @@ class PurchaseService
         }
 
         $purchase->update(['total' => $total]);
+    }
+
+    /**
+     * Pembelian yang diterima atau dibayar wajib memiliki nomor invoice dan bukti gambar.
+     */
+    private function ensureHasRequiredReferences(Purchase $purchase): void
+    {
+        if (empty($purchase->invoice_number)) {
+            throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
+        }
+
+        if (empty($purchase->proof_image)) {
+            throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
+        }
     }
 }

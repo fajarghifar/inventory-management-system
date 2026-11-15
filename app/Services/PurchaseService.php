@@ -48,7 +48,7 @@ class PurchaseService
     {
         return DB::transaction(function () use ($purchase, $data) {
             try {
-                if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::ORDERED])) {
+                if (!$purchase->status->isEditable()) {
                     throw PurchaseException::invalidStatus('update', $purchase->status->label(), ['id' => $purchase->id]);
                 }
 
@@ -79,7 +79,7 @@ class PurchaseService
     {
         DB::transaction(function () use ($purchase) {
             try {
-                if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::CANCELLED])) {
+                if (!$purchase->status->isDeletable()) {
                     throw PurchaseException::deletionFailed(
                         "Cannot delete purchase with status [{$purchase->status->label()}]. Only Draft or Cancelled purchases can be deleted.",
                         ['id' => $purchase->id, 'status' => $purchase->status->value]
@@ -102,7 +102,7 @@ class PurchaseService
     public function markAsOrdered(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if ($purchase->status !== PurchaseStatus::DRAFT) {
+            if (!$purchase->status->canBeOrdered()) {
                 throw PurchaseException::invalidStatus('order', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -117,7 +117,7 @@ class PurchaseService
     public function markAsReceived(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if (!in_array($purchase->status, [PurchaseStatus::ORDERED, PurchaseStatus::DRAFT])) {
+            if (!$purchase->status->canBeReceived()) {
                 throw PurchaseException::invalidStatus('receive', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -181,7 +181,7 @@ class PurchaseService
     public function markAsPaid(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if (!in_array($purchase->status, [PurchaseStatus::ORDERED, PurchaseStatus::RECEIVED])) {
+            if (!$purchase->status->canBePaid()) {
                 throw PurchaseException::invalidStatus('pay', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -203,7 +203,7 @@ class PurchaseService
     public function cancelPurchase(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if ($purchase->status === PurchaseStatus::RECEIVED || $purchase->status === PurchaseStatus::PAID) {
+            if (!$purchase->status->canBeCancelled()) {
                 throw PurchaseException::invalidStatus('cancel', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -216,7 +216,7 @@ class PurchaseService
     public function restoreToDraft(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if ($purchase->status !== PurchaseStatus::CANCELLED) {
+            if (!$purchase->status->canBeRestored()) {
                 throw PurchaseException::invalidStatus('restore', $purchase->status->label(), ['id' => $purchase->id]);
             }
 

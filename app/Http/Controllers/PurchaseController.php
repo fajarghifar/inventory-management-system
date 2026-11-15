@@ -59,7 +59,7 @@ class PurchaseController extends Controller
 
     public function edit(Purchase $purchase)
     {
-        if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::ORDERED])) {
+        if (!$purchase->status->isEditable()) {
             abort(403, 'Only draft or ordered purchases can be edited.');
         }
 

@@ -146,8 +146,6 @@ class PurchaseController extends Controller
 
         $request->validate($rules);
 
-        $request->validate($rules);
-
         try {
             $updateData = [];
 

@@ -35,3 +35,4 @@ class SeedSampleData extends Command
         return Command::SUCCESS;
     }
 }
+

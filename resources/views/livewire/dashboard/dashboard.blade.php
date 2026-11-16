@@ -1,373 +1,304 @@
 <div>
-    <div class="space-y-6">
+    <div class="space-y-5">
 
-        <!-- Quick Actions Header Strip -->
-        <div class="flex flex-wrap items-center justify-between gap-3 p-4 bg-card rounded-lg border border-border shadow-sm print:hidden">
+        <!-- Clean Store Overview Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 bg-card rounded-xl border border-border shadow-sm print:hidden">
             <div>
-                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Quick Actions</span>
-                <div class="text-sm font-bold text-foreground">Operational Shortcuts</div>
+                <h1 class="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
+                    <span>🛒 Market Overview</span>
+                </h1>
+                <p class="text-xs text-muted-foreground mt-0.5">Quick summary of today's sales, cash flow, and stock alerts.</p>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('sales.create') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3 py-1 gap-1.5 shadow-sm">
-                    <x-heroicon-o-computer-desktop class="w-3.5 h-3.5 text-indigo-400" />
-                    POS Register [F1]
+            
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <!-- Date Period Filter -->
+                <select wire:model.live="dateFilter" class="h-9 rounded-lg border border-input bg-background px-3 text-xs font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                    @foreach(\App\Enums\DatePeriod::cases() as $period)
+                        <option value="{{ $period->value }}">{{ $period->label() }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Big Primary POS Button -->
+                <a href="{{ route('sales.create') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white h-9 px-4 py-1.5 gap-1.5 shadow-sm transition-all hover:shadow-indigo-200">
+                    <x-heroicon-o-computer-desktop class="w-4 h-4 text-indigo-200" />
+                    <span>Open POS Register [F1]</span>
                 </a>
-                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 h-8 px-3 py-1 gap-1.5 shadow-sm">
+
+                <!-- Quick Direct Sell -->
+                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-semibold border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 h-9 px-3 py-1.5 gap-1 shadow-sm">
                     <x-heroicon-o-bolt class="w-3.5 h-3.5 text-emerald-600" />
-                    ⚡ Quick Direct Sell
+                    <span class="hidden sm:inline">⚡ Quick Sell</span>
                 </a>
+
                 @can('admin')
-                    <a href="{{ route('purchases.create') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
-                        <x-heroicon-o-shopping-bag class="w-3.5 h-3.5" />
-                        New Purchase Order
-                    </a>
-                    <button x-data x-on:click="$dispatch('open-stock-adjustment-modal')" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
-                        <x-heroicon-o-adjustments-vertical class="w-3.5 h-3.5" />
-                        Stock Adjustment
-                    </button>
-                    <a href="{{ route('reports.profit-loss') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
-                        <x-heroicon-o-scale class="w-3.5 h-3.5" />
-                        Profit & Loss
-                    </a>
-                    <a href="{{ route('reports.slow-moving') }}" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 py-1 gap-1.5">
-                        <x-heroicon-o-clock class="w-3.5 h-3.5" />
-                        Slow-Moving Items
-                    </a>
-                    <button wire:click="seedSampleData" wire:loading.attr="disabled" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-purple-300 bg-purple-50 hover:bg-purple-100 text-purple-800 h-8 px-3 py-1 gap-1.5 shadow-sm" title="Populate realistic demo items, barcodes, sales & expenses">
+                    <!-- Seed Demo Data Button -->
+                    <button wire:click="seedSampleData" wire:loading.attr="disabled" class="inline-flex items-center justify-center rounded-lg text-xs font-semibold border border-purple-300 bg-purple-50 hover:bg-purple-100 text-purple-800 h-9 px-3 py-1.5 gap-1 shadow-sm" title="Populate demo products, barcodes, sales & expenses">
                         <x-heroicon-o-sparkles class="w-3.5 h-3.5 text-purple-600" />
-                        <span wire:loading.remove wire:target="seedSampleData">🌱 Populate Sample Data</span>
+                        <span wire:loading.remove wire:target="seedSampleData">🌱 Seed Data</span>
                         <span wire:loading wire:target="seedSampleData">Seeding...</span>
                     </button>
                 @endcan
             </div>
         </div>
 
-        <!-- Filter Section -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-4 rounded-lg border border-border shadow-sm">
-            <div>
-                <h2 class="text-lg font-semibold text-foreground">Executive Overview</h2>
-                <p class="text-sm text-muted-foreground">Monitor performance, profitability, and inventory metrics.</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <!-- Period Selector -->
-                <select wire:model.live="dateFilter" class="h-9 w-[180px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-                    @foreach(\App\Enums\DatePeriod::cases() as $period)
-                        <option value="{{ $period->value }}">{{ $period->label() }}</option>
-                    @endforeach
-                </select>
-
-                <!-- Custom Date Range (Flatpickr) -->
-                <div x-show="$wire.dateFilter === 'custom'" x-transition class="flex items-center gap-2"
-                     x-data="{
-                         init() {
-                             flatpickr(this.$refs.picker, {
-                                 mode: 'range',
-                                 dateFormat: 'Y-m-d',
-                                 defaultDate: [this.$wire.customStartDate, this.$wire.customEndDate],
-                                 onChange: (selectedDates, dateStr, instance) => {
-                                     if (selectedDates.length === 2) {
-                                         this.$wire.updateCustomRange(
-                                             instance.formatDate(selectedDates[0], 'Y-m-d'),
-                                             instance.formatDate(selectedDates[1], 'Y-m-d')
-                                         );
-                                     }
-                                 }
-                             });
-                         }
-                     }"
-                >
-                    <input x-ref="picker" type="text" class="h-9 w-[240px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" placeholder="Select date range...">
-                </div>
-
-                 <!-- Refresh Button -->
-                 <button wire:click="$refresh" class="print:hidden inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9">
-                    <x-heroicon-o-arrow-path wire:loading.class="animate-spin" class="h-4 w-4" />
-                </button>
-                
-                <!-- Print Button -->
-                <button onclick="window.print()" class="print:hidden inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 gap-2">
-                    <x-heroicon-o-printer class="h-4 w-4" />
-                    <span class="hidden sm:inline">Print Report</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Inventory Master Summary Ribbon -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-muted-foreground font-medium">Active Products</span>
-                    <div class="text-xl font-bold text-foreground mt-0.5">{{ number_format($inventoryCounts['total_products'] ?? 0) }}</div>
-                </div>
-                <div class="p-2 bg-blue-50 text-blue-700 rounded-md">
-                    <x-heroicon-o-cube class="w-5 h-5" />
-                </div>
-            </div>
-
-            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-muted-foreground font-medium">Product Categories</span>
-                    <div class="text-xl font-bold text-foreground mt-0.5">{{ number_format($inventoryCounts['total_categories'] ?? 0) }}</div>
-                </div>
-                <div class="p-2 bg-purple-50 text-purple-700 rounded-md">
-                    <x-heroicon-o-tag class="w-5 h-5" />
-                </div>
-            </div>
-
-            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-muted-foreground font-medium">Total On-Hand Units</span>
-                    <div class="text-xl font-bold text-foreground mt-0.5">{{ number_format($inventoryCounts['total_units'] ?? 0) }}</div>
-                </div>
-                <div class="p-2 bg-emerald-50 text-emerald-700 rounded-md">
-                    <x-heroicon-o-archive-box class="w-5 h-5" />
-                </div>
-            </div>
-
-            <div class="rounded-lg border bg-card p-3 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-xs text-muted-foreground font-medium">Low Stock Items</span>
-                    <div class="text-xl font-bold {{ count($lowStockProducts) > 0 ? 'text-red-600' : 'text-foreground' }} mt-0.5">
-                        {{ count($lowStockProducts) }}
+        <!-- 4 Key Market Vitals -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <!-- 1. Total Sales -->
+            <div class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between">
+                <div class="flex items-center justify-between text-muted-foreground">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Sales Revenue</span>
+                    <div class="p-2 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+                        <x-heroicon-o-banknotes class="w-5 h-5" />
                     </div>
                 </div>
-                <a href="{{ route('low-stock.index') }}" class="p-2 bg-rose-50 text-rose-700 rounded-md hover:bg-rose-100 transition-colors" title="View Low Stock">
-                    <x-heroicon-o-exclamation-triangle class="w-5 h-5" />
-                </a>
-            </div>
-        </div>
-
-        <!-- Financial & Sales Performance Grid -->
-        @can('admin')
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <!-- Total Sales -->
-                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                        <h3 class="tracking-tight text-sm font-medium">Total Sales Revenue</h3>
-                        <x-heroicon-o-banknotes class="h-4 w-4 text-muted-foreground" />
+                <div class="mt-2">
+                    <div class="text-xl sm:text-2xl font-black text-foreground">
+                        @money($stats['total_sales'] ?? 0)
                     </div>
-                    <div class="p-4 pt-0">
-                        <div class="text-xl sm:text-2xl font-bold">
-                            @money($stats['total_sales'] ?? 0)
+                    <p class="text-xs text-muted-foreground mt-0.5">
+                        {{ $stats['sales_count'] ?? 0 }} completed sales
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. Profit / Earnings -->
+            @can('admin')
+                <div class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-muted-foreground">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Estimated Net Profit</span>
+                        <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50">
+                            <x-heroicon-o-scale class="w-5 h-5" />
                         </div>
-                        <p class="text-xs text-muted-foreground mt-1">
-                            {{ $stats['sales_count'] ?? 0 }} completed sales
-                        </p>
                     </div>
-                </div>
-
-                <!-- Gross Profit -->
-                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                        <h3 class="tracking-tight text-sm font-medium">Gross Profit</h3>
-                        <x-heroicon-o-arrow-trending-up class="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div class="p-4 pt-0">
-                        <div class="text-xl sm:text-2xl font-bold text-foreground">
-                            @money($stats['gross_profit'] ?? 0)
-                        </div>
-                        <p class="text-xs text-muted-foreground mt-1">
-                            Revenue minus COGS
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Estimated Net Profit -->
-                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                        <h3 class="tracking-tight text-sm font-medium">Estimated Net Profit</h3>
-                        <x-heroicon-o-scale class="h-4 w-4 {{ ($stats['estimated_net_profit'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}" />
-                    </div>
-                    <div class="p-4 pt-0">
-                        <div class="text-xl sm:text-2xl font-bold {{ ($stats['estimated_net_profit'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
+                    <div class="mt-2">
+                        <div class="text-xl sm:text-2xl font-black {{ ($stats['estimated_net_profit'] ?? 0) >= 0 ? 'text-blue-600' : 'text-red-600' }}">
                             @money($stats['estimated_net_profit'] ?? 0)
                         </div>
-                        <p class="text-xs text-muted-foreground mt-1">
-                            Gross Profit minus Operating Expenses
+                        <p class="text-xs text-muted-foreground mt-0.5">
+                            Gross Profit: @money($stats['gross_profit'] ?? 0)
                         </p>
                     </div>
                 </div>
-
-                <!-- Net Cash Flow -->
-                <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-                    <div class="p-4 flex flex-row items-center justify-between space-y-0 pb-2">
-                        <h3 class="tracking-tight text-sm font-medium">Net Cash Flow</h3>
-                        <x-heroicon-o-currency-dollar class="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div class="p-4 pt-0">
-                        <div class="text-xl sm:text-2xl font-bold {{ ($stats['net_cash_flow'] ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                            @money($stats['net_cash_flow'] ?? 0)
-                        </div>
-                        <div class="flex justify-between text-[11px] sm:text-xs text-muted-foreground mt-1">
-                            <span class="text-emerald-600 flex items-center gap-1" title="Total Income">
-                                <x-heroicon-s-arrow-up class="w-3 h-3" /> @money($stats['income'] ?? 0)
-                            </span>
-                            <span class="text-red-600 flex items-center gap-1" title="Total Expense">
-                                <x-heroicon-s-arrow-down class="w-3 h-3" /> @money($stats['expense'] ?? 0)
-                            </span>
+            @else
+                <div class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-muted-foreground">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Cashier Status</span>
+                        <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50">
+                            <x-heroicon-o-user class="w-5 h-5" />
                         </div>
                     </div>
-                </div>
-            </div>
-        @else
-            <!-- Staff Operations Overview (Confidential Business Profitability Hidden) -->
-            <div class="grid gap-4 md:grid-cols-2">
-                <div class="rounded-xl border bg-card text-card-foreground p-4 shadow-sm flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Store Operations</span>
-                        <div class="text-2xl font-bold text-foreground mt-1">{{ number_format($stats['sales_count'] ?? 0) }} Sales</div>
-                        <p class="text-xs text-muted-foreground mt-1">Total recorded transactions in this period</p>
-                    </div>
-                    <div class="p-3 bg-indigo-50 text-indigo-700 rounded-lg">
-                        <x-heroicon-o-shopping-bag class="w-6 h-6" />
-                    </div>
-                </div>
-
-                <div class="rounded-xl border bg-card text-card-foreground p-4 shadow-sm flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Cashier Terminal</span>
-                        <div class="text-base font-bold text-foreground mt-1">POS Ready for Orders</div>
-                        <a href="{{ route('sales.create') }}" class="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-800 mt-2 gap-1">
-                            Open POS Register &rarr;
-                        </a>
-                    </div>
-                    <div class="p-3 bg-emerald-50 text-emerald-700 rounded-lg">
-                        <x-heroicon-o-computer-desktop class="w-6 h-6" />
-                    </div>
-                </div>
-            </div>
-        @endcan
-
-        <!-- Charts Section -->
-        <div class="grid gap-4 @can('admin') md:grid-cols-2 lg:grid-cols-3 @else grid-cols-1 @endcan">
-            <!-- Sales Trend -->
-            <div class="@can('admin') col-span-1 lg:col-span-2 @else col-span-1 @endcan rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-                <div class="p-4 flex flex-col space-y-1.5 pb-2">
-                    <h3 class="font-semibold leading-none tracking-tight">Sales Trend</h3>
-                    <p class="text-xs text-muted-foreground">Daily sales performance.</p>
-                </div>
-                <div class="p-4 pt-0" wire:ignore>
-                    <div id="salesChart" class="w-full h-[250px]"></div>
-                </div>
-            </div>
-
-            @can('admin')
-                <!-- Cash Flow (Admin Only) -->
-                <div class="col-span-1 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-                    <div class="p-4 flex flex-col space-y-1.5 pb-2">
-                        <h3 class="font-semibold leading-none tracking-tight">Income vs Expense</h3>
-                        <p class="text-xs text-muted-foreground">Financial overview.</p>
-                    </div>
-                    <div class="p-4 pt-0" wire:ignore>
-                        <div id="cashFlowChart" class="w-full h-[250px]"></div>
+                    <div class="mt-2">
+                        <div class="text-xl sm:text-2xl font-black text-foreground">
+                            {{ $stats['sales_count'] ?? 0 }} Sales
+                        </div>
+                        <p class="text-xs text-muted-foreground mt-0.5">Shift active</p>
                     </div>
                 </div>
             @endcan
+
+            <!-- 3. Low Stock Warning -->
+            <a href="{{ route('low-stock.index') }}" class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between transition-colors hover:border-rose-400">
+                <div class="flex items-center justify-between text-muted-foreground">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Low Stock Alert</span>
+                    <div class="p-2 rounded-lg {{ count($lowStockProducts) > 0 ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50' }}">
+                        <x-heroicon-o-exclamation-triangle class="w-5 h-5" />
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="text-xl sm:text-2xl font-black {{ count($lowStockProducts) > 0 ? 'text-rose-600' : 'text-foreground' }}">
+                        {{ count($lowStockProducts) }} {{ count($lowStockProducts) === 1 ? 'item' : 'items' }}
+                    </div>
+                    <p class="text-xs text-muted-foreground mt-0.5">
+                        {{ count($lowStockProducts) > 0 ? 'Needs reorder →' : 'All products well stocked' }}
+                    </p>
+                </div>
+            </a>
+
+            <!-- 4. Products in Catalog -->
+            <a href="{{ route('products.index') }}" class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between transition-colors hover:border-indigo-400">
+                <div class="flex items-center justify-between text-muted-foreground">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Products On Shelf</span>
+                    <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50">
+                        <x-heroicon-o-cube class="w-5 h-5" />
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="text-xl sm:text-2xl font-black text-foreground">
+                        {{ number_format($inventoryCounts['total_products'] ?? 0) }} Items
+                    </div>
+                    <p class="text-xs text-muted-foreground mt-0.5">
+                        {{ number_format($inventoryCounts['total_units'] ?? 0) }} physical units →
+                    </p>
+                </div>
+            </a>
         </div>
 
-    <!-- Data Tables Section -->
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <!-- Recent Sales -->
-        <div class="col-span-1 lg:col-span-2 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-            <div class="p-4 flex flex-col space-y-1.5 border-b">
-                <h3 class="font-semibold leading-none tracking-tight">Recent Sales</h3>
-                <p class="text-xs text-muted-foreground">Latest transactions overview.</p>
-            </div>
-            <div class="p-0">
-                <div class="relative w-full overflow-auto max-h-[300px]">
-                    <table class="w-full caption-bottom text-sm">
-                        <thead class="[&_tr]:border-b sticky top-0 bg-card z-10">
-                            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Invoice</th>
-                                <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Amount</th>
+        <!-- Daily Action Grid: Recent Sales & Low Stock Watch -->
+        <div class="grid gap-5 lg:grid-cols-3">
+            <!-- Recent Sales (2 Columns Wide) -->
+            <div class="lg:col-span-2 rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden flex flex-col">
+                <div class="p-4 border-b flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm text-foreground">Recent Sales Register</h3>
+                        <p class="text-xs text-muted-foreground">Latest customer checkout transactions</p>
+                    </div>
+                    <a href="{{ route('sales.index') }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+                        View All Sales &rarr;
+                    </a>
+                </div>
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-muted-foreground uppercase bg-muted/40 border-b">
+                            <tr>
+                                <th class="px-4 py-2.5">Invoice</th>
+                                <th class="px-4 py-2.5">Customer</th>
+                                <th class="px-4 py-2.5">Method</th>
+                                <th class="px-4 py-2.5 text-right">Amount</th>
+                                <th class="px-4 py-2.5 text-center">Receipt</th>
                             </tr>
                         </thead>
-                        <tbody class="[&_tr:last-child]:border-0 bg-transparent">
+                        <tbody class="divide-y divide-border">
                             @forelse($recentSales as $sale)
-                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                    <td class="px-4 py-2 align-middle font-medium">
+                                <tr class="hover:bg-muted/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono font-medium text-xs text-foreground">
                                         {{ $sale['invoice_number'] }}
-                                        <div class="text-[11px] text-muted-foreground font-normal">{{ $sale['customer']['name'] ?? 'Guest' }}</div>
                                     </td>
-                                    <td class="px-4 py-2 align-middle text-right font-medium text-emerald-600">@money($sale['total'])</td>
+                                    <td class="px-4 py-3 text-xs">
+                                        <div class="font-medium text-foreground">{{ $sale['customer']['name'] ?? 'Walk-in Customer' }}</div>
+                                        <div class="text-[10px] text-muted-foreground">{{ \Carbon\Carbon::parse($sale['created_at'])->diffForHumans() }}</div>
+                                    </td>
+                                    <td class="px-4 py-3 text-xs">
+                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                            {{ $sale['payment_method']->value ?? 'cash' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-bold text-emerald-600 text-sm">
+                                        @money($sale['total'])
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <a href="{{ route('sales.receipt', $sale['id']) }}" target="_blank" class="inline-flex items-center justify-center p-1.5 rounded-md hover:bg-accent text-indigo-600 hover:text-indigo-800 transition-colors" title="Print Receipt">
+                                            <x-heroicon-o-printer class="w-4 h-4" />
+                                        </a>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2" class="p-4 text-center text-muted-foreground">No recent sales.</td>
+                                    <td colspan="5" class="p-6 text-center text-xs text-muted-foreground">
+                                        No sales recorded in this period yet.
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
-        <!-- Expense Breakdown -->
-        <div class="col-span-1 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-            <div class="p-4 flex flex-col space-y-1.5 pb-2">
-                <h3 class="font-semibold leading-none tracking-tight">Expense Breakdown</h3>
-                <p class="text-xs text-muted-foreground">Category distribution.</p>
-            </div>
-            <div class="p-4 pt-0" wire:ignore>
-                <div id="expenseChart" class="w-full h-[250px] flex items-center justify-center"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        <!-- Top Selling Products -->
-        <div class="col-span-1 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-            <div class="p-4 flex flex-col space-y-1.5 border-b">
-                <h3 class="font-semibold leading-none tracking-tight">Top Products</h3>
-                <p class="text-xs text-muted-foreground">Best selling items.</p>
-            </div>
-             <div class="p-4 pt-4 max-h-[300px] overflow-auto">
-                <div class="space-y-4">
-                    @forelse($topProducts as $product)
-                        <div class="flex items-center justify-between">
-                            <div class="space-y-1 flex-1">
-                                <p class="text-sm font-medium leading-none truncate pr-2" title="{{ $product['product_name'] }}">{{ $product['product_name'] }}</p>
-                                <p class="text-[11px] text-muted-foreground">{{ $product['sku'] }}</p>
-                            </div>
-                            <div class="font-semibold text-sm bg-muted px-2 py-1 rounded-md">
-                                {{ $product['total_sold'] }} <span class="text-xs font-normal text-muted-foreground">sold</span>
-                            </div>
+            <!-- Quick Restock Watch & Top Sellers (1 Column Wide) -->
+            <div class="space-y-4">
+                <!-- Low Stock Needs Attention -->
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-4">
+                    <div class="flex items-center justify-between pb-3 border-b mb-3">
+                        <div class="flex items-center gap-2">
+                            <x-heroicon-o-exclamation-triangle class="w-4 h-4 text-rose-500" />
+                            <h3 class="font-bold text-sm text-foreground">Low Stock Watch</h3>
                         </div>
-                    @empty
-                         <p class="text-xs text-muted-foreground text-center py-2">No product data.</p>
-                    @endforelse
+                        <a href="{{ route('low-stock.index') }}" class="text-xs font-semibold text-rose-600 hover:text-rose-800">
+                            See all
+                        </a>
+                    </div>
+                    <div class="space-y-2.5">
+                        @forelse(array_slice($lowStockProducts, 0, 4) as $item)
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="truncate pr-2">
+                                    <div class="font-medium text-foreground truncate">{{ $item['name'] }}</div>
+                                    <div class="text-[10px] text-muted-foreground font-mono">{{ $item['sku'] }}</div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 whitespace-nowrap">
+                                    {{ $item['quantity'] }} left
+                                </span>
+                            </div>
+                        @empty
+                            <p class="text-xs text-muted-foreground text-center py-2">All items have healthy stock levels.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Top Selling Items -->
+                <div class="rounded-xl border bg-card text-card-foreground shadow-sm p-4">
+                    <div class="flex items-center justify-between pb-3 border-b mb-3">
+                        <div class="flex items-center gap-2">
+                            <x-heroicon-o-fire class="w-4 h-4 text-amber-500" />
+                            <h3 class="font-bold text-sm text-foreground">Top Sellers</h3>
+                        </div>
+                    </div>
+                    <div class="space-y-2.5">
+                        @forelse(array_slice($topProducts, 0, 4) as $prod)
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="truncate pr-2">
+                                    <div class="font-medium text-foreground truncate">{{ $prod['product_name'] }}</div>
+                                    <div class="text-[10px] text-muted-foreground font-mono">{{ $prod['sku'] }}</div>
+                                </div>
+                                <span class="font-semibold text-xs text-foreground bg-muted px-2 py-0.5 rounded">
+                                    {{ $prod['total_sold'] }} sold
+                                </span>
+                            </div>
+                        @empty
+                            <p class="text-xs text-muted-foreground text-center py-2">No sales data for this period.</p>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Top Customers -->
-        <div class="col-span-1 rounded-xl border bg-card text-card-foreground shadow-sm break-inside-avoid">
-            <div class="p-4 flex flex-col space-y-1.5 border-b">
-                <h3 class="font-semibold leading-none tracking-tight">Top Customers</h3>
-                <p class="text-xs text-muted-foreground">By highest revenue.</p>
-            </div>
-             <div class="p-4 pt-4 max-h-[300px] overflow-auto">
-                <div class="space-y-4">
-                    @forelse($topCustomers as $customer)
-                        <div class="flex items-center justify-between">
-                            <div class="space-y-1 flex-1">
-                                <p class="text-sm font-medium leading-none truncate pr-2" title="{{ $customer['customer_name'] }}">{{ $customer['customer_name'] }}</p>
-                                <p class="text-[11px] text-muted-foreground">{{ $customer['phone'] }}</p>
-                            </div>
-                            <div class="font-semibold text-sm text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md whitespace-nowrap">
-                                @money($customer['total_spent'])
-                            </div>
+        @can('admin')
+            <!-- Collapsible Analytics & Trends (Keeps page lightweight, opens when needed) -->
+            <details class="group bg-card rounded-xl border border-border shadow-sm p-4 print:block">
+                <summary class="cursor-pointer text-sm font-semibold text-foreground flex items-center justify-between select-none">
+                    <div class="flex items-center gap-2">
+                        <x-heroicon-o-chart-bar class="w-4 h-4 text-indigo-500" />
+                        <span>📊 Detailed Sales & Expense Charts (Click to expand)</span>
+                    </div>
+                    <span class="text-xs text-muted-foreground group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+
+                <div class="pt-4 mt-3 border-t grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Sales Trend -->
+                    <div class="col-span-1 lg:col-span-2 rounded-xl border bg-background p-4 shadow-sm">
+                        <div class="flex flex-col space-y-1 pb-2">
+                            <h4 class="font-semibold text-xs leading-none tracking-tight">Daily Sales Trend</h4>
+                            <p class="text-[11px] text-muted-foreground">Revenue timeline.</p>
                         </div>
-                    @empty
-                         <p class="text-xs text-muted-foreground text-center py-2">No customer data.</p>
-                    @endforelse
+                        <div class="pt-0" wire:ignore>
+                            <div id="salesChart" class="w-full h-[220px]"></div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Flow -->
+                    <div class="col-span-1 rounded-xl border bg-background p-4 shadow-sm">
+                        <div class="flex flex-col space-y-1 pb-2">
+                            <h4 class="font-semibold text-xs leading-none tracking-tight">Income vs Expense</h4>
+                            <p class="text-[11px] text-muted-foreground">Net cash balance.</p>
+                        </div>
+                        <div class="pt-0" wire:ignore>
+                            <div id="cashFlowChart" class="w-full h-[220px]"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </details>
+        @endcan
     </div>
 </div>
 
 <style>
+    @media print {
+        @page { size: landscape; margin: 1cm; }
+        body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .print\:hidden { display: none !important; }
+        .bg-card { border: 1px solid #e2e8f0; box-shadow: none !important; }
+        .grid { gap: 1rem !important; }
+        .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+    }
+</style>
     @media print {
         @page { size: landscape; margin: 1cm; }
         body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }

@@ -13,84 +13,74 @@
 
                 <!-- Navigation Menu -->
                 <div class="flex items-center">
-                    <div class="flex flex-row gap-1">
-                        <!-- Dashboard Link -->
-                        <a href="{{ route('dashboard') }}" class="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 {{ request()->routeIs('dashboard') ? 'bg-accent/50 text-accent-foreground' : 'bg-background' }}">
-                            <x-heroicon-o-squares-2x2 class="mr-2 h-4 w-4" />
-                            Dashboard
+                    <div class="flex flex-row items-center gap-1.5">
+                        <!-- Primary Action: POS Register [F1] -->
+                        <a href="{{ route('sales.create') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all shadow-sm {{ request()->routeIs('sales.create') ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/80 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800' }}">
+                            <x-heroicon-o-computer-desktop class="mr-1.5 h-4 w-4 {{ request()->routeIs('sales.create') ? 'text-white' : 'text-indigo-500' }}" />
+                            <span>POS Register</span>
+                            <span class="ml-1.5 text-[10px] font-mono px-1 py-0.5 rounded {{ request()->routeIs('sales.create') ? 'bg-white/20 text-white' : 'bg-indigo-200/60 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200' }}">F1</span>
                         </a>
 
-                        <!-- Sales Dropdown -->
-                        <x-nav-dropdown active="{{ request()->routeIs(['sales.*', 'customers.*']) }}">
+                        @can('admin')
+                            <!-- Dashboard -->
+                            <a href="{{ route('dashboard') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground {{ request()->routeIs('dashboard') ? 'bg-accent/70 font-semibold text-accent-foreground' : 'text-foreground' }}">
+                                <x-heroicon-o-squares-2x2 class="mr-1.5 h-4 w-4 text-muted-foreground" />
+                                <span>Dashboard</span>
+                            </a>
+                        @endcan
+
+                        <!-- Products & Stock Hub -->
+                        <x-nav-dropdown active="{{ request()->routeIs(['products.*', 'low-stock.*', 'categories.*', 'units.*', 'stock.*']) }}">
                             <x-slot name="icon">
-                                <x-heroicon-o-banknotes class="mr-2 h-4 w-4" />
+                                <x-heroicon-o-cube class="mr-1.5 h-4 w-4 text-muted-foreground" />
                             </x-slot>
                             <x-slot name="trigger">
-                                Sales
+                                Products & Stock
                             </x-slot>
                             <x-slot name="content">
-                                <x-dropdown-link :href="route('sales.create')" :active="request()->routeIs('sales.create')">
-                                    POS
+                                <x-dropdown-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                                    All Products
                                 </x-dropdown-link>
-                                <x-dropdown-link :href="route('sales.index')" :active="request()->routeIs(['sales.index', 'sales.show'])">
-                                    Sales
+                                <x-dropdown-link :href="route('low-stock.index')" :active="request()->routeIs('low-stock.*')">
+                                    Low Stock Alerts
                                 </x-dropdown-link>
                                 @can('admin')
-                                    <x-dropdown-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
-                                        Customers
+                                    <div class="border-t border-border/50 my-1"></div>
+                                    <div class="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Inventory Tools</div>
+                                    <x-dropdown-link :href="route('stock.adjustments')" :active="request()->routeIs('stock.adjustments')">
+                                        Stock Adjustments (Damage/Loss)
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('stock.movements')" :active="request()->routeIs('stock.movements')">
+                                        Movement Audit Log
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
+                                        Product Categories
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('units.index')" :active="request()->routeIs('units.*')">
+                                        Units of Measure
                                     </x-dropdown-link>
                                 @endcan
                             </x-slot>
                         </x-nav-dropdown>
 
+                        <!-- Sales History -->
+                        <a href="{{ route('sales.index') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground {{ request()->routeIs(['sales.index', 'sales.show']) ? 'bg-accent/70 font-semibold text-accent-foreground' : 'text-foreground' }}">
+                            <x-heroicon-o-receipt-percent class="mr-1.5 h-4 w-4 text-muted-foreground" />
+                            <span>Sales History</span>
+                        </a>
+
                         @can('admin')
-                            <!-- Purchases Dropdown -->
-                            <x-nav-dropdown active="{{ request()->routeIs(['purchases.*', 'suppliers.*']) }}">
+                            <!-- Reports & Money -->
+                            <x-nav-dropdown active="{{ request()->routeIs(['reports.*', 'finance.*']) }}">
                                 <x-slot name="icon">
-                                    <x-heroicon-o-shopping-cart class="mr-2 h-4 w-4" />
+                                    <x-heroicon-o-chart-bar class="mr-1.5 h-4 w-4 text-muted-foreground" />
                                 </x-slot>
                                 <x-slot name="trigger">
-                                    Purchases
+                                    Reports & Money
                                 </x-slot>
                                 <x-slot name="content">
-                                    <x-dropdown-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')">
-                                        Purchases
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
-                                        Suppliers
-                                    </x-dropdown-link>
-                                </x-slot>
-                            </x-nav-dropdown>
-
-                            <!-- Finance Dropdown -->
-                            <x-nav-dropdown active="{{ request()->routeIs(['finance.*']) }}">
-                                <x-slot name="icon">
-                                    <x-heroicon-o-currency-dollar class="mr-2 h-4 w-4" />
-                                </x-slot>
-                                <x-slot name="trigger">
-                                    Finance
-                                </x-slot>
-                                <x-slot name="content">
-                                    <x-dropdown-link :href="route('finance.transactions.index')" :active="request()->routeIs('finance.transactions.index')">
-                                        Transactions
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('finance.categories.index')" :active="request()->routeIs('finance.categories.index')">
-                                        Categories
-                                    </x-dropdown-link>
-                                </x-slot>
-                            </x-nav-dropdown>
-
-                            <!-- Reports Dropdown -->
-                            <x-nav-dropdown active="{{ request()->routeIs(['reports.*']) }}">
-                                <x-slot name="icon">
-                                    <x-heroicon-o-chart-bar class="mr-2 h-4 w-4" />
-                                </x-slot>
-                                <x-slot name="trigger">
-                                    Reports
-                                </x-slot>
-                                <x-slot name="content">
-                                    <x-dropdown-link :href="route('reports.index')" :active="request()->routeIs('reports.index')">
-                                        Reports Hub
+                                    <x-dropdown-link :href="route('reports.sales')" :active="request()->routeIs('reports.sales')">
+                                        Daily Sales & Cashiers
                                     </x-dropdown-link>
                                     <x-dropdown-link :href="route('reports.profit-loss')" :active="request()->routeIs('reports.profit-loss')">
                                         Profit & Loss (P&L)
@@ -101,50 +91,41 @@
                                     <x-dropdown-link :href="route('reports.slow-moving')" :active="request()->routeIs('reports.slow-moving')">
                                         Slow-Moving Stock
                                     </x-dropdown-link>
-                                    <x-dropdown-link :href="route('reports.sales')" :active="request()->routeIs('reports.sales')">
-                                        Sales & Cashiers
+                                    <div class="border-t border-border/50 my-1"></div>
+                                    <div class="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Expenses</div>
+                                    <x-dropdown-link :href="route('finance.transactions.index')" :active="request()->routeIs('finance.transactions.index')">
+                                        Record Expense
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('finance.categories.index')" :active="request()->routeIs('finance.categories.index')">
+                                        Expense Categories
                                     </x-dropdown-link>
                                 </x-slot>
                             </x-nav-dropdown>
 
-                            <!-- Users Link -->
-                            <a href="{{ route('users.index') }}" class="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 {{ request()->routeIs('users.*') ? 'bg-accent/50 text-accent-foreground' : 'bg-background' }}">
-                                <x-heroicon-o-users class="mr-2 h-4 w-4" />
-                                Users
-                            </a>
+                            <!-- More (Purchases, Suppliers, Customers, Staff) -->
+                            <x-nav-dropdown active="{{ request()->routeIs(['purchases.*', 'suppliers.*', 'customers.*', 'users.*']) }}">
+                                <x-slot name="icon">
+                                    <x-heroicon-o-ellipsis-horizontal class="mr-1.5 h-4 w-4 text-muted-foreground" />
+                                </x-slot>
+                                <x-slot name="trigger">
+                                    More
+                                </x-slot>
+                                <x-slot name="content">
+                                    <x-dropdown-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')">
+                                        Purchases from Suppliers
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
+                                        Suppliers Directory
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
+                                        Customers Directory
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                                        Staff & User Accounts
+                                    </x-dropdown-link>
+                                </x-slot>
+                            </x-nav-dropdown>
                         @endcan
-
-                        <!-- Products Dropdown -->
-                        <x-nav-dropdown active="{{ request()->routeIs(['products.*', 'categories.*', 'units.*', 'low-stock.*', 'stock.*']) }}">
-                            <x-slot name="icon">
-                                <x-heroicon-o-cube class="mr-2 h-4 w-4" />
-                            </x-slot>
-                            <x-slot name="trigger">
-                                Inventory
-                            </x-slot>
-                            <x-slot name="content">
-                                <x-dropdown-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                                    Products
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="route('low-stock.index')" :active="request()->routeIs('low-stock.*')">
-                                    Low Stock Alerts
-                                </x-dropdown-link>
-                                @can('admin')
-                                    <x-dropdown-link :href="route('stock.adjustments')" :active="request()->routeIs('stock.adjustments')">
-                                        Stock Adjustments
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('stock.movements')" :active="request()->routeIs('stock.movements')">
-                                        Movement Audit Log
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
-                                        Categories
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('units.index')" :active="request()->routeIs('units.*')">
-                                        Units
-                                    </x-dropdown-link>
-                                @endcan
-                            </x-slot>
-                        </x-nav-dropdown>
                     </div>
                 </div>
             </div>

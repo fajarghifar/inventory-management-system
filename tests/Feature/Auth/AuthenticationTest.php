@@ -30,6 +30,21 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_staff_users_are_redirected_to_pos_upon_login(): void
+    {
+        $staff = User::factory()->create([
+            'role' => \App\Enums\UserRole::STAFF,
+        ]);
+
+        $response = $this->post('/login', [
+            'username' => $staff->username,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('sales.create', absolute: false));
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();

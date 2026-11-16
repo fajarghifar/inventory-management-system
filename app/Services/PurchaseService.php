@@ -48,7 +48,7 @@ class PurchaseService
     {
         return DB::transaction(function () use ($purchase, $data) {
             try {
-                if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::ORDERED])) {
+                if (!$purchase->status->isEditable()) {
                     throw PurchaseException::invalidStatus('update', $purchase->status->label(), ['id' => $purchase->id]);
                 }
 
@@ -79,7 +79,7 @@ class PurchaseService
     {
         DB::transaction(function () use ($purchase) {
             try {
-                if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::CANCELLED])) {
+                if (!$purchase->status->isDeletable()) {
                     throw PurchaseException::deletionFailed(
                         "Cannot delete purchase with status [{$purchase->status->label()}]. Only Draft or Cancelled purchases can be deleted.",
                         ['id' => $purchase->id, 'status' => $purchase->status->value]
@@ -102,7 +102,7 @@ class PurchaseService
     public function markAsOrdered(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if ($purchase->status !== PurchaseStatus::DRAFT) {
+            if (!$purchase->status->canBeOrdered()) {
                 throw PurchaseException::invalidStatus('order', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -117,60 +117,18 @@ class PurchaseService
     public function markAsReceived(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if (!in_array($purchase->status, [PurchaseStatus::ORDERED, PurchaseStatus::DRAFT])) {
+            if (!$purchase->status->canBeReceived()) {
                 throw PurchaseException::invalidStatus('receive', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
-            if (empty($purchase->invoice_number)) {
-                throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
-            }
+            $this->ensureHasRequiredReferences($purchase);
 
-            // Enforce Proof Image
-            if (empty($purchase->proof_image)) {
-                throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
-            }
-
-            // Update Stock
             foreach ($purchase->items as $item) {
                 // Lock the product row for update to prevent race conditions
                 $product = Product::where('id', $item->product_id)->lockForUpdate()->first();
 
                 if ($product) {
-                    $product->increment('quantity', $item->quantity);
-
-                    // Update latest purchase price and selling price
-                    $updateData = ['purchase_price' => $item->unit_price];
-                    $priceChangeLog = "";
-                    $hasPriceChange = false;
-
-                    // Check for Purchase Price Change
-                    if ((float) $product->purchase_price !== (float) $item->unit_price) {
-                        $hasPriceChange = true;
-                        $oldBuy = format_money($product->purchase_price ?? 0);
-                        $newBuy = format_money($item->unit_price);
-                        $priceChangeLog .= "\n- Buying Price: {$oldBuy} -> {$newBuy}";
-                    }
-
-                    // Check for Selling Price Change
-                    if ($item->selling_price) {
-                        $updateData['selling_price'] = $item->selling_price;
-                        if ((float) $product->selling_price !== (float) $item->selling_price) {
-                            $hasPriceChange = true;
-                            $oldSell = format_money($product->selling_price ?? 0);
-                            $newSell = format_money($item->selling_price);
-                            $priceChangeLog .= "\n- Selling Price: {$oldSell} -> {$newSell}";
-                        }
-                    }
-
-                    // Append to Notes if prices changed
-                    if ($hasPriceChange) {
-                        $timestamp = now()->format('Y-m-d H:i');
-                        $ref = $purchase->invoice_number ? "Invoice #{$purchase->invoice_number}" : "Purchase #{$purchase->id}";
-                        $logHeader = "\n\n[System Log - {$timestamp}] Price update via {$ref}:";
-                        $updateData['notes'] = TRIM(($product->notes ?? '') . $logHeader . $priceChangeLog);
-                    }
-
-                    $product->update($updateData);
+                    $this->receiveItemIntoStock($product, $item, $purchase);
                 }
             }
 
@@ -178,21 +136,66 @@ class PurchaseService
         });
     }
 
+    private function receiveItemIntoStock(Product $product, PurchaseItem $item, Purchase $purchase): void
+    {
+        $product->increment('quantity', $item->quantity);
+
+        $updateData = ['purchase_price' => $item->unit_price];
+
+        if ($item->selling_price) {
+            $updateData['selling_price'] = $item->selling_price;
+        }
+
+        // Dihitung SEBELUM $product->update() agar harga lama yang tercatat
+        $priceChangeLog = $this->buildPriceChangeLog($product, $item);
+
+        if ($priceChangeLog !== '') {
+            $updateData['notes'] = $this->appendPriceLogToNotes($product->notes, $purchase, $priceChangeLog);
+        }
+
+        $product->update($updateData);
+    }
+
+    private function buildPriceChangeLog(Product $product, PurchaseItem $item): string
+    {
+        $log = '';
+
+        if ((float) $product->purchase_price !== (float) $item->unit_price) {
+            $log .= $this->formatPriceChange('Buying Price', $product->purchase_price, $item->unit_price);
+        }
+
+        if ($item->selling_price && (float) $product->selling_price !== (float) $item->selling_price) {
+            $log .= $this->formatPriceChange('Selling Price', $product->selling_price, $item->selling_price);
+        }
+
+        return $log;
+    }
+
+    private function formatPriceChange(string $label, $oldPrice, $newPrice): string
+    {
+        return "\n- {$label}: " . format_money($oldPrice ?? 0) . ' -> ' . format_money($newPrice);
+    }
+
+    /**
+     * invoice_number dijamin terisi oleh ensureHasRequiredReferences(),
+     * sehingga cabang lama "Purchase #id" adalah dead code dan dihapus.
+     */
+    private function appendPriceLogToNotes(?string $notes, Purchase $purchase, string $priceChangeLog): string
+    {
+        $timestamp = now()->format('Y-m-d H:i');
+        $header = "\n\n[System Log - {$timestamp}] Price update via Invoice #{$purchase->invoice_number}:";
+
+        return trim(($notes ?? '') . $header . $priceChangeLog);
+    }
+
     public function markAsPaid(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if (!in_array($purchase->status, [PurchaseStatus::ORDERED, PurchaseStatus::RECEIVED])) {
+            if (!$purchase->status->canBePaid()) {
                 throw PurchaseException::invalidStatus('pay', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
-            // Strict Validation for Payment
-            if (empty($purchase->invoice_number)) {
-                throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
-            }
-
-            if (empty($purchase->proof_image)) {
-                throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
-            }
+            $this->ensureHasRequiredReferences($purchase);
 
             $purchase->update(['status' => PurchaseStatus::PAID]);
 
@@ -203,7 +206,7 @@ class PurchaseService
     public function cancelPurchase(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if ($purchase->status === PurchaseStatus::RECEIVED || $purchase->status === PurchaseStatus::PAID) {
+            if (!$purchase->status->canBeCancelled()) {
                 throw PurchaseException::invalidStatus('cancel', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -216,7 +219,7 @@ class PurchaseService
     public function restoreToDraft(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            if ($purchase->status !== PurchaseStatus::CANCELLED) {
+            if (!$purchase->status->canBeRestored()) {
                 throw PurchaseException::invalidStatus('restore', $purchase->status->label(), ['id' => $purchase->id]);
             }
 
@@ -244,5 +247,19 @@ class PurchaseService
         }
 
         $purchase->update(['total' => $total]);
+    }
+
+    /**
+     * Pembelian yang diterima atau dibayar wajib memiliki nomor invoice dan bukti gambar.
+     */
+    private function ensureHasRequiredReferences(Purchase $purchase): void
+    {
+        if (empty($purchase->invoice_number)) {
+            throw PurchaseException::missingReference('Invoice Number', ['id' => $purchase->id]);
+        }
+
+        if (empty($purchase->proof_image)) {
+            throw PurchaseException::missingReference('Proof Image', ['id' => $purchase->id]);
+        }
     }
 }

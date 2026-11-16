@@ -8,7 +8,7 @@
                 <x-secondary-button href="{{ route('purchases.index') }}">
                     &larr; {{ __('Back to List') }}
                 </x-secondary-button>
-                @if(in_array($purchase->status, [\App\Enums\PurchaseStatus::DRAFT, \App\Enums\PurchaseStatus::ORDERED]))
+                @if($purchase->status->isEditable())
                     <x-secondary-button href="{{ route('purchases.edit', $purchase) }}">
                         {{ __('Edit') }}
                     </x-secondary-button>

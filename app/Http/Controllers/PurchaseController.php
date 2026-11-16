@@ -9,6 +9,7 @@ use App\Enums\PurchaseStatus;
 use App\Services\PurchaseService;
 use Illuminate\Support\Facades\Auth;
 use App\Exceptions\PurchaseException;
+use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StorePurchaseRequest;
 use App\Http\Requests\UpdatePurchaseRequest;
 
@@ -36,14 +37,9 @@ class PurchaseController extends Controller
 
     public function store(StorePurchaseRequest $request)
     {
-        try {
-            $proofPath = null;
-            if ($request->hasFile('proof_image')) {
-                $proofPath = $request->file('proof_image')->store('proofs', 'public');
-            }
-
+        return $this->runAction(function () use ($request) {
             $data = $request->validated();
-            $data['proof_image'] = $proofPath;
+            $data['proof_image'] = $this->storeProofImage($request);
             $data['status'] = PurchaseStatus::DRAFT->value; // Force Draft on Create
 
             $purchaseData = PurchaseData::fromArray($data);
@@ -52,12 +48,7 @@ class PurchaseController extends Controller
 
             return redirect()->route('purchases.show', $purchase)
                 ->with('success', 'Purchase created successfully.');
-
-        } catch (PurchaseException $e) {
-            return back()->withInput()->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error creating purchase: ' . $e->getMessage());
-        }
+        }, 'Error creating purchase: ', withInput: true);
     }
 
     public function show(Purchase $purchase)
@@ -68,7 +59,7 @@ class PurchaseController extends Controller
 
     public function edit(Purchase $purchase)
     {
-        if (!in_array($purchase->status, [PurchaseStatus::DRAFT, PurchaseStatus::ORDERED])) {
+        if (!$purchase->status->isEditable()) {
             abort(403, 'Only draft or ordered purchases can be edited.');
         }
 
@@ -83,14 +74,9 @@ class PurchaseController extends Controller
 
     public function update(UpdatePurchaseRequest $request, Purchase $purchase)
     {
-        try {
-            $proofPath = $purchase->proof_image;
-            if ($request->hasFile('proof_image')) {
-                $proofPath = $request->file('proof_image')->store('proofs', 'public');
-            }
-
+        return $this->runAction(function () use ($request, $purchase) {
             $data = $request->validated();
-            $data['proof_image'] = $proofPath;
+            $data['proof_image'] = $this->storeProofImage($request, $purchase->proof_image);
             $data['status'] = $purchase->status->value; // Preserve existing status
 
             $purchaseData = PurchaseData::fromArray($data);
@@ -99,36 +85,23 @@ class PurchaseController extends Controller
 
             return redirect()->route('purchases.show', $purchase)
                 ->with('success', 'Purchase updated successfully.');
-
-        } catch (PurchaseException $e) {
-            return back()->withInput()->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Error updating purchase: ' . $e->getMessage());
-        }
+        }, 'Error updating purchase: ', withInput: true);
     }
 
     public function destroy(Purchase $purchase)
     {
-        try {
+        return $this->runAction(function () use ($purchase) {
             $this->service->deletePurchase($purchase);
             return redirect()->route('purchases.index')->with('success', 'Purchase deleted successfully.');
-        } catch (PurchaseException $e) {
-            return back()->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error deleting purchase: ' . $e->getMessage());
-        }
+        }, 'Error deleting purchase: ');
     }
 
     public function markOrdered(Purchase $purchase)
     {
-        try {
+        return $this->runAction(function () use ($purchase) {
             $this->service->markAsOrdered($purchase);
             return back()->with('success', 'Purchase marked as ordered.');
-        } catch (PurchaseException $e) {
-            return back()->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error marking as ordered: ' . $e->getMessage());
-        }
+        }, 'Error marking as ordered: ');
     }
 
     public function markReceived(Request $request, Purchase $purchase)
@@ -144,19 +117,19 @@ class PurchaseController extends Controller
             $rules['proof_image'] = 'required|image|max:2048'; // 2MB Max
         }
 
+        // Tetap DI LUAR runAction agar ValidationException tidak tertangkap catch(\Exception)
         $request->validate($rules);
 
-        $request->validate($rules);
-
-        try {
+        return $this->runAction(function () use ($request, $purchase) {
             $updateData = [];
 
             if ($request->filled('invoice_number')) {
                 $updateData['invoice_number'] = $request->invoice_number;
             }
 
-            if ($request->hasFile('proof_image')) {
-                $updateData['proof_image'] = $request->file('proof_image')->store('proofs', 'public');
+            $proofPath = $this->storeProofImage($request);
+            if ($proofPath !== null) {
+                $updateData['proof_image'] = $proofPath;
             }
 
             if (!empty($updateData)) {
@@ -166,47 +139,65 @@ class PurchaseController extends Controller
             $this->service->markAsReceived($purchase);
 
             return back()->with('success', 'Purchase received and stock updated.');
-
-        } catch (PurchaseException $e) {
-            return back()->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error receiving purchase: ' . $e->getMessage());
-        }
+        }, 'Error receiving purchase: ');
     }
 
     public function cancel(Purchase $purchase)
     {
-        try {
+        return $this->runAction(function () use ($purchase) {
             $this->service->cancelPurchase($purchase);
             return back()->with('success', 'Purchase order cancelled.');
-        } catch (PurchaseException $e) {
-            return back()->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error cancelling purchase: ' . $e->getMessage());
-        }
+        }, 'Error cancelling purchase: ');
     }
 
     public function markPaid(Purchase $purchase)
     {
-        try {
+        return $this->runAction(function () use ($purchase) {
             $this->service->markAsPaid($purchase);
             return back()->with('success', 'Purchase marked as paid.');
-        } catch (PurchaseException $e) {
-            return back()->with('error', $e->getMessage());
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error marking as paid: ' . $e->getMessage());
-        }
+        }, 'Error marking as paid: ');
     }
 
     public function restoreToDraft(Purchase $purchase)
     {
-        try {
+        return $this->runAction(function () use ($purchase) {
             $this->service->restoreToDraft($purchase);
             return back()->with('success', 'Purchase restored to draft.');
+        }, 'Error restoring purchase: ');
+    }
+
+    /**
+     * Jalankan aksi; ubah exception menjadi redirect kembali dengan pesan error.
+     * PurchaseException -> pesannya ditampilkan apa adanya.
+     * Exception lain    -> diberi awalan $errorPrefix.
+     */
+    private function runAction(callable $action, string $errorPrefix, bool $withInput = false): RedirectResponse
+    {
+        try {
+            return $action();
         } catch (PurchaseException $e) {
-            return back()->with('error', $e->getMessage());
+            return $this->backWithError($e->getMessage(), $withInput);
         } catch (\Exception $e) {
-            return back()->with('error', 'Error restoring purchase: ' . $e->getMessage());
+            return $this->backWithError($errorPrefix . $e->getMessage(), $withInput);
         }
+    }
+
+    private function backWithError(string $message, bool $withInput): RedirectResponse
+    {
+        $response = back()->with('error', $message);
+
+        return $withInput ? $response->withInput() : $response;
+    }
+
+    /**
+     * Simpan bukti pembayaran bila ada file baru; jika tidak, kembalikan path lama.
+     */
+    private function storeProofImage(Request $request, ?string $currentPath = null): ?string
+    {
+        if (!$request->hasFile('proof_image')) {
+            return $currentPath;
+        }
+
+        return $request->file('proof_image')->store('proofs', 'public');
     }
 }

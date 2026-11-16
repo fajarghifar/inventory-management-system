@@ -31,4 +31,40 @@ enum PurchaseStatus: string
             self::CANCELLED => 'text-red-700 bg-red-50 border-red-200',
         };
     }
+
+    public function isEditable(): bool
+    {
+        return in_array($this, [self::DRAFT, self::ORDERED], true);
+    }
+
+    public function isDeletable(): bool
+    {
+        return in_array($this, [self::DRAFT, self::CANCELLED], true);
+    }
+
+    public function canBeOrdered(): bool
+    {
+        return $this === self::DRAFT;
+    }
+
+    public function canBeReceived(): bool
+    {
+        return in_array($this, [self::DRAFT, self::ORDERED], true);
+    }
+
+    public function canBePaid(): bool
+    {
+        return in_array($this, [self::ORDERED, self::RECEIVED], true);
+    }
+
+    /** Sengaja negasi agar setara kode awal: CANCELLED juga boleh di-cancel. */
+    public function canBeCancelled(): bool
+    {
+        return !in_array($this, [self::RECEIVED, self::PAID], true);
+    }
+
+    public function canBeRestored(): bool
+    {
+        return $this === self::CANCELLED;
+    }
 }

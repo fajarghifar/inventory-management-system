@@ -108,11 +108,12 @@ USER_COUNT=$(php -r "
     echo (int) \$pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
 ")
 
-if [ "${USER_COUNT:-0}" -gt 0 ]; then
-    echo "Database already seeded."
-else
-    echo "Running database seeders..."
+if [ "${USER_COUNT:-0}" -eq 0 ]; then
+    echo "Running baseline database seeders..."
     php artisan db:seed --force --no-interaction
+else
+    echo "Users exist. Ensuring demo sample data is populated..."
+    php artisan db:seed --class=DemoDataSeeder --force --no-interaction
 fi
 
 chown -R www-data:www-data storage bootstrap/cache

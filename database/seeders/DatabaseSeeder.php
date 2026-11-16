@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             FinanceCategorySeeder::class,
             SettingSeeder::class,
+            DemoDataSeeder::class,
         ]);
     }
 }

@@ -129,6 +129,21 @@ class Dashboard extends Component
         };
     }
 
+    public function seedSampleData(): void
+    {
+        if (!auth()->user() || !auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--class' => \Database\Seeders\DemoDataSeeder::class,
+            '--force' => true,
+        ]);
+
+        $this->loadStats(app(DashboardStatsService::class));
+        $this->dispatch('toast', message: 'Sample demo data populated successfully!', type: 'success');
+    }
+
     public function render()
     {
         return view('livewire.dashboard.dashboard');

@@ -33,6 +33,11 @@
                         <x-heroicon-o-clock class="w-3.5 h-3.5" />
                         Slow-Moving Items
                     </a>
+                    <button wire:click="seedSampleData" wire:loading.attr="disabled" class="inline-flex items-center justify-center rounded-md text-xs font-semibold border border-purple-300 bg-purple-50 hover:bg-purple-100 text-purple-800 h-8 px-3 py-1 gap-1.5 shadow-sm" title="Populate realistic demo items, barcodes, sales & expenses">
+                        <x-heroicon-o-sparkles class="w-3.5 h-3.5 text-purple-600" />
+                        <span wire:loading.remove wire:target="seedSampleData">🌱 Populate Sample Data</span>
+                        <span wire:loading wire:target="seedSampleData">Seeding...</span>
+                    </button>
                 @endcan
             </div>
         </div>

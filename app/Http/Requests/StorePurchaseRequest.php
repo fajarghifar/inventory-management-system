@@ -20,6 +20,7 @@ class StorePurchaseRequest extends FormRequest
             'purchase_date' => ['required', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:purchase_date'],
             'notes' => ['nullable', 'string'],
+            'proof_image' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
             // 'status' is handled by controller (default: draft)
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],

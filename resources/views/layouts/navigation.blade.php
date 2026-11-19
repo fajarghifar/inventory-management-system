@@ -1,124 +1,128 @@
-<section class="py-3 lg:py-4 bg-background border-b border-border">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ mobileMenuOpen: false }" @toggle-mobile-menu.window="mobileMenuOpen = !mobileMenuOpen">
+<section class="py-2.5 lg:py-3 bg-white border-b border-gray-200/80 shadow-2xs sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8" x-data="{ mobileMenuOpen: false }" @toggle-mobile-menu.window="mobileMenuOpen = !mobileMenuOpen">
         <!-- Desktop Menu -->
-        <nav class="hidden items-center justify-between lg:flex">
-            <div class="flex items-center gap-6">
-                <!-- Logo -->
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                    <x-application-logo class="w-8 h-8 fill-current text-foreground" />
-                    <span class="text-md font-semibold tracking-tighter text-foreground">
-                        {{ config('app.name', 'Laravel') }}
+        <nav class="hidden items-center justify-between lg:flex w-full gap-3 xl:gap-5">
+            <!-- Left: Brand Store Identity -->
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 flex-shrink-0 group">
+                <div class="w-9 h-9 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs group-hover:bg-brand-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="text-sm font-black tracking-tight text-gray-900 group-hover:text-brand transition-colors whitespace-nowrap">
+                        {{ \App\Models\Setting::get('store_name', 'Addis Store') }}
                     </span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5 whitespace-nowrap">
+                        Retail POS
+                    </span>
+                </div>
+            </a>
+
+            <!-- Center: Navigation Menu Links -->
+            <div class="flex items-center gap-1.5 xl:gap-2 flex-wrap xl:flex-nowrap justify-center">
+                <!-- Primary Action: POS Register [F1] -->
+                <a href="{{ route('sales.create') }}" class="inline-flex h-9 items-center justify-center rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap flex-shrink-0 {{ request()->routeIs('sales.create') ? 'bg-brand text-white shadow-emerald-900/15' : 'bg-brand-50 text-brand hover:bg-brand-100 border border-brand-200/70' }}">
+                    <x-heroicon-o-computer-desktop class="mr-1.5 h-4 w-4" />
+                    <span>POS Register</span>
+                    <span class="ml-1.5 text-[10px] font-mono px-1.5 py-0.5 rounded font-bold {{ request()->routeIs('sales.create') ? 'bg-white/20 text-white' : 'bg-brand-200/80 text-brand-900' }}">F1</span>
                 </a>
 
-                <!-- Navigation Menu -->
-                <div class="flex items-center">
-                    <div class="flex flex-row items-center gap-1.5">
-                        <!-- Primary Action: POS Register [F1] -->
-                        <a href="{{ route('sales.create') }}" class="group inline-flex h-9 items-center justify-center rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all shadow-sm {{ request()->routeIs('sales.create') ? 'bg-brand text-white shadow-emerald-900/10' : 'bg-brand-100 text-brand-700 hover:bg-brand-200 border border-brand-200' }}">
-                            <x-heroicon-o-computer-desktop class="mr-1.5 h-4 w-4 {{ request()->routeIs('sales.create') ? 'text-white' : 'text-brand' }}" />
-                            <span>POS Register</span>
-                            <span class="ml-1.5 text-[10px] font-mono px-1 py-0.5 rounded {{ request()->routeIs('sales.create') ? 'bg-white/20 text-white' : 'bg-brand-200 text-brand-800' }}">F1</span>
-                        </a>
+                @can('admin')
+                    <!-- Dashboard -->
+                    <a href="{{ route('dashboard') }}" class="inline-flex h-9 items-center justify-center rounded-xl px-3 py-1.5 text-xs transition-colors whitespace-nowrap flex-shrink-0 {{ request()->routeIs('dashboard') ? 'bg-brand-50 text-brand font-bold border border-brand-200/60 shadow-2xs' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 font-semibold border border-transparent' }}">
+                        <x-heroicon-o-squares-2x2 class="mr-1.5 h-4 w-4 text-gray-400" />
+                        <span>Dashboard</span>
+                    </a>
+                @endcan
 
+                <!-- Products & Stock Hub -->
+                <x-nav-dropdown active="{{ request()->routeIs(['products.*', 'low-stock.*', 'categories.*', 'units.*', 'stock.*']) }}">
+                    <x-slot name="icon">
+                        <x-heroicon-o-cube class="mr-1.5 h-4 w-4 text-gray-400" />
+                    </x-slot>
+                    <x-slot name="trigger">
+                        Products & Stock
+                    </x-slot>
+                    <x-slot name="content">
+                        <x-dropdown-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                            All Products Catalog
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('low-stock.index')" :active="request()->routeIs('low-stock.*')">
+                            Low Stock Alerts
+                        </x-dropdown-link>
                         @can('admin')
-                            <!-- Dashboard -->
-                            <a href="{{ route('dashboard') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground {{ request()->routeIs('dashboard') ? 'bg-accent/70 font-semibold text-accent-foreground' : 'text-foreground' }}">
-                                <x-heroicon-o-squares-2x2 class="mr-1.5 h-4 w-4 text-muted-foreground" />
-                                <span>Dashboard</span>
-                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <div class="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Inventory Tools</div>
+                            <x-dropdown-link :href="route('stock.adjustments')" :active="request()->routeIs('stock.adjustments')">
+                                Stock Adjustments (Damage/Loss)
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('stock.movements')" :active="request()->routeIs('stock.movements')">
+                                Movement Audit Log
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
+                                Product Categories
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('units.index')" :active="request()->routeIs('units.*')">
+                                Units of Measure
+                            </x-dropdown-link>
                         @endcan
+                    </x-slot>
+                </x-nav-dropdown>
 
-                        <!-- Products & Stock Hub -->
-                        <x-nav-dropdown active="{{ request()->routeIs(['products.*', 'low-stock.*', 'categories.*', 'units.*', 'stock.*']) }}">
-                            <x-slot name="icon">
-                                <x-heroicon-o-cube class="mr-1.5 h-4 w-4 text-muted-foreground" />
-                            </x-slot>
-                            <x-slot name="trigger">
-                                Products & Stock
-                            </x-slot>
-                            <x-slot name="content">
-                                <x-dropdown-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                                    All Products
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="route('low-stock.index')" :active="request()->routeIs('low-stock.*')">
-                                    Low Stock Alerts
-                                </x-dropdown-link>
-                                @can('admin')
-                                    <div class="border-t border-border/50 my-1"></div>
-                                    <div class="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Inventory Tools</div>
-                                    <x-dropdown-link :href="route('stock.adjustments')" :active="request()->routeIs('stock.adjustments')">
-                                        Stock Adjustments (Damage/Loss)
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('stock.movements')" :active="request()->routeIs('stock.movements')">
-                                        Movement Audit Log
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
-                                        Product Categories
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('units.index')" :active="request()->routeIs('units.*')">
-                                        Units of Measure
-                                    </x-dropdown-link>
-                                @endcan
-                            </x-slot>
-                        </x-nav-dropdown>
+                <!-- Sales History -->
+                <a href="{{ route('sales.index') }}" class="inline-flex h-9 items-center justify-center rounded-xl px-3 py-1.5 text-xs transition-colors whitespace-nowrap flex-shrink-0 {{ request()->routeIs(['sales.index', 'sales.show']) ? 'bg-brand-50 text-brand font-bold border border-brand-200/60 shadow-2xs' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 font-semibold border border-transparent' }}">
+                    <x-heroicon-o-receipt-percent class="mr-1.5 h-4 w-4 text-gray-400" />
+                    <span>Sales History</span>
+                </a>
 
-                        <!-- Sales History -->
-                        <a href="{{ route('sales.index') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground {{ request()->routeIs(['sales.index', 'sales.show']) ? 'bg-accent/70 font-semibold text-accent-foreground' : 'text-foreground' }}">
-                            <x-heroicon-o-receipt-percent class="mr-1.5 h-4 w-4 text-muted-foreground" />
-                            <span>Sales History</span>
-                        </a>
+                @can('admin')
+                    <!-- Reports & Money -->
+                    <x-nav-dropdown active="{{ request()->routeIs(['reports.*', 'finance.*']) }}">
+                        <x-slot name="icon">
+                            <x-heroicon-o-chart-bar class="mr-1.5 h-4 w-4 text-gray-400" />
+                        </x-slot>
+                        <x-slot name="trigger">
+                            Reports & Money
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('reports.sales')" :active="request()->routeIs('reports.sales')">
+                                Daily Sales & Cashiers
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('reports.profit-loss')" :active="request()->routeIs('reports.profit-loss')">
+                                Profit & Loss (P&L)
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('reports.stock-valuation')" :active="request()->routeIs('reports.stock-valuation')">
+                                Stock Valuation
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('reports.slow-moving')" :active="request()->routeIs('reports.slow-moving')">
+                                Slow-Moving Stock
+                            </x-dropdown-link>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <div class="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Expenses</div>
+                            <x-dropdown-link :href="route('finance.transactions.index')" :active="request()->routeIs('finance.transactions.index')">
+                                Record Expense
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('finance.categories.index')" :active="request()->routeIs('finance.categories.index')">
+                                Expense Categories
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-nav-dropdown>
 
-                        @can('admin')
-                            <!-- Reports & Money -->
-                            <x-nav-dropdown active="{{ request()->routeIs(['reports.*', 'finance.*']) }}">
-                                <x-slot name="icon">
-                                    <x-heroicon-o-chart-bar class="mr-1.5 h-4 w-4 text-muted-foreground" />
-                                </x-slot>
-                                <x-slot name="trigger">
-                                    Reports & Money
-                                </x-slot>
-                                <x-slot name="content">
-                                    <x-dropdown-link :href="route('reports.sales')" :active="request()->routeIs('reports.sales')">
-                                        Daily Sales & Cashiers
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('reports.profit-loss')" :active="request()->routeIs('reports.profit-loss')">
-                                        Profit & Loss (P&L)
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('reports.stock-valuation')" :active="request()->routeIs('reports.stock-valuation')">
-                                        Stock Valuation
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('reports.slow-moving')" :active="request()->routeIs('reports.slow-moving')">
-                                        Slow-Moving Stock
-                                    </x-dropdown-link>
-                                    <div class="border-t border-border/50 my-1"></div>
-                                    <div class="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Expenses</div>
-                                    <x-dropdown-link :href="route('finance.transactions.index')" :active="request()->routeIs('finance.transactions.index')">
-                                        Record Expense
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('finance.categories.index')" :active="request()->routeIs('finance.categories.index')">
-                                        Expense Categories
-                                    </x-dropdown-link>
-                                </x-slot>
-                            </x-nav-dropdown>
-
-                            <!-- Staff & Users -->
-                            <a href="{{ route('users.index') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground {{ request()->routeIs('users.*') ? 'bg-accent/70 font-semibold text-accent-foreground' : 'text-foreground' }}">
-                                <x-heroicon-o-user-group class="mr-1.5 h-4 w-4 text-muted-foreground" />
-                                <span>Staff & Users</span>
-                            </a>
-                        @endcan
-                    </div>
-                </div>
+                    <!-- Staff & Users -->
+                    <a href="{{ route('users.index') }}" class="inline-flex h-9 items-center justify-center rounded-xl px-3 py-1.5 text-xs transition-colors whitespace-nowrap flex-shrink-0 {{ request()->routeIs('users.*') ? 'bg-brand-50 text-brand font-bold border border-brand-200/60 shadow-2xs' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100 font-semibold border border-transparent' }}">
+                        <x-heroicon-o-user-group class="mr-1.5 h-4 w-4 text-gray-400" />
+                        <span>Staff & Users</span>
+                    </a>
+                @endcan
             </div>
 
-            <!-- User Auth Buttons -->
-            <div class="flex gap-2">
+            <!-- Right: User Auth Profile Button -->
+            <div class="flex items-center gap-2 flex-shrink-0">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 gap-2">
-                            <span class="hidden md:inline-flex">{{ Auth::user()->name }}</span>
-                            <x-avatar :name="Auth::user()->name" />
+                        <button type="button" class="inline-flex items-center gap-2 h-9 px-2.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand whitespace-nowrap flex-shrink-0 shadow-2xs cursor-pointer">
+                            <x-avatar :name="Auth::user()->name" class="w-6 h-6 text-[10px] font-bold" />
+                            <span class="text-xs font-bold text-gray-800 hidden xl:inline-block max-w-[120px] truncate">{{ Auth::user()->name }}</span>
+                            <x-heroicon-o-chevron-down class="w-3.5 h-3.5 text-gray-400" />
                         </button>
                     </x-slot>
 
@@ -158,9 +162,11 @@
             <div class="flex items-center justify-between">
                 <!-- Brand Logo + Name -->
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                    <x-application-logo class="w-8 h-8 fill-current text-foreground" />
-                    <span class="text-base font-bold tracking-tight text-foreground truncate max-w-[180px]">
-                        {{ config('app.name', 'Inventory') }}
+                    <div class="w-7 h-7 rounded-lg bg-brand text-white flex items-center justify-center shadow-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold tracking-tight text-gray-900 truncate max-w-[200px]">
+                        {{ \App\Models\Setting::get('store_name', 'Addis Store') }}
                     </span>
                 </a>
 

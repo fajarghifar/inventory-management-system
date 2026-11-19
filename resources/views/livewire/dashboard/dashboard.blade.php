@@ -299,16 +299,6 @@
         .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
     }
 </style>
-    @media print {
-        @page { size: landscape; margin: 1cm; }
-        body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .print\:hidden { display: none !important; }
-        .bg-card { border: 1px solid #e2e8f0; box-shadow: none !important; }
-        .grid { gap: 1rem !important; }
-        /* Prevent charts and cards from breaking across pages */
-        .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
-    }
-</style>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>

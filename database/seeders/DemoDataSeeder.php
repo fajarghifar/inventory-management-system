@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\Customer;
-use App\Models\Supplier;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\FinanceCategory;
@@ -23,7 +22,6 @@ use App\Enums\StockAdjustmentType;
 use App\Enums\StockAdjustmentReason;
 use App\Enums\FinanceCategoryType;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -53,199 +51,228 @@ class DemoDataSeeder extends Seeder
             ]
         );
 
-        // 2. Units
+        // 2. Ethiopian Units of Measurement (Safe resolver avoiding unique constraint collisions)
+        $findOrCreateUnit = function ($symbol, $name) {
+            return Unit::where('symbol', $symbol)
+                ->orWhere('name', $name)
+                ->first() ?? Unit::create(['symbol' => $symbol, 'name' => $name]);
+        };
+
         $units = [
-            'pcs' => Unit::firstOrCreate(['symbol' => 'pcs'], ['name' => 'Pieces']),
-            'btl' => Unit::firstOrCreate(['symbol' => 'btl'], ['name' => 'Bottle']),
-            'pk'  => Unit::firstOrCreate(['symbol' => 'pk'],  ['name' => 'Pack']),
-            'box' => Unit::firstOrCreate(['symbol' => 'box'], ['name' => 'Box']),
-            'kg'  => Unit::firstOrCreate(['symbol' => 'kg'],  ['name' => 'Kilogram']),
+            'pcs' => $findOrCreateUnit('pcs', 'Pieces'),
+            'btl' => $findOrCreateUnit('btl', 'Bottle'),
+            'pk'  => $findOrCreateUnit('pk', 'Pack'),
+            'box' => $findOrCreateUnit('box', 'Box / Carton'),
+            'kg'  => $findOrCreateUnit('kg', 'Kilogram'),
+            'qnt' => $findOrCreateUnit('qnt', 'Quintal (100kg)'),
+            'L'   => $findOrCreateUnit('L', 'Liter'),
+            'doz' => $findOrCreateUnit('doz', 'Dozen'),
         ];
 
-        // 3. Categories
+        // 3. Ethiopian Shopping Center Categories
         $categories = [
+            'grains' => Category::firstOrCreate(
+                ['slug' => 'grains-teff-flour'],
+                ['name' => 'Grains, Teff & Flour', 'description' => 'White and sergegna teff, wheat flour, and pulses (እህል እና ዱቄት)']
+            ),
+            'oil' => Category::firstOrCreate(
+                ['slug' => 'cooking-oil-essentials'],
+                ['name' => 'Edible Oil & Essentials', 'description' => 'Cooking oils, salt, sugar, and Ethiopian spices (ዘይት እና ቅመማ ቅመም)']
+            ),
+            'coffee' => Category::firstOrCreate(
+                ['slug' => 'coffee-tea'],
+                ['name' => 'Ethiopian Coffee & Tea', 'description' => 'Harar, Yirgacheffe, Sidama coffee beans, and highland tea (ቡና እና ሻይ)']
+            ),
             'beverages' => Category::firstOrCreate(
                 ['slug' => 'beverages-drinks'],
-                ['name' => 'Beverages & Drinks', 'description' => 'Cold drinks, juices, energy drinks, tea, and coffee']
+                ['name' => 'Beverages & Soft Drinks', 'description' => 'Ambo mineral water, soft drinks, juices, and malt (መጠጦች)']
             ),
-            'snacks' => Category::firstOrCreate(
-                ['slug' => 'snacks-confectionery'],
-                ['name' => 'Snacks & Confectionery', 'description' => 'Chips, chocolates, biscuits, and candy']
-            ),
-            'groceries' => Category::firstOrCreate(
-                ['slug' => 'packaged-foods-groceries'],
-                ['name' => 'Packaged Foods & Groceries', 'description' => 'Instant noodles, cooking oil, rice, sauces']
+            'dairy' => Category::firstOrCreate(
+                ['slug' => 'dairy-bakery'],
+                ['name' => 'Dairy & Bakery', 'description' => 'Fresh milk, Shola butter, bread, and biscuits (ወተት እና ዳቦ)']
             ),
             'personal_care' => Category::firstOrCreate(
                 ['slug' => 'personal-care-hygiene'],
-                ['name' => 'Personal Care & Hygiene', 'description' => 'Soaps, shampoos, sanitizers, and dental care']
+                ['name' => 'Personal Care & Hygiene', 'description' => 'Desta soap, laundry bars, shampoos, and dental care (የግል ንፅህና)']
             ),
             'household' => Category::firstOrCreate(
-                ['slug' => 'household-supplies'],
-                ['name' => 'Household Supplies', 'description' => 'Cleaning liquids, kitchenware, and laundry items']
+                ['slug' => 'cleaning-household'],
+                ['name' => 'Cleaning & Household Goods', 'description' => 'Detergents, thermos flasks, and kitchen essentials (የቤት እቃዎች)']
             ),
         ];
 
-        // 4. Customers
+        // 4. Default Walk-in Customer (for POS counter sales)
         $walkIn = Customer::firstOrCreate(
             ['phone' => '0000000000'],
-            ['name' => 'Walk-in Customer', 'email' => 'walkin@store.com', 'address' => 'Store Counter']
-        );
-        $customerAmina = Customer::firstOrCreate(
-            ['phone' => '+251911223344'],
-            ['name' => 'Amina Mohammed', 'email' => 'amina@gmail.com', 'address' => 'Bole Subcity, House 102']
-        );
-        $customerJohn = Customer::firstOrCreate(
-            ['phone' => '+251922334455'],
-            ['name' => 'John Doe', 'email' => 'john.doe@gmail.com', 'address' => 'CMC Village, Block 4']
+            ['name' => 'Walk-in Retail Customer', 'email' => 'walkin@store.com', 'address' => 'Store Counter']
         );
 
-        // 5. Products with Standard Retail Barcodes
+        // 5. Authentic Ethiopian Shopping Center Products with Real Barcodes (ETB Prices)
         $productsData = [
-            // Standard Retail Products (High & Normal Stock)
+            // Teff & Grains
             [
-                'sku' => '8992761001001',
-                'name' => 'Mineral Spring Water 600ml',
-                'category' => $categories['beverages'],
-                'unit' => $units['btl'],
-                'cost' => 0.40,
-                'price' => 1.00,
-                'qty' => 95,
-                'min' => 10,
+                'sku' => '6001234500018',
+                'name' => 'Magna White Teff (50kg Bag)',
+                'category' => $categories['grains'],
+                'unit' => $units['qnt'],
+                'cost' => 5000.00,
+                'price' => 5800.00,
+                'qty' => 40,
+                'min' => 5,
                 'created_at' => Carbon::now()->subDays(60),
             ],
+            // Cooking Oil
             [
-                'sku' => '012345678905',
-                'name' => 'Crispy Potato Chips BBQ 150g',
-                'category' => $categories['snacks'],
-                'unit' => $units['pk'],
-                'cost' => 1.20,
-                'price' => 2.50,
-                'qty' => 45,
-                'min' => 5,
+                'sku' => '6001234500025',
+                'name' => 'Chef Sun Sunflower Cooking Oil 5L',
+                'category' => $categories['oil'],
+                'unit' => $units['btl'],
+                'cost' => 1050.00,
+                'price' => 1250.00,
+                'qty' => 50,
+                'min' => 10,
                 'created_at' => Carbon::now()->subDays(45),
             ],
+            // Ethiopian Coffee
             [
-                'sku' => '7622210449283',
-                'name' => 'Cadbury Dairy Milk Chocolate 100g',
-                'category' => $categories['snacks'],
-                'unit' => $units['pcs'],
-                'cost' => 1.00,
-                'price' => 2.00,
-                'qty' => 38,
-                'min' => 8,
-                'created_at' => Carbon::now()->subDays(30),
-            ],
-            [
-                'sku' => '12345678',
-                'name' => 'Red Bull Energy Drink 250ml',
-                'category' => $categories['beverages'],
-                'unit' => $units['pcs'],
-                'cost' => 1.80,
-                'price' => 3.50,
-                'qty' => 30,
-                'min' => 5,
-                'created_at' => Carbon::now()->subDays(30),
-            ],
-            [
-                'sku' => '5449000000996',
-                'name' => 'Coca-Cola Original 330ml Can',
-                'category' => $categories['beverages'],
-                'unit' => $units['pcs'],
-                'cost' => 0.50,
-                'price' => 1.25,
-                'qty' => 75,
-                'min' => 15,
-                'created_at' => Carbon::now()->subDays(40),
-            ],
-            [
-                'sku' => '8801043001234',
-                'name' => 'Samyang Spicy Ramen Noodles 140g',
-                'category' => $categories['groceries'],
+                'sku' => '6001234500032',
+                'name' => 'Harar Roasted Coffee Beans Grade-1 500g',
+                'category' => $categories['coffee'],
                 'unit' => $units['pk'],
-                'cost' => 0.80,
-                'price' => 1.80,
+                'cost' => 520.00,
+                'price' => 650.00,
                 'qty' => 60,
                 'min' => 10,
-                'created_at' => Carbon::now()->subDays(20),
-            ],
-            [
-                'sku' => '6901234567890',
-                'name' => 'Dettol Antibacterial Liquid Handwash 250ml',
-                'category' => $categories['personal_care'],
-                'unit' => $units['btl'],
-                'cost' => 1.40,
-                'price' => 2.80,
-                'qty' => 40,
-                'min' => 6,
-                'created_at' => Carbon::now()->subDays(25),
-            ],
-            [
-                'sku' => '5012345678900',
-                'name' => 'Multi-Surface Disinfectant Cleaner 1L',
-                'category' => $categories['household'],
-                'unit' => $units['btl'],
-                'cost' => 2.20,
-                'price' => 4.50,
-                'qty' => 25,
-                'min' => 5,
                 'created_at' => Carbon::now()->subDays(35),
             ],
+            // Ambo Water
             [
-                'sku' => '9300675001234',
-                'name' => 'Nescafe Gold Classic Coffee 200g',
+                'sku' => '8992761001001',
+                'name' => 'Ambo Mineral Water 500ml Glass Bottle',
                 'category' => $categories['beverages'],
+                'unit' => $units['btl'],
+                'cost' => 25.00,
+                'price' => 35.00,
+                'qty' => 120,
+                'min' => 24,
+                'created_at' => Carbon::now()->subDays(50),
+            ],
+            // Habesha Beer
+            [
+                'sku' => '6001234500056',
+                'name' => 'Habesha Cold Gold Beer 330ml',
+                'category' => $categories['beverages'],
+                'unit' => $units['btl'],
+                'cost' => 50.00,
+                'price' => 65.00,
+                'qty' => 96,
+                'min' => 24,
+                'created_at' => Carbon::now()->subDays(40),
+            ],
+            // Desta Laundry Soap
+            [
+                'sku' => '6001234500063',
+                'name' => 'Desta Laundry Bar Soap 200g',
+                'category' => $categories['personal_care'],
                 'unit' => $units['pcs'],
-                'cost' => 4.50,
-                'price' => 7.90,
-                'qty' => 20,
-                'min' => 4,
-                'created_at' => Carbon::now()->subDays(15),
+                'cost' => 32.00,
+                'price' => 45.00,
+                'qty' => 150,
+                'min' => 30,
+                'created_at' => Carbon::now()->subDays(40),
+            ],
+            // Faffa Baby Food
+            [
+                'sku' => '6001234500070',
+                'name' => 'Faffa Enriched Weaning Food 500g',
+                'category' => $categories['dairy'],
+                'unit' => $units['box'],
+                'cost' => 190.00,
+                'price' => 240.00,
+                'qty' => 45,
+                'min' => 10,
+                'created_at' => Carbon::now()->subDays(30),
+            ],
+            // Wonji Sugar
+            [
+                'sku' => '6001234500087',
+                'name' => 'Wonji Pure Refined Sugar 5kg Pack',
+                'category' => $categories['oil'],
+                'unit' => $units['pk'],
+                'cost' => 440.00,
+                'price' => 520.00,
+                'qty' => 70,
+                'min' => 15,
+                'created_at' => Carbon::now()->subDays(25),
+            ],
+            // Coca-Cola
+            [
+                'sku' => '5449000000996',
+                'name' => 'Coca-Cola Ethiopia 300ml RGB',
+                'category' => $categories['beverages'],
+                'unit' => $units['btl'],
+                'cost' => 22.00,
+                'price' => 30.00,
+                'qty' => 100,
+                'min' => 24,
+                'created_at' => Carbon::now()->subDays(40),
+            ],
+            // Shola Butter
+            [
+                'sku' => '6001234500117',
+                'name' => 'Shola Pure Table Butter 500g',
+                'category' => $categories['dairy'],
+                'unit' => $units['pk'],
+                'cost' => 450.00,
+                'price' => 550.00,
+                'qty' => 30,
+                'min' => 5,
+                'created_at' => Carbon::now()->subDays(20),
             ],
 
             // Low Stock Items (Triggers Low Stock Alert on Dashboard & /products/low-in-stock)
             [
                 'sku' => '4001234567891',
-                'name' => 'Twinings Pure Green Tea 25 Bags (LOW STOCK)',
-                'category' => $categories['beverages'],
-                'unit' => $units['box'],
-                'cost' => 2.10,
-                'price' => 3.90,
+                'name' => 'Ethiopian Red Pepper Berbere 1kg (LOW STOCK)',
+                'category' => $categories['oil'],
+                'unit' => $units['kg'],
+                'cost' => 300.00,
+                'price' => 380.00,
                 'qty' => 2,
                 'min' => 10, // Stock (2) <= Min (10)
                 'created_at' => Carbon::now()->subDays(50),
             ],
             [
                 'sku' => '8712345678902',
-                'name' => 'Borges Extra Virgin Olive Oil 500ml (LOW STOCK)',
-                'category' => $categories['groceries'],
+                'name' => 'Abyssinia Pure Cooking Oil 1L (LOW STOCK)',
+                'category' => $categories['oil'],
                 'unit' => $units['btl'],
-                'cost' => 5.20,
-                'price' => 9.50,
+                'cost' => 220.00,
+                'price' => 280.00,
                 'qty' => 3,
-                'min' => 8, // Stock (3) <= Min (8)
+                'min' => 12, // Stock (3) <= Min (12)
                 'created_at' => Carbon::now()->subDays(40),
             ],
 
             // Slow-Moving / Dead Stock Items (Triggers Stagnant Alert on /reports/slow-moving)
             [
                 'sku' => '9900112233445',
-                'name' => 'Stainless Steel Japanese Chef Knife Set (SLOW-MOVING)',
+                'name' => 'Stainless Steel Coffee Flask Thermos 2L (SLOW-MOVING)',
                 'category' => $categories['household'],
-                'unit' => $units['box'],
-                'cost' => 28.00,
-                'price' => 52.00,
+                'unit' => $units['pcs'],
+                'cost' => 1750.00,
+                'price' => 2200.00,
                 'qty' => 12,
                 'min' => 2,
                 'created_at' => Carbon::now()->subDays(105), // Created >90 days ago, 0 sales
             ],
             [
                 'sku' => '9900112233552',
-                'name' => 'Ceramic Chocolate Fondue Pot Deluxe (SLOW-MOVING)',
+                'name' => 'Ceramic Traditional Jebena Set 6 Cups (SLOW-MOVING)',
                 'category' => $categories['household'],
                 'unit' => $units['box'],
-                'cost' => 15.00,
-                'price' => 28.00,
+                'cost' => 850.00,
+                'price' => 1300.00,
                 'qty' => 18,
                 'min' => 3,
                 'created_at' => Carbon::now()->subDays(120), // Created >90 days ago, 0 sales
@@ -265,7 +292,7 @@ class DemoDataSeeder extends Seeder
                     'quantity' => $data['qty'],
                     'min_stock' => $data['min'],
                     'is_active' => true,
-                    'description' => 'Demo item for stock & POS barcode verification.',
+                    'description' => 'Ethiopian retail item for supermarket stock & POS barcode verification.',
                     'created_at' => $data['created_at'],
                     'updated_at' => $data['created_at'],
                 ]
@@ -302,7 +329,7 @@ class DemoDataSeeder extends Seeder
                 'quantity' => 2,
                 'cost_price_at_time' => $water->purchase_price,
                 'user_id' => $admin->id,
-                'notes' => 'Bottles dropped and broken during aisle restocking.',
+                'notes' => 'Glass bottles cracked during aisle restocking.',
                 'created_at' => Carbon::now()->subDays(3),
             ]);
 
@@ -322,103 +349,95 @@ class DemoDataSeeder extends Seeder
             $water->decrement('quantity', 2);
         }
 
-        // 7. Seed Sales Transactions (over the last 14 days, yesterday, and today)
+        // 7. Seed Sales Transactions in Ethiopian Birr (ETB)
         if (Sale::count() < 5) {
             $salesSchedule = [
                 // 12 days ago
                 [
                     'days_ago' => 12,
                     'cashier' => $admin,
-                    'customer' => $customerAmina,
                     'method' => PaymentMethod::CASH,
                     'items' => [
-                        ['sku' => '8992761001001', 'qty' => 3],
-                        ['sku' => '012345678905', 'qty' => 2],
+                        ['sku' => '8992761001001', 'qty' => 6], // Ambo water
+                        ['sku' => '6001234500063', 'qty' => 4], // Desta soap
                     ],
                 ],
                 // 10 days ago
                 [
                     'days_ago' => 10,
                     'cashier' => $staff,
-                    'customer' => $walkIn,
                     'method' => PaymentMethod::CASH,
                     'items' => [
-                        ['sku' => '7622210449283', 'qty' => 2],
-                        ['sku' => '12345678', 'qty' => 1],
+                        ['sku' => '6001234500032', 'qty' => 1], // Harar coffee
+                        ['sku' => '6001234500087', 'qty' => 1], // Sugar 5kg
                     ],
                 ],
                 // 7 days ago
                 [
                     'days_ago' => 7,
                     'cashier' => $admin,
-                    'customer' => $customerJohn,
-                    'method' => PaymentMethod::TRANSFER,
+                    'method' => PaymentMethod::TRANSFER, // CBE / Telebirr transfer
                     'items' => [
-                        ['sku' => '9300675001234', 'qty' => 1],
-                        ['sku' => '5449000000996', 'qty' => 4],
+                        ['sku' => '6001234500018', 'qty' => 1], // Magna Teff
+                        ['sku' => '6001234500025', 'qty' => 1], // Cooking Oil 5L
                     ],
                 ],
                 // 5 days ago
                 [
                     'days_ago' => 5,
                     'cashier' => $staff,
-                    'customer' => $walkIn,
                     'method' => PaymentMethod::CASH,
                     'items' => [
-                        ['sku' => '8801043001234', 'qty' => 5],
-                        ['sku' => '8992761001001', 'qty' => 2],
+                        ['sku' => '6001234500056', 'qty' => 6], // Habesha beer
+                        ['sku' => '5449000000996', 'qty' => 4], // Coca-Cola
                     ],
                 ],
                 // 3 days ago
                 [
                     'days_ago' => 3,
                     'cashier' => $staff,
-                    'customer' => $customerAmina,
                     'method' => PaymentMethod::CASH,
                     'items' => [
-                        ['sku' => '6901234567890', 'qty' => 2],
-                        ['sku' => '5012345678900', 'qty' => 1],
+                        ['sku' => '6001234500070', 'qty' => 2], // Faffa baby food
+                        ['sku' => '6001234500117', 'qty' => 1], // Shola butter
                     ],
                 ],
                 // Yesterday
                 [
                     'days_ago' => 1,
                     'cashier' => $admin,
-                    'customer' => $walkIn,
                     'method' => PaymentMethod::CASH,
                     'items' => [
-                        ['sku' => '012345678905', 'qty' => 3],
-                        ['sku' => '7622210449283', 'qty' => 2],
-                        ['sku' => '12345678', 'qty' => 2],
+                        ['sku' => '6001234500025', 'qty' => 2], // Cooking oil
+                        ['sku' => '6001234500087', 'qty' => 2], // Sugar
+                        ['sku' => '8992761001001', 'qty' => 4], // Ambo water
                     ],
                 ],
                 // Today (Morning)
                 [
                     'days_ago' => 0,
                     'cashier' => $staff,
-                    'customer' => $customerJohn,
                     'method' => PaymentMethod::CASH,
                     'items' => [
-                        ['sku' => '5449000000996', 'qty' => 3],
-                        ['sku' => '8992761001001', 'qty' => 4],
+                        ['sku' => '5449000000996', 'qty' => 6], // Coca-Cola
+                        ['sku' => '8992761001001', 'qty' => 6], // Ambo water
                     ],
                 ],
                 // Today (Afternoon)
                 [
                     'days_ago' => 0,
                     'cashier' => $admin,
-                    'customer' => $walkIn,
-                    'method' => PaymentMethod::TRANSFER,
+                    'method' => PaymentMethod::TRANSFER, // Telebirr / CBE
                     'items' => [
-                        ['sku' => '9300675001234', 'qty' => 2],
-                        ['sku' => '8801043001234', 'qty' => 3],
+                        ['sku' => '6001234500018', 'qty' => 2], // Teff 2 bags
+                        ['sku' => '6001234500032', 'qty' => 2], // Harar coffee
                     ],
                 ],
             ];
 
             $saleCounter = 1001;
             foreach ($salesSchedule as $plan) {
-                $saleDate = Carbon::now()->subDays($plan['days_ago'])->setHour(rand(10, 18))->setMinute(rand(5, 55));
+                $saleDate = Carbon::now()->subDays($plan['days_ago'])->setHour(rand(9, 18))->setMinute(rand(5, 55));
                 $invNumber = 'INV-' . $saleDate->format('ymd') . '-' . sprintf('%04d', $saleCounter++);
 
                 $subtotal = 0;
@@ -447,12 +466,12 @@ class DemoDataSeeder extends Seeder
                 }
 
                 $total = $subtotal;
-                $cashReceived = ($plan['method'] === PaymentMethod::CASH) ? ceil($total / 5) * 5 : $total;
+                $cashReceived = ($plan['method'] === PaymentMethod::CASH) ? ceil($total / 10) * 10 : $total;
                 $change = round($cashReceived - $total, 2);
 
                 $sale = Sale::create([
                     'invoice_number' => $invNumber,
-                    'customer_id' => $plan['customer']->id,
+                    'customer_id' => $walkIn->id,
                     'created_by' => $plan['cashier']->id,
                     'sale_date' => $saleDate,
                     'status' => SaleStatus::COMPLETED,
@@ -463,7 +482,7 @@ class DemoDataSeeder extends Seeder
                     'cash_received' => $cashReceived,
                     'change' => $change,
                     'payment_method' => $plan['method'],
-                    'notes' => 'Sample retail transaction.',
+                    'notes' => 'Walk-in retail POS transaction.',
                     'created_at' => $saleDate,
                     'updated_at' => $saleDate,
                 ]);
@@ -497,7 +516,7 @@ class DemoDataSeeder extends Seeder
                         'reference_id' => $sale->id,
                         'reference_number' => $sale->invoice_number,
                         'user_id' => $plan['cashier']->id,
-                        'notes' => 'Sold via POS.',
+                        'notes' => 'Sold via retail POS terminal.',
                         'created_at' => $saleDate,
                     ]);
 
@@ -506,47 +525,47 @@ class DemoDataSeeder extends Seeder
             }
         }
 
-        // 8. Operational Expenses (for P&L Statement and Finance Dashboard)
-        $expenseCatUtilities = FinanceCategory::firstOrCreate(
-            ['slug' => 'electricity-utilities'],
-            ['name' => 'Electricity & Utilities', 'type' => FinanceCategoryType::Expense, 'description' => 'Power, water, and cooling.']
-        );
+        // 8. Operational Expenses in Ethiopian Birr (ETB)
         $expenseCatRent = FinanceCategory::firstOrCreate(
             ['slug' => 'store-rent'],
-            ['name' => 'Store Rent', 'type' => FinanceCategoryType::Expense, 'description' => 'Monthly facility lease.']
+            ['name' => 'Store Space Rent', 'type' => FinanceCategoryType::Expense, 'description' => 'Monthly shopping center retail space rental.']
         );
-        $expenseCatInternet = FinanceCategory::firstOrCreate(
-            ['slug' => 'internet-pos-communications'],
-            ['name' => 'Internet & POS Communications', 'type' => FinanceCategoryType::Expense, 'description' => 'Broadband and POS sync cellular data.']
+        $expenseCatGenerator = FinanceCategory::firstOrCreate(
+            ['slug' => 'generator-fuel'],
+            ['name' => 'Generator Fuel (Diesel)', 'type' => FinanceCategoryType::Expense, 'description' => 'Fuel for backup generator during power outages.']
         );
-        $expenseCatPackaging = FinanceCategory::firstOrCreate(
-            ['slug' => 'packaging-bag-supplies'],
-            ['name' => 'Packaging & Bag Supplies', 'type' => FinanceCategoryType::Expense, 'description' => 'Shopping bags, thermal rolls, and packaging.']
+        $expenseCatUtilities = FinanceCategory::firstOrCreate(
+            ['slug' => 'electricity-water'],
+            ['name' => 'Electricity & Water Utilities', 'type' => FinanceCategoryType::Expense, 'description' => 'Ethiopian Electric Utility & water utility bills.']
+        );
+        $expenseCatLunch = FinanceCategory::firstOrCreate(
+            ['slug' => 'cashier-lunch-allowance'],
+            ['name' => 'Cashier Lunch & Allowance', 'type' => FinanceCategoryType::Expense, 'description' => 'Daily staff lunch and tea allowance.']
         );
 
         $expenses = [
             [
                 'cat' => $expenseCatRent,
-                'amount' => 450.00,
-                'desc' => 'Monthly retail space rent',
+                'amount' => 35000.00,
+                'desc' => 'Monthly retail space rent (Bole)',
                 'date' => Carbon::now()->startOfMonth()->addDays(1),
             ],
             [
-                'cat' => $expenseCatUtilities,
-                'amount' => 95.00,
-                'desc' => 'Electric bill & commercial refrigerator cooling',
-                'date' => Carbon::now()->subDays(10),
+                'cat' => $expenseCatGenerator,
+                'amount' => 6500.00,
+                'desc' => 'Diesel fuel purchase for store backup generator',
+                'date' => Carbon::now()->subDays(12),
             ],
             [
-                'cat' => $expenseCatInternet,
-                'amount' => 35.00,
-                'desc' => 'Fiber internet for POS and cameras',
+                'cat' => $expenseCatUtilities,
+                'amount' => 2800.00,
+                'desc' => 'Monthly electricity & municipal water bill',
                 'date' => Carbon::now()->subDays(8),
             ],
             [
-                'cat' => $expenseCatPackaging,
-                'amount' => 25.00,
-                'desc' => 'Receipt paper rolls and shopping bags',
+                'cat' => $expenseCatLunch,
+                'amount' => 3500.00,
+                'desc' => 'Weekly staff lunch and refreshment fund',
                 'date' => Carbon::now()->subDays(4),
             ],
         ];

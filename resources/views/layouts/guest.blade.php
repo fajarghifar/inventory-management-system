@@ -23,8 +23,8 @@
         <!-- Connectivity Offline/Online Banner -->
         <x-connectivity-banner />
 
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 text-foreground overflow-hidden">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center py-10 px-4 sm:px-6">
+            <div class="w-full sm:max-w-md bg-card text-foreground rounded-2xl border border-border/80 shadow-2xl p-6 sm:p-8 overflow-hidden">
                 {{ $slot }}
             </div>
         </div>

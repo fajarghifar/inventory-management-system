@@ -306,11 +306,11 @@
         let salesChart = null;
         let cashFlowChart = null;
         
-        const currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'Rp') }}";
+        const currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'ETB') }}";
         const currencyPosition = "{{ \App\Models\Setting::get('currency_position', 'left') }}";
 
         const formatMoney = (val) => {
-            let num = new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(val);
+            let num = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
             return currencyPosition === 'left' ? currencySymbol + ' ' + num : num + ' ' + currencySymbol;
         };
 

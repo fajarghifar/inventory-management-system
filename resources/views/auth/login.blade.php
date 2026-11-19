@@ -4,8 +4,11 @@
 
     <div class="space-y-6">
         <div class="space-y-2 text-center">
-            <h1 class="text-2xl font-semibold tracking-tight">Login</h1>
-            <p class="text-sm text-muted-foreground">Enter your username below to login to your account</p>
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-foreground">{{ \App\Models\Setting::get('store_name', 'Addis Shopping Center') }}</h1>
+            <p class="text-xs text-muted-foreground">Sign in to your retail terminal or POS register</p>
         </div>
 
         <form method="POST" action="{{ route('login') }}" x-data="{ loading: false }" @submit="loading = true">

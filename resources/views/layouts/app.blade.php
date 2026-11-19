@@ -71,12 +71,12 @@
                 });
             });
 
-            // Global Currency Formatter
-            window.currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'Rp') }}";
+            // Global Currency Formatter (Default: Ethiopian Birr - ETB)
+            window.currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'ETB') }}";
             window.currencyPosition = "{{ \App\Models\Setting::get('currency_position', 'left') }}";
-            window.currencyFraction = parseInt("{{ \App\Models\Setting::get('currency_fraction_digits', 0) }}");
-            window.thousandSeparator = "{{ \App\Models\Setting::get('currency_thousand_separator', '.') }}";
-            window.decimalSeparator = "{{ \App\Models\Setting::get('currency_decimal_separator', ',') }}";
+            window.currencyFraction = parseInt("{{ \App\Models\Setting::get('currency_fraction_digits', 2) }}");
+            window.thousandSeparator = "{{ \App\Models\Setting::get('currency_thousand_separator', ',') }}";
+            window.decimalSeparator = "{{ \App\Models\Setting::get('currency_decimal_separator', '.') }}";
 
             window.formatMoney = function(val) {
                 let amount = parseFloat(val) || 0;

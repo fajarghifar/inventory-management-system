@@ -84,6 +84,7 @@
             window.location.reload();
         }
     }"
+    x-cloak
     class="relative z-50"
 >
     <!-- Floating Installation Banner (Desktop & Mobile) -->

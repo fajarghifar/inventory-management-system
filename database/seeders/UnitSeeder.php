@@ -4,30 +4,36 @@ namespace Database\Seeders;
 
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UnitSeeder extends Seeder
 {
     public function run(): void
     {
         $units = [
-            ['name' => 'Pcs', 'symbol' => 'pcs'],       // Satuan umum (Alat, Sambungan Pipa, Kuas)
-            ['name' => 'Kilogram', 'symbol' => 'kg'],  // Paku, Kawat, Cat Kiloan
-            ['name' => 'Meter', 'symbol' => 'm'],      // Kabel, Talang, Plastik Cor
-            ['name' => 'Batang', 'symbol' => 'btg'],  // Pipa, Besi Beton, Baja Ringan, Lis
-            ['name' => 'Lembar', 'symbol' => 'lbr'],   // Triplek, Seng, Asbes, GRC
-            ['name' => 'Sak', 'symbol' => 'sak'],      // Khusus Semen
-            ['name' => 'Dus', 'symbol' => 'dus'],      // Keramik, Granit, Paku (Grosir)
-            ['name' => 'Roll', 'symbol' => 'roll'],    // Kabel Besar, Selang, Terpal Gulung
-            ['name' => 'Rit', 'symbol' => 'rit'],      // Pasir, Batu (Muatan Truk)
-            ['name' => 'Liter', 'symbol' => 'ltr'],    // Thinner, Cat Minyak
+            ['name' => 'Pieces', 'symbol' => 'pcs'],
+            ['name' => 'Kilogram', 'symbol' => 'kg'],
+            ['name' => 'Gram', 'symbol' => 'g'],
+            ['name' => 'Liter', 'symbol' => 'L'],
+            ['name' => 'Bottle', 'symbol' => 'btl'],
+            ['name' => 'Pack', 'symbol' => 'pk'],
+            ['name' => 'Box / Carton', 'symbol' => 'box'],
+            ['name' => 'Dozen', 'symbol' => 'doz'],
+            ['name' => 'Quintal (100kg)', 'symbol' => 'qnt'], // Essential for Ethiopian grain & teff markets
+            ['name' => 'Roll', 'symbol' => 'roll'],
+            ['name' => 'Meter', 'symbol' => 'm'],
         ];
 
         foreach ($units as $unit) {
-            Unit::firstOrCreate(
-                ['symbol' => $unit['symbol']],
-                ['name' => $unit['name']]
-            );
+            $existing = Unit::where('symbol', $unit['symbol'])
+                ->orWhere('name', $unit['name'])
+                ->first();
+
+            if (!$existing) {
+                Unit::create([
+                    'name' => $unit['name'],
+                    'symbol' => $unit['symbol'],
+                ]);
+            }
         }
     }
 }

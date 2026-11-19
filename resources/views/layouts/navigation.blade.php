@@ -15,10 +15,10 @@
                 <div class="flex items-center">
                     <div class="flex flex-row items-center gap-1.5">
                         <!-- Primary Action: POS Register [F1] -->
-                        <a href="{{ route('sales.create') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all shadow-sm {{ request()->routeIs('sales.create') ? 'bg-indigo-600 text-white shadow-indigo-200' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/80 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800' }}">
-                            <x-heroicon-o-computer-desktop class="mr-1.5 h-4 w-4 {{ request()->routeIs('sales.create') ? 'text-white' : 'text-indigo-500' }}" />
+                        <a href="{{ route('sales.create') }}" class="group inline-flex h-9 items-center justify-center rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all shadow-sm {{ request()->routeIs('sales.create') ? 'bg-brand text-white shadow-emerald-900/10' : 'bg-brand-100 text-brand-700 hover:bg-brand-200 border border-brand-200' }}">
+                            <x-heroicon-o-computer-desktop class="mr-1.5 h-4 w-4 {{ request()->routeIs('sales.create') ? 'text-white' : 'text-brand' }}" />
                             <span>POS Register</span>
-                            <span class="ml-1.5 text-[10px] font-mono px-1 py-0.5 rounded {{ request()->routeIs('sales.create') ? 'bg-white/20 text-white' : 'bg-indigo-200/60 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200' }}">F1</span>
+                            <span class="ml-1.5 text-[10px] font-mono px-1 py-0.5 rounded {{ request()->routeIs('sales.create') ? 'bg-white/20 text-white' : 'bg-brand-200 text-brand-800' }}">F1</span>
                         </a>
 
                         @can('admin')
@@ -226,7 +226,7 @@
                             <div>
                                 <h3 class="font-bold text-sm text-foreground leading-tight">{{ Auth::user()->name }}</h3>
                                 <p class="text-xs text-muted-foreground">{{ Auth::user()->email }}</p>
-                                <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ Auth::user()->isAdmin() ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300' }}">
+                                <span class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ Auth::user()->isAdmin() ? 'bg-brand-100 text-brand-800' : 'bg-slate-100 text-slate-800' }}">
                                     {{ Auth::user()->role->value ?? 'User' }}
                                 </span>
                             </div>
@@ -239,12 +239,12 @@
                     <!-- Clean Grouped Menu Links -->
                     <div class="py-4 space-y-4">
                         <!-- Quick POS Sale Launch Card -->
-                        <a href="{{ route('sales.create') }}" class="flex items-center justify-between p-3 rounded-lg bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 transition-colors">
+                        <a href="{{ route('sales.create') }}" class="flex items-center justify-between p-3.5 rounded-xl bg-brand text-white shadow-sm hover:bg-brand-700 transition-colors">
                             <div class="flex items-center gap-2.5">
-                                <svg class="w-5 h-5 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                <svg class="w-5 h-5 text-brand-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                                 <div>
                                     <div class="font-bold text-xs uppercase tracking-wider">Point of Sale</div>
-                                    <div class="text-[11px] text-indigo-100">Open register & record sale</div>
+                                    <div class="text-[11px] text-brand-100">Open register & record sale</div>
                                 </div>
                             </div>
                             <span class="text-xs font-bold bg-white/20 px-2 py-1 rounded">Open &rarr;</span>
@@ -362,7 +362,7 @@
                         @click="$dispatch('open-pwa-install'); mobileMenuOpen = false"
                         class="w-full inline-flex items-center justify-center rounded-md text-xs font-semibold border border-input h-9 px-3 bg-background hover:bg-accent text-foreground transition-colors gap-2"
                     >
-                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         Install Web App
                     </button>
 

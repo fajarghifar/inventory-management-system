@@ -1,53 +1,91 @@
 <div>
     <div class="space-y-5">
 
-        <!-- Clean Store Overview Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 bg-card rounded-xl border border-border shadow-sm print:hidden">
-            <div>
-                <h1 class="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
-                    <span>🛒 Market Overview</span>
-                </h1>
-                <p class="text-xs text-muted-foreground mt-0.5">Quick summary of today's sales, cash flow, and stock alerts.</p>
+        <!-- Brand Hero Card (Matching Mobile POS Brand Mockup) -->
+        <div class="rounded-3xl bg-brand text-white p-5 sm:p-6 shadow-xl shadow-brand/15 relative overflow-hidden print:hidden">
+            <!-- Decorative background circles -->
+            <div class="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-white/5 pointer-events-none"></div>
+            <div class="absolute right-20 -top-10 w-32 h-32 rounded-full bg-white/5 pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                <!-- Store identity -->
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-inner flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg sm:text-xl font-black tracking-tight text-white">{{ \App\Models\Setting::get('store_name', 'Addis Shopping Center') }}</h2>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/20 text-white backdrop-blur-xs">Live Terminal</span>
+                        </div>
+                        <p class="text-xs text-brand-100 mt-0.5">{{ \App\Models\Setting::get('store_address', 'Bole Medhanialem, Bole Sub-City, Addis Ababa, Ethiopia') }}</p>
+                    </div>
+                </div>
+
+                <!-- Right Quick Controls -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Date Period Filter -->
+                    <select wire:model.live="dateFilter" class="h-9 rounded-xl border border-white/20 bg-white/15 backdrop-blur-md px-3 text-xs font-semibold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-white">
+                        @foreach(\App\Enums\DatePeriod::cases() as $period)
+                            <option value="{{ $period->value }}" class="text-gray-900">{{ $period->label() }}</option>
+                        @endforeach
+                    </select>
+
+                    <a href="{{ route('sales.create') }}" class="inline-flex items-center justify-center rounded-xl text-xs font-bold bg-white text-brand hover:bg-brand-50 h-9 px-4 py-1.5 gap-1.5 shadow-md transition-all active:scale-95">
+                        <x-heroicon-o-computer-desktop class="w-4 h-4 text-brand" />
+                        <span>Open POS Register [F1]</span>
+                    </a>
+
+                    <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 h-9 px-3 py-1.5 gap-1 transition-all">
+                        <x-heroicon-o-bolt class="w-3.5 h-3.5 text-brand-200" />
+                        <span>⚡ Quick Sell</span>
+                    </a>
+
+                    @can('admin')
+                        <button wire:click="seedSampleData" wire:loading.attr="disabled" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 h-9 px-3 py-1.5 gap-1 transition-all" title="Reload Ethiopian demo products & ETB currency">
+                            <x-heroicon-o-sparkles class="w-3.5 h-3.5 text-brand-200" />
+                            <span wire:loading.remove wire:target="seedSampleData">🌱 Seed Data</span>
+                            <span wire:loading wire:target="seedSampleData">Seeding...</span>
+                        </button>
+                    @endcan
+                </div>
             </div>
-            
-            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <!-- Date Period Filter -->
-                <select wire:model.live="dateFilter" class="h-9 rounded-lg border border-input bg-background px-3 text-xs font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                    @foreach(\App\Enums\DatePeriod::cases() as $period)
-                        <option value="{{ $period->value }}">{{ $period->label() }}</option>
-                    @endforeach
-                </select>
 
-                <!-- Big Primary POS Button -->
-                <a href="{{ route('sales.create') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white h-9 px-4 py-1.5 gap-1.5 shadow-sm transition-all hover:shadow-indigo-200">
-                    <x-heroicon-o-computer-desktop class="w-4 h-4 text-indigo-200" />
-                    <span>Open POS Register [F1]</span>
-                </a>
+            <!-- 2 Mini Balance Cards inside Hero (Like mockup's Balance cards) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/15">
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15 flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] font-medium text-brand-100 uppercase tracking-wider">Period Sales Revenue</div>
+                        <div class="text-xl sm:text-2xl font-black text-white mt-0.5">
+                            @money($stats['total_sales'] ?? 0)
+                        </div>
+                    </div>
+                    <span class="text-xs text-brand-200 font-bold bg-white/15 px-2.5 py-1 rounded-xl">
+                        {{ $stats['sales_count'] ?? 0 }} Sales
+                    </span>
+                </div>
 
-                <!-- Quick Direct Sell -->
-                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-semibold border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 h-9 px-3 py-1.5 gap-1 shadow-sm">
-                    <x-heroicon-o-bolt class="w-3.5 h-3.5 text-emerald-600" />
-                    <span class="hidden sm:inline">⚡ Quick Sell</span>
-                </a>
-
-                @can('admin')
-                    <!-- Seed Demo Data Button -->
-                    <button wire:click="seedSampleData" wire:loading.attr="disabled" class="inline-flex items-center justify-center rounded-lg text-xs font-semibold border border-purple-300 bg-purple-50 hover:bg-purple-100 text-purple-800 h-9 px-3 py-1.5 gap-1 shadow-sm" title="Populate demo products, barcodes, sales & expenses">
-                        <x-heroicon-o-sparkles class="w-3.5 h-3.5 text-purple-600" />
-                        <span wire:loading.remove wire:target="seedSampleData">🌱 Seed Data</span>
-                        <span wire:loading wire:target="seedSampleData">Seeding...</span>
-                    </button>
-                @endcan
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15 flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] font-medium text-brand-100 uppercase tracking-wider">Estimated Net Profit</div>
+                        <div class="text-xl sm:text-2xl font-black text-white mt-0.5">
+                            @money($stats['estimated_net_profit'] ?? 0)
+                        </div>
+                    </div>
+                    <span class="text-xs text-brand-200 font-bold bg-white/15 px-2.5 py-1 rounded-xl">
+                        P&L Margin
+                    </span>
+                </div>
             </div>
         </div>
 
         <!-- 4 Key Market Vitals -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <!-- 1. Total Sales -->
-            <div class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between">
+            <div class="rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between">
                 <div class="flex items-center justify-between text-muted-foreground">
                     <span class="text-xs font-semibold uppercase tracking-wider">Sales Revenue</span>
-                    <div class="p-2 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50">
+                    <div class="p-2 rounded-xl bg-brand-50 text-brand">
                         <x-heroicon-o-banknotes class="w-5 h-5" />
                     </div>
                 </div>
@@ -63,15 +101,15 @@
 
             <!-- 2. Profit / Earnings -->
             @can('admin')
-                <div class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between">
+                <div class="rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between">
                     <div class="flex items-center justify-between text-muted-foreground">
                         <span class="text-xs font-semibold uppercase tracking-wider">Estimated Net Profit</span>
-                        <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50">
+                        <div class="p-2 rounded-xl bg-blue-50 text-blue-600">
                             <x-heroicon-o-scale class="w-5 h-5" />
                         </div>
                     </div>
                     <div class="mt-2">
-                        <div class="text-xl sm:text-2xl font-black {{ ($stats['estimated_net_profit'] ?? 0) >= 0 ? 'text-blue-600' : 'text-red-600' }}">
+                        <div class="text-xl sm:text-2xl font-black {{ ($stats['estimated_net_profit'] ?? 0) >= 0 ? 'text-brand' : 'text-red-600' }}">
                             @money($stats['estimated_net_profit'] ?? 0)
                         </div>
                         <p class="text-xs text-muted-foreground mt-0.5">
@@ -80,10 +118,10 @@
                     </div>
                 </div>
             @else
-                <div class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between">
+                <div class="rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between">
                     <div class="flex items-center justify-between text-muted-foreground">
                         <span class="text-xs font-semibold uppercase tracking-wider">Cashier Status</span>
-                        <div class="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50">
+                        <div class="p-2 rounded-xl bg-brand-50 text-brand">
                             <x-heroicon-o-user class="w-5 h-5" />
                         </div>
                     </div>
@@ -97,10 +135,10 @@
             @endcan
 
             <!-- 3. Low Stock Warning -->
-            <a href="{{ route('low-stock.index') }}" class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between transition-colors hover:border-rose-400">
+            <a href="{{ route('low-stock.index') }}" class="rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between transition-colors hover:border-rose-400">
                 <div class="flex items-center justify-between text-muted-foreground">
                     <span class="text-xs font-semibold uppercase tracking-wider">Low Stock Alert</span>
-                    <div class="p-2 rounded-lg {{ count($lowStockProducts) > 0 ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/50' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50' }}">
+                    <div class="p-2 rounded-xl {{ count($lowStockProducts) > 0 ? 'bg-rose-50 text-rose-600' : 'bg-brand-50 text-brand' }}">
                         <x-heroicon-o-exclamation-triangle class="w-5 h-5" />
                     </div>
                 </div>
@@ -114,11 +152,11 @@
                 </div>
             </a>
 
-            <!-- 4. Products in Catalog -->
-            <a href="{{ route('products.index') }}" class="rounded-xl border bg-card p-4 shadow-sm flex flex-col justify-between transition-colors hover:border-indigo-400">
+            <!-- 4. Products in Catalog (Warm Amber Icon like in Mockup) -->
+            <a href="{{ route('products.index') }}" class="rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-col justify-between transition-colors hover:border-amber-400">
                 <div class="flex items-center justify-between text-muted-foreground">
                     <span class="text-xs font-semibold uppercase tracking-wider">Products On Shelf</span>
-                    <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50">
+                    <div class="p-2 rounded-xl bg-amber-50 text-amber-600">
                         <x-heroicon-o-cube class="w-5 h-5" />
                     </div>
                 </div>
@@ -136,13 +174,13 @@
         <!-- Daily Action Grid: Recent Sales & Low Stock Watch -->
         <div class="grid gap-5 lg:grid-cols-3">
             <!-- Recent Sales (2 Columns Wide) -->
-            <div class="lg:col-span-2 rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden flex flex-col">
+            <div class="lg:col-span-2 rounded-2xl border border-border/80 bg-card text-card-foreground shadow-xs overflow-hidden flex flex-col">
                 <div class="p-4 border-b flex items-center justify-between">
                     <div>
                         <h3 class="font-bold text-sm text-foreground">Recent Sales Register</h3>
                         <p class="text-xs text-muted-foreground">Latest register checkout transactions</p>
                     </div>
-                    <a href="{{ route('sales.index') }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+                    <a href="{{ route('sales.index') }}" class="text-xs font-bold text-brand hover:underline">
                         View All Sales &rarr;
                     </a>
                 </div>
@@ -168,15 +206,15 @@
                                         <div class="text-[10px]">{{ \Carbon\Carbon::parse($sale['sale_date'] ?? $sale['created_at'])->diffForHumans() }}</div>
                                     </td>
                                     <td class="px-4 py-3 text-xs">
-                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-slate-100 text-slate-700">
                                             {{ $sale['payment_method']->value ?? 'cash' }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-right font-bold text-emerald-600 text-sm">
+                                    <td class="px-4 py-3 text-right font-black text-brand text-sm">
                                         @money($sale['total'])
                                     </td>
                                     <td class="px-4 py-3 text-center">
-                                        <a href="{{ route('sales.receipt', $sale['id']) }}" target="_blank" class="inline-flex items-center justify-center p-1.5 rounded-md hover:bg-accent text-indigo-600 hover:text-indigo-800 transition-colors" title="Print Receipt">
+                                        <a href="{{ route('sales.receipt', $sale['id']) }}" target="_blank" class="inline-flex items-center justify-center p-1.5 rounded-lg hover:bg-brand-50 text-brand transition-colors" title="Print Receipt">
                                             <x-heroicon-o-printer class="w-4 h-4" />
                                         </a>
                                     </td>
@@ -359,7 +397,7 @@
                         stops: [0, 90, 100]
                     }
                 },
-                colors: ['#0ea5e9'], // Sky 500
+                colors: ['#0C735B'], // Brand Emerald Green
                 tooltip: {
                     y: {
                         formatter: function (val) {
@@ -411,7 +449,7 @@
                         }
                     }
                 },
-                colors: ['#10b981', '#ef4444'], // Emerald 500, Red 500
+                colors: ['#0C735B', '#e11d48'], // Brand Emerald, Rose Expense
                 fill: { opacity: 1 },
                 tooltip: {
                     y: {

@@ -15,7 +15,7 @@
         @php $isHome = request()->routeIs('dashboard'); @endphp
         <a
             href="{{ route('dashboard') }}"
-            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isHome ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
+            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isHome ? 'text-brand font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
         >
             <div class="relative flex items-center justify-center w-7 h-7">
                 <svg class="w-5 h-5 transition-transform group-active:scale-90" fill="{{ $isHome ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@
         @php $isProducts = request()->routeIs(['products.*', 'categories.*', 'units.*', 'low-stock.*', 'stock.*']); @endphp
         <a
             href="{{ route('products.index') }}"
-            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isProducts ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
+            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isProducts ? 'text-brand font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
         >
             <div class="relative flex items-center justify-center w-7 h-7">
                 <svg class="w-5 h-5 transition-transform group-active:scale-90" fill="{{ $isProducts ? 'currentColor' : 'none' }}" stroke="{{ $isProducts ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
@@ -58,8 +58,8 @@
         >
             <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-active:scale-95 shadow-sm
                 {{ $isPOS
-                    ? 'bg-indigo-600 text-white shadow-indigo-600/30'
-                    : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 group-hover:scale-105'
+                    ? 'bg-brand text-white shadow-emerald-900/25'
+                    : 'bg-brand-100 text-brand hover:bg-brand-200 group-hover:scale-105'
                 }}"
             >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,14 +68,14 @@
                     />
                 </svg>
             </div>
-            <span class="text-[10px] font-bold leading-none mt-1 {{ $isPOS ? 'text-indigo-600' : 'text-indigo-600/90' }}">POS</span>
+            <span class="text-[10px] font-bold leading-none mt-1 {{ $isPOS ? 'text-brand' : 'text-brand/90' }}">POS</span>
         </a>
 
         {{-- 4. Sales History --}}
         @php $isSales = request()->routeIs(['sales.index', 'sales.show']); @endphp
         <a
             href="{{ route('sales.index') }}"
-            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isSales ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
+            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isSales ? 'text-brand font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
         >
             <div class="relative flex items-center justify-center w-7 h-7">
                 <svg class="w-5 h-5 transition-transform group-active:scale-90" fill="{{ $isSales ? 'currentColor' : 'none' }}" stroke="{{ $isSales ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">

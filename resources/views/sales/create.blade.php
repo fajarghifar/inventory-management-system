@@ -9,13 +9,13 @@
         <div class="mb-3 flex items-center justify-between gap-2 bg-white dark:bg-slate-900 px-3 sm:px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm">
             <div class="flex items-center space-x-2">
                 <h1 class="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                     POS Register
                 </h1>
                 <!-- Online/Offline Live Status Pill -->
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold"
-                      :class="isOnline ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'">
-                    <span class="w-1.5 h-1.5 rounded-full" :class="isOnline ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'"></span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold"
+                      :class="isOnline ? 'bg-brand-50 text-brand-800 border border-brand-200' : 'bg-amber-100 text-amber-800 border border-amber-300'">
+                    <span class="w-1.5 h-1.5 rounded-full" :class="isOnline ? 'bg-brand' : 'bg-amber-500 animate-pulse'"></span>
                     <span x-text="isOnline ? 'Online' : 'Offline'"></span>
                 </span>
             </div>
@@ -26,7 +26,7 @@
                     type="button"
                     @click="isAudioMuted = window.posAudio ? window.posAudio.toggleMute() : !isAudioMuted"
                     class="p-1 rounded-md text-xs font-semibold border transition-colors flex items-center justify-center w-7 h-7"
-                    :class="isAudioMuted ? 'bg-gray-100 text-gray-400 border-gray-200' : 'bg-indigo-50 text-indigo-600 border-indigo-200'"
+                    :class="isAudioMuted ? 'bg-gray-100 text-gray-400 border-gray-200' : 'bg-brand-50 text-brand-700 border-brand-200'"
                     :title="isAudioMuted ? 'Unmute POS Sound' : 'Mute POS Sound'"
                 >
                     <template x-if="!isAudioMuted">
@@ -82,7 +82,7 @@
                     x-show="pendingSalesCount > 0 && isOnline"
                     @click="syncOfflineSales()"
                     :disabled="isSyncing"
-                    class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-md text-xs font-semibold shadow-sm transition-colors"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 bg-brand hover:bg-brand-700 disabled:opacity-50 text-white rounded-md text-xs font-semibold shadow-sm transition-colors"
                 >
                     <svg class="w-3 h-3" :class="isSyncing ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     <span x-text="isSyncing ? '...' : 'Sync'"></span>
@@ -347,15 +347,15 @@
                             <div class="grid grid-cols-2 gap-2">
                                 <button
                                     @click="payment.method = 'cash'"
-                                    class="px-4 py-2 text-sm font-medium rounded-md border"
-                                    :class="payment.method === 'cash' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                                    class="px-4 py-2 text-sm font-semibold rounded-xl border transition-all"
+                                    :class="payment.method === 'cash' ? 'bg-brand text-white border-brand shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
                                 >
                                     CASH
                                 </button>
                                 <button
                                     @click="payment.method = 'transfer'"
-                                    class="px-4 py-2 text-sm font-medium rounded-md border"
-                                    :class="payment.method === 'transfer' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                                    class="px-4 py-2 text-sm font-semibold rounded-xl border transition-all"
+                                    :class="payment.method === 'transfer' ? 'bg-brand text-white border-brand shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
                                 >
                                     TRANSFER
                                 </button>
@@ -373,44 +373,44 @@
                                         type="text"
                                         :value="formatNumber(payment.cash_received)"
                                         @input="payment.cash_received = unformatNumber($event.target.value)"
-                                        class="block w-full py-3 text-lg font-bold text-gray-900 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                        :class="window.currencyPosition === 'left' ? 'pl-10 pr-3 text-left' : 'pr-10 pl-3 text-right'"
-                                        placeholder="0"
+                                        class="block w-full py-3 text-lg font-bold text-gray-900 border-gray-300 rounded-xl focus:ring-brand focus:border-brand"
+                                        :class="window.currencyPosition === 'left' ? 'pl-14 pr-3 text-left' : 'pr-14 pl-3 text-right'"
+                                        placeholder="0.00"
                                     >
                                 </div>
 
-                                <!-- Quick Cash Buttons -->
+                                <!-- Quick Cash Buttons in Ethiopian Birr -->
                                 <div class="grid grid-cols-4 gap-2 mt-2">
-                                    <button @click="payment.cash_received = total" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
+                                    <button @click="payment.cash_received = total" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-xs font-bold text-gray-700 transition-colors">
                                         EXACT
                                     </button>
-                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 100000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
-                                        +100K
+                                    <button @click="payment.cash_received = (parseFloat(payment.cash_received) || 0) + 1000" class="px-2 py-2 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-lg text-xs font-bold text-brand-800 transition-colors">
+                                        +1,000
                                     </button>
-                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 50000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
-                                        +50K
+                                    <button @click="payment.cash_received = (parseFloat(payment.cash_received) || 0) + 500" class="px-2 py-2 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-lg text-xs font-bold text-brand-800 transition-colors">
+                                        +500
                                     </button>
-                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 20000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
-                                        +20K
+                                    <button @click="payment.cash_received = (parseFloat(payment.cash_received) || 0) + 200" class="px-2 py-2 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-lg text-xs font-bold text-brand-800 transition-colors">
+                                        +200
                                     </button>
-                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 10000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
-                                        +10K
+                                    <button @click="payment.cash_received = (parseFloat(payment.cash_received) || 0) + 100" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-xs font-bold text-gray-700 transition-colors">
+                                        +100
                                     </button>
-                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 5000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
-                                        +5K
+                                    <button @click="payment.cash_received = (parseFloat(payment.cash_received) || 0) + 50" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-xs font-bold text-gray-700 transition-colors">
+                                        +50
                                     </button>
-                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 2000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
-                                        +2K
+                                    <button @click="payment.cash_received = (parseFloat(payment.cash_received) || 0) + 20" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-xs font-bold text-gray-700 transition-colors">
+                                        +20
                                     </button>
-                                    <button @click="payment.cash_received = (parseInt(payment.cash_received) || 0) + 1000" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold text-gray-700">
-                                        +1K
+                                    <button @click="payment.cash_received = (parseFloat(payment.cash_received) || 0) + 10" class="px-2 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-xs font-bold text-gray-700 transition-colors">
+                                        +10
                                     </button>
                                 </div>
-                                <div class="bg-green-50 p-3 rounded-md border border-green-100 flex justify-between items-center mt-2"
-                                     :class="change < 0 ? 'bg-red-50 border-red-100 text-red-800' : 'bg-green-50 border-green-100 text-green-800'">
-                                    <span class="text-sm font-medium uppercase" x-text="change < 0 ? 'Due' : 'Change'"></span>
-                                    <span class="text-xl font-bold"
-                                          :class="change < 0 ? 'text-red-700' : 'text-green-700'"
+                                <div class="p-3 rounded-xl border flex justify-between items-center mt-2"
+                                     :class="change < 0 ? 'bg-red-50 border-red-200 text-red-800' : 'bg-brand-50 border-brand-200 text-brand-800'">
+                                    <span class="text-sm font-semibold uppercase" x-text="change < 0 ? 'Due' : 'Change'"></span>
+                                    <span class="text-xl font-black"
+                                          :class="change < 0 ? 'text-red-700' : 'text-brand-800'"
                                           x-text="formatCurrency(Math.abs(change))"></span>
                                 </div>
                             </div>
@@ -419,9 +419,9 @@
                         <div>
                             <textarea
                                 x-model="payment.notes"
-                                rows="3"
-                                class="block w-full text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 py-2"
-                                placeholder="Transaction Notes / Address..."
+                                rows="2"
+                                class="block w-full text-sm border-gray-300 rounded-xl focus:ring-brand focus:border-brand placeholder-gray-400 py-2"
+                                placeholder="Transaction Notes (optional)..."
                             ></textarea>
                         </div>
                     </div>
@@ -431,7 +431,7 @@
                 <div class="p-4 border-t border-gray-200 bg-gray-50 flex gap-3">
                     <button
                         @click="$dispatch('open-modal', { name: 'cancel-modal' })"
-                        class="w-1/3 py-3 text-sm font-bold text-red-600 hover:text-white bg-white border border-red-200 hover:bg-red-600 rounded-lg flex items-center justify-center transition-colors shadow-sm"
+                        class="w-1/3 py-3 text-sm font-bold text-red-600 hover:text-white bg-white border border-red-200 hover:bg-red-600 rounded-xl flex items-center justify-center transition-colors shadow-sm"
                     >
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         CANCEL
@@ -440,12 +440,13 @@
                     <button
                         @click="openConfirmation()"
                         :disabled="isSubmitting || cart.length === 0"
-                        class="w-2/3 flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        class="w-2/3 flex justify-between items-center py-3.5 px-5 border border-transparent rounded-xl shadow-lg shadow-emerald-900/15 text-base font-bold text-white bg-brand hover:bg-brand-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
-                        <template x-if="isSubmitting">
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        </template>
-                        <span x-text="isSubmitting ? 'Processing...' : 'PAY (F3)'"></span>
+                        <span x-text="isSubmitting ? 'Processing...' : 'CONFIRM & PAY'"></span>
+                        <div class="flex items-center gap-1">
+                            <span class="text-sm font-semibold opacity-90" x-text="formatCurrency(total)"></span>
+                            <span class="text-lg leading-none">&rarr;</span>
+                        </div>
                     </button>
                 </div>
             </div>

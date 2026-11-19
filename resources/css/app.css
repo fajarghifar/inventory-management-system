@@ -9,26 +9,26 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 240 10% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 240 10% 3.9%;
+        --background: 160 12% 97%;          /* #F4F7F6 Clean soft off-white/cyan background */
+        --foreground: 200 25% 12%;          /* #162228 Modern deep charcoal */
+        --card: 0 0% 100%;                  /* #FFFFFF Pure white cards */
+        --card-foreground: 200 25% 12%;     /* #162228 */
         --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 3.9%;
-        --primary: 240 5.9% 10%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 240 4.8% 95.9%;
-        --secondary-foreground: 240 5.9% 10%;
-        --muted: 240 4.8% 95.9%;
-        --muted-foreground: 240 3.8% 46.1%;
-        --accent: 240 4.8% 95.9%;
-        --accent-foreground: 240 5.9% 10%;
+        --popover-foreground: 200 25% 12%;
+        --primary: 166 81% 25%;             /* #0C735B Brand Deep Emerald Green */
+        --primary-foreground: 0 0% 100%;    /* #FFFFFF */
+        --secondary: 164 36% 94%;           /* #E8F6F2 Soft mint tint */
+        --secondary-foreground: 166 81% 20%;/* #074E3E Deep pine */
+        --muted: 160 15% 94%;
+        --muted-foreground: 200 10% 45%;    /* #64748B Cool slate */
+        --accent: 164 36% 94%;              /* #E8F6F2 Soft mint */
+        --accent-foreground: 166 81% 20%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
-        --border: 240 5.9% 90%;
-        --input: 240 5.9% 90%;
-        --ring: 240 5.9% 10%;
-        --radius: 0.5rem;
+        --border: 160 14% 90%;              /* #E2ECE9 Soft divider border */
+        --input: 160 14% 88%;
+        --ring: 166 81% 25%;                /* #0C735B Focus ring */
+        --radius: 0.875rem;                 /* 14px modern rounded corner */
     }
 
     /* Custom Scrollbar */
@@ -52,7 +52,7 @@
 
 /* Input Control (Trigger) */
 .ts-control {
-    @apply rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3 py-2;
+    @apply rounded-xl border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0C735B] sm:text-sm sm:leading-6 px-3 py-2;
     min-height: 2.5rem; /* 40px - h-10 */
     background-color: #ffffff !important;
     color: #111827 !important; /* text-gray-900 */
@@ -66,14 +66,14 @@
 
 /* Fix Focus Ring - Apply Tailwind ring when wrapper handles focus */
 .ts-wrapper.focus .ts-control {
-    @apply ring-2 ring-inset ring-indigo-600;
+    @apply ring-2 ring-inset ring-[#0C735B];
     box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000) !important;
     border-color: transparent;
 }
 
 /* Dropdown Container */
 .ts-dropdown {
-    @apply bg-white border border-gray-200 shadow-lg rounded-md mt-1 overflow-hidden;
+    @apply bg-white border border-gray-200 shadow-xl rounded-xl mt-1 overflow-hidden;
     z-index: 50 !important;
 }
 
@@ -89,11 +89,11 @@
 
 /* Selected State (Currently Selected Value) */
 .ts-dropdown .option.selected {
-    @apply font-medium bg-indigo-50 text-indigo-700;
+    @apply font-medium bg-[#E8F6F2] text-[#0C735B];
 }
 
 .ts-dropdown .active.selected {
-    @apply bg-indigo-100 text-indigo-800 !important;
+    @apply bg-[#D1EFE7] text-[#074E3E] !important;
 }
 
 /* Highlighted Match in Search */

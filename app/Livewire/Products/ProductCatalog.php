@@ -20,7 +20,7 @@ class ProductCatalog extends Component
     public string $search = '';
 
     #[Url(as: 'category')]
-    public ?int $selectedCategory = null;
+    public $selectedCategory = null;
 
     #[Url(as: 'status')]
     public string $stockFilter = 'all'; // all, in_stock, low_stock, out_of_stock, inactive
@@ -140,8 +140,8 @@ class ProductCatalog extends Component
         }
 
         // Category Filter
-        if ($this->selectedCategory) {
-            $query->where('category_id', $this->selectedCategory);
+        if (!empty($this->selectedCategory)) {
+            $query->where('category_id', (int) $this->selectedCategory);
         }
 
         // Stock Filter

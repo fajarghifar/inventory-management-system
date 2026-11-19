@@ -99,9 +99,9 @@
             </button>
         </div>
 
-        <!-- 3. Toolbar (Search, Categories, Stock Filters, Sorting) -->
+        <!-- 3. Toolbar (Search, Category Dropdown, Stock Filters, Sorting) -->
         <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-3">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                 <!-- Search Input -->
                 <div class="relative flex-1">
                     <x-heroicon-o-magnifying-glass class="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -122,29 +122,56 @@
                     @endif
                 </div>
 
-                <!-- Sort & View Controls -->
-                <div class="flex items-center gap-2 self-end md:self-auto w-full md:w-auto justify-between md:justify-end">
+                <!-- Filters & Controls -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Category Dropdown -->
+                    <div class="flex-1 sm:flex-none min-w-[170px]">
+                        <select
+                            wire:model.live="selectedCategory"
+                            class="w-full h-11 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer"
+                        >
+                            <option value="">📁 All Categories</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Stock Status Dropdown -->
+                    <div class="flex-1 sm:flex-none min-w-[145px]">
+                        <select
+                            wire:model.live="stockFilter"
+                            class="w-full h-11 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer"
+                        >
+                            <option value="all">📦 All Stock</option>
+                            <option value="in_stock">✅ In Stock</option>
+                            <option value="low_stock">⚠️ Low Stock</option>
+                            <option value="out_of_stock">❌ Out of Stock</option>
+                            <option value="inactive">🚫 Discontinued</option>
+                        </select>
+                    </div>
+
                     <!-- Sort Dropdown -->
-                    <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                        <span class="hidden sm:inline font-medium">Sort:</span>
+                    <div class="flex-1 sm:flex-none min-w-[145px]">
                         <select
                             wire:model.live="sortBy"
-                            class="h-10 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+                            class="w-full h-11 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer"
                         >
-                            <option value="latest">Newest First</option>
-                            <option value="name_asc">Name (A → Z)</option>
-                            <option value="name_desc">Name (Z → A)</option>
-                            <option value="price_asc">Price: Low to High</option>
-                            <option value="price_desc">Price: High to Low</option>
-                            <option value="qty_desc">Stock: High to Low</option>
-                            <option value="qty_asc">Stock: Low to High</option>
+                            <option value="latest">⚡ Newest First</option>
+                            <option value="name_asc">🔤 Name (A → Z)</option>
+                            <option value="name_desc">🔤 Name (Z → A)</option>
+                            <option value="price_asc">💵 Price: Low to High</option>
+                            <option value="price_desc">💵 Price: High to Low</option>
+                            <option value="qty_desc">📊 Stock: High to Low</option>
+                            <option value="qty_asc">📊 Stock: Low to High</option>
                         </select>
                     </div>
 
                     <!-- Items Per Page -->
                     <select
                         wire:model.live="perPage"
-                        class="h-10 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-2.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand hidden sm:block"
+                        class="h-11 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-2.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand hidden sm:block cursor-pointer"
+                        title="Items per page"
                     >
                         <option value="12">12 / page</option>
                         <option value="24">24 / page</option>
@@ -152,11 +179,11 @@
                     </select>
 
                     <!-- Reset Filters Button if any active -->
-                    @if($search !== '' || $selectedCategory !== null || $stockFilter !== 'all' || $sortBy !== 'latest')
+                    @if($search !== '' || !empty($selectedCategory) || $stockFilter !== 'all' || $sortBy !== 'latest')
                         <button
                             type="button"
                             wire:click="resetFilters"
-                            class="h-10 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-1"
+                            class="h-11 px-3 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors flex items-center gap-1"
                             title="Clear all filters"
                         >
                             <x-heroicon-o-arrow-path class="w-3.5 h-3.5" />
@@ -166,26 +193,42 @@
                 </div>
             </div>
 
-            <!-- Horizontally Scrollable Category Pills -->
-            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 no-scrollbar border-t border-gray-100 text-xs">
-                <span class="text-gray-400 font-medium text-[11px] uppercase tracking-wider mr-1 flex-shrink-0">Category:</span>
-                <button
-                    type="button"
-                    wire:click="$set('selectedCategory', null)"
-                    class="px-3 py-1.5 rounded-full whitespace-nowrap text-xs font-semibold transition-all flex-shrink-0 {{ $selectedCategory === null ? 'bg-brand text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}"
-                >
-                    All Categories
-                </button>
-                @foreach($categories as $cat)
-                    <button
-                        type="button"
-                        wire:click="$set('selectedCategory', {{ $cat->id }})"
-                        class="px-3 py-1.5 rounded-full whitespace-nowrap text-xs font-semibold transition-all flex-shrink-0 {{ $selectedCategory === $cat->id ? 'bg-brand text-white shadow-xs' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}"
-                    >
-                        {{ $cat->name }}
-                    </button>
-                @endforeach
-            </div>
+            <!-- Active Filter Badges (Shown when category or search is selected) -->
+            @if(!empty($selectedCategory) || $search !== '' || $stockFilter !== 'all')
+                <div class="flex items-center gap-2 pt-2 border-t border-gray-100 flex-wrap text-xs">
+                    <span class="text-gray-400 font-medium text-[11px] uppercase tracking-wider">Active:</span>
+
+                    @if(!empty($selectedCategory))
+                        @php $activeCat = $categories->firstWhere('id', (int)$selectedCategory); @endphp
+                        @if($activeCat)
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-brand-50 text-brand border border-brand-100">
+                                <span>Category: {{ $activeCat->name }}</span>
+                                <button type="button" wire:click="$set('selectedCategory', null)" class="text-brand hover:text-brand-900 p-0.5">
+                                    <x-heroicon-o-x-mark class="w-3.5 h-3.5" />
+                                </button>
+                            </span>
+                        @endif
+                    @endif
+
+                    @if($stockFilter !== 'all')
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">
+                            <span>Status: {{ ucwords(str_replace('_', ' ', $stockFilter)) }}</span>
+                            <button type="button" wire:click="$set('stockFilter', 'all')" class="text-gray-500 hover:text-gray-900 p-0.5">
+                                <x-heroicon-o-x-mark class="w-3.5 h-3.5" />
+                            </button>
+                        </span>
+                    @endif
+
+                    @if($search !== '')
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">
+                            <span>"{{ $search }}"</span>
+                            <button type="button" wire:click="$set('search', '')" class="text-gray-500 hover:text-gray-900 p-0.5">
+                                <x-heroicon-o-x-mark class="w-3.5 h-3.5" />
+                            </button>
+                        </span>
+                    @endif
+                </div>
+            @endif
         </div>
 
         <!-- 4. Product Catalog Content -->

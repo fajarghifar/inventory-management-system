@@ -327,17 +327,7 @@
     </div>
 </div>
 
-<style>
-    @media print {
-        @page { size: landscape; margin: 1cm; }
-        body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .print\:hidden { display: none !important; }
-        .bg-card { border: 1px solid #e2e8f0; box-shadow: none !important; }
-        .grid { gap: 1rem !important; }
-        .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
-    }
-</style>
-
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     document.addEventListener('livewire:initialized', () => {
@@ -524,4 +514,4 @@
         });
     });
 </script>
-</div>
+@endpush

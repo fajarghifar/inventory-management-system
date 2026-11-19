@@ -195,3 +195,32 @@
     background-color: #000000;
 }
 
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+@media print {
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+    body {
+        background-color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .print\:hidden {
+        display: none !important;
+    }
+    .bg-card {
+        border: 1px solid #e2e8f0;
+        box-shadow: none !important;
+    }
+    .grid {
+        gap: 1rem !important;
+    }
+    .break-inside-avoid {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+

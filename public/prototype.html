@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock & Financial Management System — Mobile Prototype</title>
+    <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+    <style>
+        :root {
+            --brand-primary: #087C50;
+            --brand-accent: #10B981;
+            --brand-soft: #E8F7EF;
+            --brand-bg: #F7F9F8;
+            --brand-text: #172C25;
+            --brand-secondary: #6B7280;
+            --brand-warning: #F59E0B;
+            --brand-error: #DC4545;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0E1614;
+            color: #172C25;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .device-iphone {
+            width: 390px;
+            height: 800px;
+            background: #F7F9F8;
+            border-radius: 44px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 12px #222926, 0 0 0 14px #333d39;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #222926;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            z-index: 50;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 antialiased">
+
+    <!-- Top Controls: Role Switcher & Screen Mode -->
+    <header class="w-full max-w-4xl mb-4 flex flex-wrap items-center justify-between gap-3 px-2 text-white">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-[#10B981] animate-pulse"></span>
+                <h1 class="text-base font-bold tracking-tight">Interactive UI/UX Prototype</h1>
+                <span class="text-xs bg-[#087C50] px-2 py-0.5 rounded-full font-medium">Ethiopian Birr (ETB)</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-0.5">Loyverse simplicity · Square interactions · Zoho Inventory organization</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- Role Toggle -->
+            <div class="bg-[#1A2420] p-1 rounded-xl flex items-center border border-white/10 text-xs">
+                <button id="role-admin-btn" onclick="setRole('admin')" class="px-3 py-1.5 rounded-lg font-semibold transition-all bg-[#087C50] text-white shadow-sm">
+                    👑 Admin (Owner)
+                </button>
+                <button id="role-staff-btn" onclick="setRole('staff')" class="px-3 py-1.5 rounded-lg font-semibold transition-all text-gray-400 hover:text-white">
+                    🧑‍💼 Staff (Cashier)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Phone Frame Container -->
+    <div class="device-iphone" id="app-container">
+        <!-- iPhone Dynamic Island / Speaker Notch -->
+        <div class="notch"></div>
+
+        <!-- Phone Top Status Bar -->
+        <div class="pt-2 px-7 pb-1 flex justify-between items-center text-[11px] font-semibold text-gray-800 z-40 bg-inherit select-none">
+            <span>9:41</span>
+            <div class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.32 19.58 10.61 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+                <span class="w-5 h-2.5 border border-gray-700 rounded-sm p-0.5 flex items-center"><span class="w-full h-full bg-gray-800 rounded-2xs"></span></span>
+            </div>
+        </div>
+
+        <!-- Active View Screen Content Container -->
+        <main id="main-content" class="flex-1 overflow-y-auto hide-scrollbar pb-24">
+
+            <!-- ================= SCREEN 1: HOME / DASHBOARD ================= -->
+            <div id="screen-home" class="screen-view">
+                <!-- Header Greeting -->
+                <div class="p-5 bg-gradient-to-b from-[#087C50] to-[#066340] text-white rounded-b-3xl shadow-lg relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none"></div>
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-[10px] tracking-wider uppercase text-[#E8F7EF] font-bold">GOOD MORNING</span>
+                            <h2 class="text-xl font-black tracking-tight mt-0.5">Welcome back!</h2>
+                            <p class="text-xs text-[#E8F7EF]/80" id="role-subtitle">Addis Shopping Center · Bole (Owner)</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-inner font-bold text-sm">
+                            AS
+                        </div>
+                    </div>
+
+                    <!-- Prominent Today's Sales Metric -->
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 mt-3 shadow-inner">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-[#E8F7EF]">TODAY'S SALES</span>
+                        <div class="text-3xl font-black tracking-tight text-white mt-1">ETB 24,500.00</div>
+                        <div class="flex items-center gap-1.5 mt-1 text-xs text-[#E8F7EF]">
+                            <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                            <span>38 completed sales today</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 Vitals Grid (Loyverse/Square clarity) -->
+                    <div class="grid grid-cols-2 gap-2.5 mt-3" id="admin-vitals">
+                        <div class="bg-white/10 rounded-xl p-3 border border-white/10">
+                            <div class="text-lg font-black text-white">1,240</div>
+                            <div class="text-[10px] text-[#E8F7EF] uppercase font-semibold">Total Products</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl p-3 border border-white/10 cursor-pointer hover:bg-white/20 transition-all" onclick="showScreen('stock')">
+                            <div class="text-lg font-black text-[#F59E0B]">12</div>
+                            <div class="text-[10px] text-[#E8F7EF] uppercase font-semibold">Low Stock ⚠</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl p-3 border border-white/10">
+                            <div class="text-lg font-black text-white">ETB 3,200</div>
+                            <div class="text-[10px] text-[#E8F7EF] uppercase font-semibold">Expenses</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl p-3 border border-white/10">
+                            <div class="text-lg font-black text-[#10B981]">ETB 5,400</div>
+                            <div class="text-[10px] text-[#E8F7EF] uppercase font-semibold">Est. Profit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div class="p-5">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-[#6B7280] mb-3">Quick Actions</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="showScreen('sales')" class="flex items-center gap-3 p-3.5 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:border-[#087C50] active:scale-95 transition-all text-left">
+                            <div class="w-10 h-10 rounded-xl bg-[#E8F7EF] text-[#087C50] flex items-center justify-center font-bold text-lg">
+                                🛒
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-[#172C25]">Record Sale</div>
+                                <div class="text-[10px] text-[#6B7280]">Quick POS Checkout</div>
+                            </div>
+                        </button>
+                        <button onclick="showScreen('stock')" class="flex items-center gap-3 p-3.5 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:border-[#087C50] active:scale-95 transition-all text-left">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-[#F59E0B] flex items-center justify-center font-bold text-lg">
+                                📦
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-[#172C25]">Add Stock</div>
+                                <div class="text-[10px] text-[#6B7280]">Receive new items</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Recent Activity Feed -->
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-[#6B7280]">Recent Activity</h3>
+                            <span class="text-[11px] text-[#087C50] font-bold cursor-pointer" onclick="showScreen('sales')">View all</span>
+                        </div>
+                        <div class="space-y-2.5">
+                            <div class="p-3 bg-white rounded-2xl border border-gray-100 shadow-2xs flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#E8F7EF] text-[#087C50] flex items-center justify-center text-xs font-bold">
+                                        ✓
+                                    </div>
+                                    <div>
+                                        <div class="text-xs font-bold text-[#172C25]">New Stock Received</div>
+                                        <div class="text-[10px] text-[#6B7280]">Magna White Teff · 20 bags (qnt)</div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-semibold text-gray-400">10:30 AM</span>
+                            </div>
+                            <div class="p-3 bg-white rounded-2xl border border-gray-100 shadow-2xs flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                                        ETB
+                                    </div>
+                                    <div>
+                                        <div class="text-xs font-bold text-[#172C25]">Sale Recorded</div>
+                                        <div class="text-[10px] text-[#6B7280]">3 products · Cash Payment</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-black text-[#087C50]">+ ETB 1,890</div>
+                                    <span class="text-[10px] text-gray-400">09:45 AM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 2: PRODUCTS CATALOG ================= -->
+            <div id="screen-products" class="screen-view hidden p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-black text-[#172C25]">Product Catalog</h2>
+                    <button onclick="openAddProductModal()" class="px-3 py-1.5 bg-[#087C50] text-white rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm active:scale-95 transition-all">
+                        <span>+ Add Product</span>
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative mb-3">
+                    <input type="text" placeholder="Search name or barcode..." class="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs focus:ring-2 focus:ring-[#087C50] focus:border-transparent outline-none shadow-2xs">
+                    <span class="absolute left-3 top-2.5 text-gray-400 text-sm">🔍</span>
+                </div>
+
+                <!-- Category Filters (Horizontal Scroll) -->
+                <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2 mb-4 text-xs font-semibold whitespace-nowrap">
+                    <button class="px-3 py-1.5 bg-[#087C50] text-white rounded-full shadow-2xs">All (1,240)</button>
+                    <button class="px-3 py-1.5 bg-white text-[#6B7280] border border-gray-200 rounded-full hover:bg-gray-50">Grains & Teff</button>
+                    <button class="px-3 py-1.5 bg-white text-[#6B7280] border border-gray-200 rounded-full hover:bg-gray-50">Cooking Oil</button>
+                    <button class="px-3 py-1.5 bg-white text-[#6B7280] border border-gray-200 rounded-full hover:bg-gray-50">Coffee & Tea</button>
+                    <button class="px-3 py-1.5 bg-white text-[#6B7280] border border-gray-200 rounded-full hover:bg-gray-50">Dairy</button>
+                </div>
+
+                <!-- Products Grid / List (Shopping App Feel) -->
+                <div class="space-y-3">
+                    <!-- Product 1 -->
+                    <div class="p-3.5 bg-white rounded-2xl border border-gray-100 shadow-2xs flex items-center justify-between hover:border-[#087C50] transition-colors cursor-pointer" onclick="showProductDetails('Magna White Teff 50kg', 'ETB 5,800.00', 'ETB 5,000.00', 40, 5, 'qnt', '6001234500018')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-[#E8F7EF] flex items-center justify-center text-xl flex-shrink-0">
+                                🌾
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-[#172C25]">Magna White Teff 50kg</h4>
+                                <span class="text-[10px] text-[#6B7280]">Grains · SKU: 6001234500018</span>
+                                <div class="flex items-center gap-1.5 mt-1">
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#E8F7EF] text-[#087C50]">Available: 40 qnt</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-black text-[#087C50]">ETB 5,800</div>
+                            <span class="text-[10px] text-gray-400">Cost: ETB 5,000</span>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 (Low Stock Warning) -->
+                    <div class="p-3.5 bg-white rounded-2xl border border-amber-200 shadow-2xs flex items-center justify-between hover:border-[#F59E0B] transition-colors cursor-pointer" onclick="showProductDetails('Abyssinia Sunflower Oil 1L', 'ETB 280.00', 'ETB 220.00', 3, 12, 'btl', '8712345678902')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-xl flex-shrink-0">
+                                🌻
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-[#172C25]">Abyssinia Sunflower Oil 1L</h4>
+                                <span class="text-[10px] text-[#6B7280]">Edible Oil · SKU: 8712345678902</span>
+                                <div class="flex items-center gap-1.5 mt-1">
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-[#F59E0B]">Low Stock: 3 btl left</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-black text-[#087C50]">ETB 280</div>
+                            <span class="text-[10px] text-gray-400">Cost: ETB 220</span>
+                        </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="p-3.5 bg-white rounded-2xl border border-gray-100 shadow-2xs flex items-center justify-between hover:border-[#087C50] transition-colors cursor-pointer" onclick="showProductDetails('Harar Grade-1 Coffee 500g', 'ETB 650.00', 'ETB 520.00', 60, 10, 'pk', '6001234500032')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-[#E8F7EF] flex items-center justify-center text-xl flex-shrink-0">
+                                ☕
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-[#172C25]">Harar Roasted Coffee 500g</h4>
+                                <span class="text-[10px] text-[#6B7280]">Coffee & Tea · SKU: 6001234500032</span>
+                                <div class="flex items-center gap-1.5 mt-1">
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#E8F7EF] text-[#087C50]">Available: 60 pk</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-black text-[#087C50]">ETB 650</div>
+                            <span class="text-[10px] text-gray-400">Cost: ETB 520</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 3: SALES / RECORD A SALE (POS) ================= -->
+            <div id="screen-sales" class="screen-view hidden p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h2 class="text-xl font-black text-[#172C25]">Record Sale (POS)</h2>
+                        <span class="text-[10px] text-[#10B981] font-bold">● Cashier Register Active</span>
+                    </div>
+                    <span class="text-xs bg-[#E8F7EF] text-[#087C50] font-bold px-2.5 py-1 rounded-full" id="pos-items-count">Cart: 0 items</span>
+                </div>
+
+                <!-- Touch Product Shelf for Cashier -->
+                <div class="space-y-2.5 mb-6">
+                    <div class="p-3 bg-white rounded-2xl border border-gray-200/80 shadow-2xs flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-[#172C25]">Ambo Mineral Water 500ml</div>
+                            <div class="text-sm font-black text-[#087C50]">ETB 35.00</div>
+                            <div class="text-[10px] text-gray-400">In stock: 120 btl</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCart('ambo', -1)" class="w-8 h-8 rounded-xl bg-gray-100 font-black text-gray-700 active:scale-95 transition-all text-sm">-</button>
+                            <span id="qty-ambo" class="text-sm font-black w-5 text-center">0</span>
+                            <button onclick="updateCart('ambo', 1)" class="w-8 h-8 rounded-xl bg-[#087C50] font-black text-white active:scale-95 transition-all text-sm">+</button>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-white rounded-2xl border border-gray-200/80 shadow-2xs flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-[#172C25]">Chef Sun Cooking Oil 5L</div>
+                            <div class="text-sm font-black text-[#087C50]">ETB 1,250.00</div>
+                            <div class="text-[10px] text-gray-400">In stock: 50 btl</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCart('oil', -1)" class="w-8 h-8 rounded-xl bg-gray-100 font-black text-gray-700 active:scale-95 transition-all text-sm">-</button>
+                            <span id="qty-oil" class="text-sm font-black w-5 text-center">0</span>
+                            <button onclick="updateCart('oil', 1)" class="w-8 h-8 rounded-xl bg-[#087C50] font-black text-white active:scale-95 transition-all text-sm">+</button>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-white rounded-2xl border border-gray-200/80 shadow-2xs flex items-center justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-[#172C25]">Desta Laundry Soap 200g</div>
+                            <div class="text-sm font-black text-[#087C50]">ETB 45.00</div>
+                            <div class="text-[10px] text-gray-400">In stock: 150 pcs</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCart('soap', -1)" class="w-8 h-8 rounded-xl bg-gray-100 font-black text-gray-700 active:scale-95 transition-all text-sm">-</button>
+                            <span id="qty-soap" class="text-sm font-black w-5 text-center">0</span>
+                            <button onclick="updateCart('soap', 1)" class="w-8 h-8 rounded-xl bg-[#087C50] font-black text-white active:scale-95 transition-all text-sm">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fixed Bottom Floating Checkout Summary (Matching Square & Loyverse) -->
+                <div class="bg-white rounded-2xl p-4 border border-gray-200 shadow-lg">
+                    <div class="flex justify-between items-center text-xs text-[#6B7280] mb-2">
+                        <span>Cart Subtotal</span>
+                        <span id="pos-subtotal" class="font-bold text-[#172C25]">ETB 0.00</span>
+                    </div>
+                    <button id="pos-pay-btn" onclick="openPaymentModal()" disabled class="w-full py-3.5 bg-[#087C50] hover:bg-[#066340] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl font-bold flex justify-between items-center px-4 transition-all shadow-md active:scale-98">
+                        <span id="pos-pay-label">Total (0 items)</span>
+                        <div class="flex items-center gap-1.5">
+                            <span id="pos-pay-total">ETB 0.00</span>
+                            <span class="text-base">&rarr;</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 4: STOCK MANAGEMENT ================= -->
+            <div id="screen-stock" class="screen-view hidden p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-black text-[#172C25]">Stock Manager</h2>
+                    <span class="text-xs bg-[#E8F7EF] text-[#087C50] font-bold px-2 py-0.5 rounded-full">Inventory Health</span>
+                </div>
+
+                <!-- 3 Main Sections: Available, Low Stock, Out of Stock -->
+                <div class="grid grid-cols-3 gap-2 mb-4 text-xs font-bold text-center">
+                    <button class="py-2.5 rounded-xl bg-[#087C50] text-white shadow-2xs">
+                        Healthy<br><span class="text-[10px] font-normal">1,225 items</span>
+                    </button>
+                    <button class="py-2.5 rounded-xl bg-amber-100 text-[#F59E0B] border border-amber-300">
+                        Low Stock<br><span class="text-[10px] font-normal">12 items</span>
+                    </button>
+                    <button class="py-2.5 rounded-xl bg-red-100 text-[#DC4545] border border-red-300">
+                        Out of Stock<br><span class="text-[10px] font-normal">3 items</span>
+                    </button>
+                </div>
+
+                <!-- Quick Stock Adjustment / Receiving Card -->
+                <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm mb-4">
+                    <h3 class="text-xs font-bold uppercase text-[#087C50] mb-2">⚡ Quick Stock Adjustment Flow</h3>
+                    <p class="text-[11px] text-[#6B7280] mb-3">Adjust stock on shelf with audited reason (Damage, Expiry, Correction).</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase text-gray-500">Select Product</label>
+                            <select class="w-full mt-1 p-2 bg-[#F7F9F8] border border-gray-200 rounded-xl text-xs font-medium">
+                                <option>Magna White Teff 50kg (Current: 40 qnt)</option>
+                                <option>Abyssinia Sunflower Oil 1L (Current: 3 btl)</option>
+                                <option>Ambo Mineral Water 500ml (Current: 120 btl)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase text-gray-500">Adjustment Qty</label>
+                                <input type="number" placeholder="-2 or +5" class="w-full mt-1 p-2 bg-[#F7F9F8] border border-gray-200 rounded-xl text-xs font-medium">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold uppercase text-gray-500">Reason</label>
+                                <select class="w-full mt-1 p-2 bg-[#F7F9F8] border border-gray-200 rounded-xl text-xs font-medium">
+                                    <option>Damage / Leakage</option>
+                                    <option>Expired Goods</option>
+                                    <option>Stock Count Fix</option>
+                                    <option>Restock Received</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="alert('Stock adjustment recorded and logged to audit trail!')" class="w-full py-2.5 bg-[#087C50] hover:bg-[#066340] text-white rounded-xl text-xs font-bold shadow-sm transition-all">
+                            Confirm Stock Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 5: REPORTS & BUSINESS INTELLIGENCE ================= -->
+            <div id="screen-reports" class="screen-view hidden p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-xl font-black text-[#172C25]">Business Reports</h2>
+                        <span class="text-[10px] text-gray-400">P&L, Revenue & Stock Valuations</span>
+                    </div>
+                    <select class="text-xs bg-white border border-gray-200 rounded-xl px-2.5 py-1 font-bold text-[#087C50]">
+                        <option>This Month</option>
+                        <option>This Week</option>
+                        <option>Today</option>
+                    </select>
+                </div>
+
+                <!-- Financial Statement Card -->
+                <div class="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-sm mb-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-[#6B7280] mb-3">Profit & Loss Summary (ETB)</h3>
+                    <div class="space-y-2.5 text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#6B7280]">Total Revenue (Sales)</span>
+                            <span class="font-black text-[#172C25]">ETB 145,200.00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#6B7280]">Cost of Goods Sold (COGS)</span>
+                            <span class="font-medium text-gray-600">- ETB 112,000.00</span>
+                        </div>
+                        <div class="h-px bg-gray-100 my-1"></div>
+                        <div class="flex justify-between items-center font-bold">
+                            <span class="text-[#087C50]">Gross Profit</span>
+                            <span class="text-[#087C50]">ETB 33,200.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-rose-600">
+                            <span>Operating Expenses</span>
+                            <span>- ETB 12,500.00</span>
+                        </div>
+                        <div class="h-px bg-gray-200 my-1"></div>
+                        <div class="flex justify-between items-center text-sm font-black text-[#087C50] bg-[#E8F7EF] p-2.5 rounded-xl">
+                            <span>Estimated Net Profit</span>
+                            <span>ETB 20,700.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slow-Moving Stock Warning Card -->
+                <div class="p-4 bg-white rounded-2xl border border-gray-200/80 shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xs font-bold text-[#172C25]">Slow-Moving Monitor</h3>
+                        <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">>90 days stagnant</span>
+                    </div>
+                    <p class="text-[11px] text-[#6B7280] mb-2">Items tied up in inventory with 0 sales.</p>
+                    <div class="text-xs font-medium text-[#172C25] flex justify-between p-2 bg-gray-50 rounded-xl">
+                        <span>Stainless Steel Coffee Flask 2L</span>
+                        <span class="font-bold text-amber-600">12 units (ETB 26,400)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 6: MORE (EXPENSES, STAFF, SETTINGS) ================= -->
+            <div id="screen-more" class="screen-view hidden p-5">
+                <h2 class="text-xl font-black text-[#172C25] mb-4">More Tools</h2>
+
+                <div class="space-y-3">
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm cursor-pointer hover:border-[#087C50] transition-colors" onclick="openExpenseSheet()">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg">
+                                💸
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-[#172C25]">Record Expense</h4>
+                                <p class="text-[10px] text-[#6B7280]">Rent, Generator Diesel, Utilities, Lunch</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm cursor-pointer hover:border-[#087C50] transition-colors" onclick="alert('Staff permissions: Cashier vs Administrator role assignment.')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#E8F7EF] text-[#087C50] flex items-center justify-center font-bold text-lg">
+                                👥
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-[#172C25]">Staff & Permissions</h4>
+                                <p class="text-[10px] text-[#6B7280]">Manage cashier access and roles</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-sm cursor-pointer hover:border-[#087C50] transition-colors" onclick="alert('Settings: Addis Shopping Center, Currency: ETB, Timezone: Africa/Addis_Ababa')">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center font-bold text-lg">
+                                ⚙️
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-[#172C25]">Store Settings</h4>
+                                <p class="text-[10px] text-[#6B7280]">Addis Shopping Center · Bole Sub-City</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ================= 5-DESTINATION MOBILE BOTTOM NAVIGATION ================= -->
+        <nav class="absolute bottom-0 inset-x-0 h-18 bg-white/95 backdrop-blur-xl border-t border-gray-200 flex justify-around items-center px-1 z-50">
+            <!-- 1. Home -->
+            <button onclick="showScreen('home')" id="nav-home" class="nav-item flex flex-col items-center justify-center flex-1 py-1 text-[#087C50] font-bold">
+                <span class="text-lg">🏠</span>
+                <span class="text-[10px] tracking-tight leading-none mt-0.5">Home</span>
+            </button>
+            <!-- 2. Products -->
+            <button onclick="showScreen('products')" id="nav-products" class="nav-item flex flex-col items-center justify-center flex-1 py-1 text-[#6B7280] hover:text-[#087C50]">
+                <span class="text-lg">📦</span>
+                <span class="text-[10px] tracking-tight leading-none mt-0.5">Products</span>
+            </button>
+            <!-- 3. Sales (POS Highlight) -->
+            <button onclick="showScreen('sales')" id="nav-sales" class="nav-item flex flex-col items-center justify-center flex-1 py-1 text-[#6B7280] hover:text-[#087C50]">
+                <div class="w-10 h-10 rounded-2xl bg-[#087C50] text-white flex items-center justify-center shadow-md shadow-[#087C50]/30 -mt-2">
+                    <span class="text-base font-black">🛒</span>
+                </div>
+                <span class="text-[10px] font-bold tracking-tight text-[#087C50] mt-0.5">Sales</span>
+            </button>
+            <!-- 4. Reports (Admin only) -->
+            <button onclick="showScreen('reports')" id="nav-reports" class="nav-item flex flex-col items-center justify-center flex-1 py-1 text-[#6B7280] hover:text-[#087C50]">
+                <span class="text-lg">📊</span>
+                <span class="text-[10px] tracking-tight leading-none mt-0.5">Reports</span>
+            </button>
+            <!-- 5. More -->
+            <button onclick="showScreen('more')" id="nav-more" class="nav-item flex flex-col items-center justify-center flex-1 py-1 text-[#6B7280] hover:text-[#087C50]">
+                <span class="text-lg">⚙️</span>
+                <span class="text-[10px] tracking-tight leading-none mt-0.5">More</span>
+            </button>
+        </nav>
+
+        <!-- ================= MODALS & BOTTOM SHEETS ================= -->
+        <!-- Payment Modal -->
+        <div id="payment-modal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex flex-col justify-end">
+            <div class="bg-white rounded-t-3xl p-5 shadow-2xl">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-black text-[#172C25]">Complete Payment</h3>
+                    <button onclick="closePaymentModal()" class="text-gray-400 font-bold p-1">✕</button>
+                </div>
+                <div class="text-xs text-[#6B7280] mb-1">Total Due:</div>
+                <div class="text-2xl font-black text-[#087C50] mb-3" id="modal-total-display">ETB 0.00</div>
+
+                <!-- Ethiopian Birr Denomination Buttons -->
+                <div class="grid grid-cols-4 gap-2 mb-3">
+                    <button onclick="setCash(1000)" class="p-2 rounded-xl bg-[#E8F7EF] text-[#087C50] font-bold text-xs">+1,000</button>
+                    <button onclick="setCash(500)" class="p-2 rounded-xl bg-[#E8F7EF] text-[#087C50] font-bold text-xs">+500</button>
+                    <button onclick="setCash(200)" class="p-2 rounded-xl bg-[#E8F7EF] text-[#087C50] font-bold text-xs">+200</button>
+                    <button onclick="setCash(100)" class="p-2 rounded-xl bg-gray-100 text-gray-700 font-bold text-xs">+100</button>
+                </div>
+
+                <button onclick="finishSale()" class="w-full py-3.5 bg-[#087C50] text-white rounded-xl font-bold shadow-lg shadow-[#087C50]/20 active:scale-95 transition-all">
+                    ✓ Confirm Payment & Print Receipt
+                </button>
+            </div>
+        </div>
+
+        <!-- Expense Bottom Sheet -->
+        <div id="expense-modal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-xs z-50 flex flex-col justify-end">
+            <div class="bg-white rounded-t-3xl p-5 shadow-2xl">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-black text-[#172C25]">Record New Expense</h3>
+                    <button onclick="closeExpenseSheet()" class="text-gray-400 font-bold p-1">✕</button>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="font-bold text-gray-500">Expense Category</label>
+                        <select class="w-full mt-1 p-2.5 bg-[#F7F9F8] border border-gray-200 rounded-xl">
+                            <option>Store Rent (Bole)</option>
+                            <option>Generator Diesel Fuel</option>
+                            <option>Electricity & Water</option>
+                            <option>Cashier Lunch Allowance</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-bold text-gray-500">Amount (ETB)</label>
+                        <input type="number" placeholder="e.g. 3500.00" class="w-full mt-1 p-2.5 bg-[#F7F9F8] border border-gray-200 rounded-xl font-bold text-sm">
+                    </div>
+                    <button onclick="alert('Expense recorded in financial accounts!'); closeExpenseSheet();" class="w-full py-3 bg-[#087C50] text-white rounded-xl font-bold shadow-sm">
+                        Save Expense
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script to drive prototype interaction -->
+    <script>
+        let currentRole = 'admin';
+        let cart = { ambo: 0, oil: 0, soap: 0 };
+        const prices = { ambo: 35, oil: 1250, soap: 45 };
+
+        function setRole(role) {
+            currentRole = role;
+            const adminBtn = document.getElementById('role-admin-btn');
+            const staffBtn = document.getElementById('role-staff-btn');
+            const navReports = document.getElementById('nav-reports');
+            const adminVitals = document.getElementById('admin-vitals');
+            const roleSubtitle = document.getElementById('role-subtitle');
+
+            if (role === 'admin') {
+                adminBtn.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-[#087C50] text-white shadow-sm";
+                staffBtn.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-gray-400 hover:text-white";
+                navReports.classList.remove('hidden');
+                adminVitals.classList.remove('hidden');
+                roleSubtitle.textContent = 'Addis Shopping Center · Bole (Owner)';
+            } else {
+                staffBtn.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-[#087C50] text-white shadow-sm";
+                adminBtn.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-gray-400 hover:text-white";
+                navReports.classList.add('hidden'); // Hide financial reports from staff
+                adminVitals.classList.add('hidden'); // Hide profit and expense cards
+                roleSubtitle.textContent = 'Cashier Terminal · Shift Active';
+            }
+        }
+
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.add('hidden'));
+            // Show target screen
+            const target = document.getElementById('screen-' + screenId);
+            if (target) target.classList.remove('hidden');
+
+            // Update navigation highlights
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('text-[#087C50]', 'font-bold');
+                el.classList.add('text-[#6B7280]');
+            });
+            const activeNav = document.getElementById('nav-' + screenId);
+            if (activeNav) {
+                activeNav.classList.remove('text-[#6B7280]');
+                activeNav.classList.add('text-[#087C50]', 'font-bold');
+            }
+        }
+
+        function updateCart(item, delta) {
+            cart[item] = Math.max(0, (cart[item] || 0) + delta);
+            document.getElementById('qty-' + item).textContent = cart[item];
+
+            const totalItems = cart.ambo + cart.oil + cart.soap;
+            const subtotal = (cart.ambo * prices.ambo) + (cart.oil * prices.oil) + (cart.soap * prices.soap);
+
+            document.getElementById('pos-items-count').textContent = 'Cart: ' + totalItems + ' items';
+            document.getElementById('pos-subtotal').textContent = 'ETB ' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('pos-pay-total').textContent = 'ETB ' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('pos-pay-label').textContent = 'Total (' + totalItems + ' items)';
+
+            const payBtn = document.getElementById('pos-pay-btn');
+            payBtn.disabled = totalItems === 0;
+        }
+
+        function openPaymentModal() {
+            const subtotal = (cart.ambo * prices.ambo) + (cart.oil * prices.oil) + (cart.soap * prices.soap);
+            document.getElementById('modal-total-display').textContent = 'ETB ' + subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+        }
+
+        function setCash(amount) {
+            alert('Recorded ETB ' + amount + ' cash. Calculating change...');
+        }
+
+        function finishSale() {
+            closePaymentModal();
+            alert('✓ Transaction INV-261119-0042 Completed!\nReceipt generated in Ethiopian Birr (ETB).\nInventory quantities automatically deducted.');
+            cart = { ambo: 0, oil: 0, soap: 0 };
+            document.getElementById('qty-ambo').textContent = 0;
+            document.getElementById('qty-oil').textContent = 0;
+            document.getElementById('qty-soap').textContent = 0;
+            updateCart('ambo', 0);
+        }
+
+        function openExpenseSheet() {
+            document.getElementById('expense-modal').classList.remove('hidden');
+        }
+
+        function closeExpenseSheet() {
+            document.getElementById('expense-modal').classList.add('hidden');
+        }
+
+        function showProductDetails(name, price, cost, stock, min, unit, sku) {
+            alert(name + '\nSKU: ' + sku + '\nSelling Price: ' + price + '\nPurchase Cost: ' + cost + '\nCurrent Stock: ' + stock + ' ' + unit + '\nMin Stock Alert: ' + min + ' ' + unit);
+        }
+
+        function openAddProductModal() {
+            alert('Add Product Form:\n1. Product Name\n2. Category\n3. Unit of Measure (pcs, kg, L, qnt)\n4. Purchase Price\n5. Selling Price\n6. Opening Stock\n7. Minimum Stock Level');
+        }
+    </script>
+</body>
+</html>

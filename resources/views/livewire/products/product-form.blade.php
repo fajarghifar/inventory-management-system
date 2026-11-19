@@ -74,7 +74,7 @@
             <div class="flex flex-col sm:flex-row gap-6">
                 <!-- Purchase Price -->
                 <div class="w-full sm:w-1/2 space-y-2">
-                    <x-input-label for="purchase_price" :value="__('Purchase Price') . ' (' . \App\Models\Setting::get('currency_symbol', 'Rp') . ')'" />
+                    <x-input-label for="purchase_price" :value="__('Purchase Price') . ' (' . \App\Models\Setting::get('currency_symbol', 'ETB') . ')'" />
                     <x-currency-input
                         id="purchase_price"
                         wire:model.live.debounce.500ms="purchase_price"
@@ -86,7 +86,7 @@
 
                 <!-- Selling Price -->
                 <div class="w-full sm:w-1/2 space-y-2">
-                    <x-input-label for="selling_price" :value="__('Selling Price') . ' (' . \App\Models\Setting::get('currency_symbol', 'Rp') . ')'" />
+                    <x-input-label for="selling_price" :value="__('Selling Price') . ' (' . \App\Models\Setting::get('currency_symbol', 'ETB') . ')'" />
                     <x-currency-input
                         id="selling_price"
                         wire:model.live.debounce.500ms="selling_price"

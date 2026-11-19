@@ -142,19 +142,19 @@
         <table class="summary-table">
             <tr>
                 <td class="text-right" style="color: #666;">Opening Balance ({{ \Carbon\Carbon::parse($openingBalanceDate)->format('d M Y') }})</td>
-                <td class="text-right">{{ number_format($openingBalanceAmount, 0, ',', '.') }}</td>
+                <td class="text-right">@money($openingBalanceAmount)</td>
             </tr>
             <tr>
                 <td class="text-right" style="color: #666;">Total Income</td>
-                <td class="text-right" style="color: #065f46;">+ {{ number_format($totalIncome, 0, ',', '.') }}</td>
+                <td class="text-right" style="color: #065f46;">+ @money($totalIncome)</td>
             </tr>
             <tr>
                 <td class="text-right" style="color: #666;">Total Expense</td>
-                <td class="text-right" style="color: #991b1b;">- {{ number_format($totalExpense, 0, ',', '.') }}</td>
+                <td class="text-right" style="color: #991b1b;">- @money($totalExpense)</td>
             </tr>
             <tr class="summary-row-total">
                 <td class="text-right">Estimated Final Balance</td>
-                <td class="text-right">Rp {{ number_format($estimatedFinalBalance, 0, ',', '.') }}</td>
+                <td class="text-right">@money($estimatedFinalBalance)</td>
             </tr>
         </table>
     </div>

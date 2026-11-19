@@ -102,26 +102,11 @@
                                 </x-slot>
                             </x-nav-dropdown>
 
-                            <!-- More (Purchases, Suppliers, Staff) -->
-                            <x-nav-dropdown active="{{ request()->routeIs(['purchases.*', 'suppliers.*', 'users.*']) }}">
-                                <x-slot name="icon">
-                                    <x-heroicon-o-ellipsis-horizontal class="mr-1.5 h-4 w-4 text-muted-foreground" />
-                                </x-slot>
-                                <x-slot name="trigger">
-                                    More
-                                </x-slot>
-                                <x-slot name="content">
-                                    <x-dropdown-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')">
-                                        Purchases from Suppliers
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
-                                        Suppliers Directory
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('users.index')" :active="request()->routeIs('users.*')">
-                                        Staff & User Accounts
-                                    </x-dropdown-link>
-                                </x-slot>
-                            </x-nav-dropdown>
+                            <!-- Staff & Users -->
+                            <a href="{{ route('users.index') }}" class="group inline-flex h-9 items-center justify-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground {{ request()->routeIs('users.*') ? 'bg-accent/70 font-semibold text-accent-foreground' : 'text-foreground' }}">
+                                <x-heroicon-o-user-group class="mr-1.5 h-4 w-4 text-muted-foreground" />
+                                <span>Staff & Users</span>
+                            </a>
                         @endcan
                     </div>
                 </div>
@@ -293,20 +278,16 @@
                                 </a>
                             </div>
 
-                            <!-- Purchasing & Finance -->
+                            <!-- Expenses & Finance -->
                             <div class="space-y-1 pt-2 border-t border-border">
-                                <div class="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-2 mb-1">Purchasing & Finance</div>
-                                <a href="{{ route('purchases.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('purchases.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
-                                    <x-heroicon-o-shopping-bag class="w-4 h-4 text-muted-foreground" />
-                                    <span>Purchases</span>
-                                </a>
-                                <a href="{{ route('suppliers.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('suppliers.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
-                                    <x-heroicon-o-truck class="w-4 h-4 text-muted-foreground" />
-                                    <span>Suppliers</span>
-                                </a>
-                                <a href="{{ route('finance.transactions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('finance.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
+                                <div class="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-2 mb-1">Expenses & Finance</div>
+                                <a href="{{ route('finance.transactions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('finance.transactions.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
                                     <x-heroicon-o-currency-dollar class="w-4 h-4 text-muted-foreground" />
-                                    <span>Finance Transactions</span>
+                                    <span>Record Expense</span>
+                                </a>
+                                <a href="{{ route('finance.categories.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('finance.categories.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
+                                    <x-heroicon-o-tag class="w-4 h-4 text-muted-foreground" />
+                                    <span>Expense Categories</span>
                                 </a>
                             </div>
 

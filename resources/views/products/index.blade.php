@@ -4,10 +4,12 @@
             <h2 class="font-semibold text-lg sm:text-xl text-foreground leading-tight">
                 {{ __('Products') }}
             </h2>
-            <x-primary-button x-data x-on:click="$dispatch('create-product')" class="text-xs sm:text-sm py-2 px-3 sm:px-4">
-                <x-heroicon-o-plus class="w-4 h-4 mr-1.5 sm:mr-2" />
-                <span>{{ __('Create Product') }}</span>
-            </x-primary-button>
+            @can('admin')
+                <x-primary-button x-data x-on:click="$dispatch('create-product')" class="text-xs sm:text-sm py-2 px-3 sm:px-4">
+                    <x-heroicon-o-plus class="w-4 h-4 mr-1.5 sm:mr-2" />
+                    <span>{{ __('Create Product') }}</span>
+                </x-primary-button>
+            @endcan
         </div>
     </x-slot>
 

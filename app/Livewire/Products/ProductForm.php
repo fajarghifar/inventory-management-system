@@ -47,6 +47,8 @@ class ProductForm extends Component
     #[On('create-product')]
     public function create(): void
     {
+        abort_unless(auth()->user()?->isAdmin(), 403, 'Unauthorized. Only administrators can create products.');
+
         $this->reset(['sku', 'name', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'description', 'notes', 'product', 'isEditing', 'categoryName', 'unitName']);
         $this->is_active = true;
 
@@ -56,6 +58,8 @@ class ProductForm extends Component
     #[On('edit-product')]
     public function edit(Product $product): void
     {
+        abort_unless(auth()->user()?->isAdmin(), 403, 'Unauthorized. Only administrators can edit products.');
+
         $this->product = $product;
         $this->sku = $product->sku;
         $this->name = $product->name;
@@ -102,6 +106,8 @@ class ProductForm extends Component
 
     public function save(ProductService $service): void
     {
+        abort_unless(auth()->user()?->isAdmin(), 403, 'Unauthorized. Only administrators can save product changes.');
+
         $validated = $this->validate();
 
         $data = ProductData::fromArray($validated);

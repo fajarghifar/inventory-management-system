@@ -16,6 +16,7 @@ class ProductData
         public readonly bool $is_active,
         public readonly ?string $description,
         public readonly ?string $notes,
+        public readonly ?string $image = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -32,6 +33,7 @@ class ProductData
             is_active: (bool) ($data['is_active'] ?? true),
             description: empty($data['description']) ? null : $data['description'],
             notes: empty($data['notes']) ? null : $data['notes'],
+            image: !empty($data['image']) ? $data['image'] : null,
         );
     }
 
@@ -49,6 +51,7 @@ class ProductData
             'is_active' => $this->is_active,
             'description' => $this->description,
             'notes' => $this->notes,
+            'image' => $this->image,
         ];
     }
 }

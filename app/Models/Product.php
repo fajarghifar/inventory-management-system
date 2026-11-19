@@ -23,6 +23,12 @@ class Product extends Model
         'is_active',
         'description',
         'notes',
+        'image',
+    ];
+
+    protected $appends = [
+        'image_url',
+        'stock_status',
     ];
 
     protected $casts = [
@@ -61,5 +67,27 @@ class Product extends Model
     public function stockAdjustments()
     {
         return $this->hasMany(StockAdjustment::class)->latest();
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->image)) {
+            return asset('storage/' . $this->image);
+        }
+        return null;
+    }
+
+    public function getStockStatusAttribute(): string
+    {
+        if (!$this->is_active) {
+            return 'inactive';
+        }
+        if ($this->quantity <= 0) {
+            return 'out_of_stock';
+        }
+        if ($this->quantity <= $this->min_stock) {
+            return 'low_stock';
+        }
+        return 'in_stock';
     }
 }

@@ -37,6 +37,7 @@ class ProductService
                     'is_active' => $data->is_active,
                     'description' => $data->description,
                     'notes' => $data->notes,
+                    'image' => $data->image,
                 ]);
 
                 if ($data->quantity > 0) {
@@ -79,6 +80,7 @@ class ProductService
                     'is_active' => $data->is_active,
                     'description' => $data->description,
                     'notes' => $data->notes,
+                    'image' => $data->image !== null ? $data->image : $product->image,
                 ]);
 
                 return $product->refresh();

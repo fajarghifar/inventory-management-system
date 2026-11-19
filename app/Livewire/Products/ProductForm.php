@@ -5,6 +5,7 @@ namespace App\Livewire\Products;
 use App\DTOs\ProductData;
 use App\Models\Product;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\Category;
 use App\Models\Unit;
 use Livewire\Attributes\On;
@@ -14,6 +15,8 @@ use App\Exceptions\ProductException;
 
 class ProductForm extends Component
 {
+    use WithFileUploads;
+
     public bool $isEditing = false;
     public ?Product $product = null;
 
@@ -29,6 +32,10 @@ class ProductForm extends Component
     public bool $is_active = true;
     public string $description = '';
     public string $notes = '';
+
+    // Image Upload
+    public $photo = null;
+    public ?string $existingImageUrl = null;
 
     // Select Options (Removed for AJAX)
     public ?string $categoryName = null;
@@ -49,7 +56,7 @@ class ProductForm extends Component
     {
         abort_unless(auth()->user()?->isAdmin(), 403, 'Unauthorized. Only administrators can create products.');
 
-        $this->reset(['sku', 'name', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'description', 'notes', 'product', 'isEditing', 'categoryName', 'unitName']);
+        $this->reset(['sku', 'name', 'category_id', 'unit_id', 'purchase_price', 'selling_price', 'quantity', 'min_stock', 'description', 'notes', 'product', 'isEditing', 'categoryName', 'unitName', 'photo', 'existingImageUrl']);
         $this->is_active = true;
 
         $this->dispatch('open-modal', name: 'product-form-modal');
@@ -72,6 +79,8 @@ class ProductForm extends Component
         $this->is_active = $product->is_active;
         $this->description = $product->description ?? '';
         $this->notes = $product->notes ?? '';
+        $this->existingImageUrl = $product->image_url;
+        $this->photo = null;
 
         // Set initial labels for TomSelect
         $this->categoryName = $product->category ? $product->category->name : null;
@@ -101,6 +110,7 @@ class ProductForm extends Component
             'is_active' => ['boolean'],
             'description' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
+            'photo' => ['nullable', 'image', 'max:2048'],
         ];
     }
 
@@ -109,6 +119,11 @@ class ProductForm extends Component
         abort_unless(auth()->user()?->isAdmin(), 403, 'Unauthorized. Only administrators can save product changes.');
 
         $validated = $this->validate();
+
+        if ($this->photo) {
+            $imagePath = $this->photo->store('products', 'public');
+            $validated['image'] = $imagePath;
+        }
 
         $data = ProductData::fromArray($validated);
 
@@ -123,6 +138,7 @@ class ProductForm extends Component
 
             $this->dispatch('close-modal', name: 'product-form-modal');
             $this->dispatch('pg:eventRefresh-product-table');
+            $this->dispatch('product-saved');
             $this->dispatch('toast', message: $message, type: 'success');
         } catch (ProductException $e) {
             $this->dispatch('toast', message: $e->getMessage(), type: 'error');

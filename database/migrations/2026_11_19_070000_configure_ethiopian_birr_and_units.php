@@ -26,6 +26,13 @@ return new class extends Migration
             );
         }
 
+        // Clear all cached settings so ETB takes effect immediately
+        try {
+            \Illuminate\Support\Facades\Cache::flush();
+        } catch (\Throwable $e) {
+            // ignore if cache driver unavailable during early setup
+        }
+
         // If store still has default Indonesian sample name, update to Ethiopian Shopping Center
         $currentStore = DB::table('settings')->where('key', 'store_name')->value('value');
         if (!$currentStore || str_contains($currentStore, 'Kencana Pamijahan')) {

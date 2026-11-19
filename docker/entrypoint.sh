@@ -84,9 +84,13 @@ done
 # Laravel setup
 php artisan package:discover --ansi --no-interaction
 php artisan config:clear --no-interaction
+php artisan cache:clear --no-interaction
+php artisan view:clear --no-interaction
+php artisan route:clear --no-interaction
 php artisan storage:link --force --no-interaction
 
 php artisan migrate --force --no-interaction
+php artisan cache:clear --no-interaction
 
 USER_COUNT=$(php -r "
     \$dbUrl = getenv('DATABASE_URL') ?: getenv('DB_URL');

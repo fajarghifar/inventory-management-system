@@ -136,12 +136,19 @@ class Dashboard extends Component
         }
 
         \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--class' => \Database\Seeders\SettingSeeder::class,
+            '--force' => true,
+        ]);
+
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
             '--class' => \Database\Seeders\DemoDataSeeder::class,
             '--force' => true,
         ]);
 
+        \Illuminate\Support\Facades\Cache::flush();
+
         $this->loadStats(app(DashboardStatsService::class));
-        $this->dispatch('toast', message: 'Sample demo data populated successfully!', type: 'success');
+        $this->dispatch('toast', message: 'Ethiopian demo products & ETB currency loaded successfully!', type: 'success');
     }
 
     public function render()

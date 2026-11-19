@@ -220,7 +220,7 @@
                     To install this application on your computer or browser:
                 </p>
                 <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg text-xs text-left mt-3 text-slate-700 dark:text-slate-300">
-                    <p>• <strong>Chrome / Edge:</strong> Click the install icon (🖥️ or ➕) on the right side of the address bar.</p>
+                    <p>• <strong>Chrome / Edge:</strong> Click the install icon in the address bar.</p>
                     <p class="mt-2">• Or open browser menu <strong>(⋮) &rarr; Save and share &rarr; Install app</strong>.</p>
                 </div>
                 <button

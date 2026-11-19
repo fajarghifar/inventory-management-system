@@ -170,7 +170,7 @@
             @else
                 <a href="{{ request()->fullUrlWithQuery(['width' => '58']) }}" class="btn btn-secondary" style="font-size:11px; padding:3px 8px;">Switch to 58mm</a>
             @endif
-            <button onclick="window.print()" class="btn" style="padding:3px 10px;">🖨️ Print</button>
+            <button onclick="window.print()" class="btn" style="padding:3px 10px;">Print Receipt</button>
             <button onclick="window.close()" class="btn btn-secondary" style="padding:3px 10px;">Close</button>
         </div>
     </div>

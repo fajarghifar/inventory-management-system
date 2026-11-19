@@ -36,15 +36,15 @@
                         <span>Open POS Register [F1]</span>
                     </a>
 
-                    <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 h-9 px-3 py-1.5 gap-1 transition-all">
+                    <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 h-9 px-3 py-1.5 gap-1.5 transition-all">
                         <x-heroicon-o-bolt class="w-3.5 h-3.5 text-brand-200" />
-                        <span>⚡ Quick Sell</span>
+                        <span>Quick Sell</span>
                     </a>
 
                     @can('admin')
-                        <button wire:click="seedSampleData" wire:loading.attr="disabled" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 h-9 px-3 py-1.5 gap-1 transition-all" title="Reload Ethiopian demo products & ETB currency">
+                        <button wire:click="seedSampleData" wire:loading.attr="disabled" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 h-9 px-3 py-1.5 gap-1.5 transition-all" title="Reload Ethiopian demo products & ETB currency">
                             <x-heroicon-o-sparkles class="w-3.5 h-3.5 text-brand-200" />
-                            <span wire:loading.remove wire:target="seedSampleData">🌱 Seed Data</span>
+                            <span wire:loading.remove wire:target="seedSampleData">Seed Data</span>
                             <span wire:loading wire:target="seedSampleData">Seeding...</span>
                         </button>
                     @endcan
@@ -293,8 +293,8 @@
             <details class="group bg-card rounded-xl border border-border shadow-sm p-4 print:block">
                 <summary class="cursor-pointer text-sm font-semibold text-foreground flex items-center justify-between select-none">
                     <div class="flex items-center gap-2">
-                        <x-heroicon-o-chart-bar class="w-4 h-4 text-indigo-500" />
-                        <span>📊 Detailed Sales & Expense Charts (Click to expand)</span>
+                        <x-heroicon-o-chart-bar class="w-4 h-4 text-brand" />
+                        <span>Detailed Sales & Expense Charts (Click to expand)</span>
                     </div>
                     <span class="text-xs text-muted-foreground group-open:rotate-180 transition-transform">▼</span>
                 </summary>

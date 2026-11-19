@@ -42,8 +42,9 @@
                     <!-- Header: Product Info & Stock -->
                     <div class="flex items-start justify-between border-b border-gray-100 pb-3 mb-4">
                         <div>
-                            <span class="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
-                                ⚡ Express Direct Sale
+                            <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                                <x-heroicon-o-bolt class="w-3.5 h-3.5 text-emerald-600" />
+                                <span>Express Direct Sale</span>
                             </span>
                             <h3 class="text-base font-bold text-gray-900 mt-1 leading-snug">{{ $product->name }}</h3>
                             <div class="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
@@ -193,7 +194,10 @@
                             </button>
                             <button type="submit" wire:loading.attr="disabled"
                                     class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-sm font-bold shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50">
-                                <span wire:loading.remove wire:target="submit">⚡ Confirm Sale</span>
+                                <span wire:loading.remove wire:target="submit" class="inline-flex items-center gap-1.5">
+                                    <x-heroicon-o-check class="w-4 h-4" />
+                                    <span>Confirm Sale</span>
+                                </span>
                                 <span wire:loading wire:target="submit">Processing...</span>
                             </button>
                         </div>

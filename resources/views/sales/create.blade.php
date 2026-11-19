@@ -1761,8 +1761,8 @@
                     <template x-if="lastScannedItem">
                         <div class="absolute bottom-4 inset-x-4 bg-emerald-600/95 backdrop-blur-md text-white p-3 rounded-xl shadow-lg flex items-center justify-between z-30 border border-emerald-400/40">
                             <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-7 h-7 rounded-full bg-white text-emerald-700 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                                    ✓
+                                <div class="w-7 h-7 rounded-full bg-white text-emerald-700 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
                                 <div class="truncate">
                                     <div class="font-bold text-xs truncate" x-text="lastScannedItem.name"></div>

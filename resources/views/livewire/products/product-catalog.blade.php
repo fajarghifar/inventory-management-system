@@ -130,7 +130,7 @@
                             wire:model.live="selectedCategory"
                             class="w-full h-11 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer"
                         >
-                            <option value="">📁 All Categories</option>
+                            <option value="">All Categories</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach
@@ -143,11 +143,11 @@
                             wire:model.live="stockFilter"
                             class="w-full h-11 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer"
                         >
-                            <option value="all">📦 All Stock</option>
-                            <option value="in_stock">✅ In Stock</option>
-                            <option value="low_stock">⚠️ Low Stock</option>
-                            <option value="out_of_stock">❌ Out of Stock</option>
-                            <option value="inactive">🚫 Discontinued</option>
+                            <option value="all">All Inventory</option>
+                            <option value="in_stock">In Stock</option>
+                            <option value="low_stock">Low Stock Alert</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                            <option value="inactive">Discontinued</option>
                         </select>
                     </div>
 
@@ -157,13 +157,13 @@
                             wire:model.live="sortBy"
                             class="w-full h-11 text-xs font-semibold bg-gray-50 border border-gray-200 rounded-xl px-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer"
                         >
-                            <option value="latest">⚡ Newest First</option>
-                            <option value="name_asc">🔤 Name (A → Z)</option>
-                            <option value="name_desc">🔤 Name (Z → A)</option>
-                            <option value="price_asc">💵 Price: Low to High</option>
-                            <option value="price_desc">💵 Price: High to Low</option>
-                            <option value="qty_desc">📊 Stock: High to Low</option>
-                            <option value="qty_asc">📊 Stock: Low to High</option>
+                            <option value="latest">Newest First</option>
+                            <option value="name_asc">Name (A &rarr; Z)</option>
+                            <option value="name_desc">Name (Z &rarr; A)</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="qty_desc">Stock: High to Low</option>
+                            <option value="qty_asc">Stock: Low to High</option>
                         </select>
                     </div>
 
@@ -354,7 +354,7 @@
                                             type="button"
                                             wire:click="$dispatch('open-quick-sale-modal', { productId: {{ $product->id }} })"
                                             class="p-2 rounded-xl bg-brand text-white hover:bg-brand-700 transition-all active:scale-90 shadow-2xs"
-                                            title="Quick Direct Sale [⚡]"
+                                            title="Quick Direct Sale"
                                         >
                                             <x-heroicon-o-bolt class="w-4 h-4" />
                                         </button>

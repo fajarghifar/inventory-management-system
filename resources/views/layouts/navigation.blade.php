@@ -102,8 +102,8 @@
                                 </x-slot>
                             </x-nav-dropdown>
 
-                            <!-- More (Purchases, Suppliers, Customers, Staff) -->
-                            <x-nav-dropdown active="{{ request()->routeIs(['purchases.*', 'suppliers.*', 'customers.*', 'users.*']) }}">
+                            <!-- More (Purchases, Suppliers, Staff) -->
+                            <x-nav-dropdown active="{{ request()->routeIs(['purchases.*', 'suppliers.*', 'users.*']) }}">
                                 <x-slot name="icon">
                                     <x-heroicon-o-ellipsis-horizontal class="mr-1.5 h-4 w-4 text-muted-foreground" />
                                 </x-slot>
@@ -116,9 +116,6 @@
                                     </x-dropdown-link>
                                     <x-dropdown-link :href="route('suppliers.index')" :active="request()->routeIs('suppliers.*')">
                                         Suppliers Directory
-                                    </x-dropdown-link>
-                                    <x-dropdown-link :href="route('customers.index')" :active="request()->routeIs('customers.*')">
-                                        Customers Directory
                                     </x-dropdown-link>
                                     <x-dropdown-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                                         Staff & User Accounts
@@ -306,10 +303,6 @@
                                 <a href="{{ route('suppliers.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('suppliers.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
                                     <x-heroicon-o-truck class="w-4 h-4 text-muted-foreground" />
                                     <span>Suppliers</span>
-                                </a>
-                                <a href="{{ route('customers.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('customers.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
-                                    <x-heroicon-o-users class="w-4 h-4 text-muted-foreground" />
-                                    <span>Customers</span>
                                 </a>
                                 <a href="{{ route('finance.transactions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('finance.*') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
                                     <x-heroicon-o-currency-dollar class="w-4 h-4 text-muted-foreground" />

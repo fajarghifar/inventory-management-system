@@ -80,10 +80,6 @@ final class SalesTable extends PowerGridComponent
                 ->searchable()
                 ->sortable(),
 
-            Column::make('Customer', 'customer_name', 'customer_id')
-                ->searchable()
-                ->sortable(),
-
             Column::make('Created By', 'creator_name', 'created_by')
                 ->sortable(),
 
@@ -106,22 +102,9 @@ final class SalesTable extends PowerGridComponent
         ];
     }
 
-    public function relationSearch(): array
-    {
-        return [
-            'customer' => ['name'],
-        ];
-    }
-
     public function filters(): array
     {
         return [
-            Filter::multiSelectAsync('customer_name', 'customer_id')
-                ->url(route('ajax.customers.search'))
-                ->method('POST')
-                ->optionValue('value')
-                ->optionLabel('text'),
-
             Filter::multiSelect('status', 'status')
                 ->dataSource(collect(SaleStatus::cases())->map(fn($status) => [
                     'value' => $status->value,

@@ -3,9 +3,7 @@
          x-data="pos()"
          x-init="init()"
          @keydown.window.f1.prevent="productTs && productTs.focus()"
-         @keydown.window.f2.prevent="customerTs && customerTs.focus()"
          @keydown.window.f3.prevent="openConfirmation()"
-         @keydown.window.f4.prevent="openCustomerModal()"
     >
         <!-- POS Top Ribbon: Title, Online Status & Offline Sync Badge -->
         <div class="mb-3 flex items-center justify-between gap-2 bg-white dark:bg-slate-900 px-3 sm:px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-800 shadow-sm">
@@ -310,37 +308,6 @@
                 </div>
 
                 <div class="p-4 space-y-6 flex-1 overflow-y-auto">
-                    <!-- Customer Section -->
-                    <div class="bg-indigo-50 rounded-lg p-4 border border-indigo-100 relative group">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-bold text-indigo-500 uppercase">Customer</span>
-                            <button @click="openCustomerModal()" class="text-[10px] font-semibold text-indigo-600 hover:text-white hover:bg-indigo-600 border border-indigo-200 bg-white px-2 py-1 rounded transition-colors flex items-center">
-                                + New (F4)
-                            </button>
-                        </div>
-
-                        <div class="relative">
-                            <template x-if="selectedCustomer">
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <h3 class="font-bold text-lg text-gray-900" x-text="selectedCustomer.name"></h3>
-                                        <p class="text-sm text-gray-600" x-text="selectedCustomer.phone || 'No Phone'"></p>
-                                    </div>
-                                    <button @click="resetCustomer()" class="text-gray-400 hover:text-red-500">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                    </button>
-                                </div>
-                            </template>
-                            <div x-show="!selectedCustomer">
-                                <select
-                                    x-ref="customerSelect"
-                                    placeholder="Search Customer [F2]..."
-                                    autocomplete="off"
-                                ></select>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Totals Section -->
                     <div class="space-y-3">
                         <div class="flex justify-between items-center text-gray-600 text-sm font-medium">
@@ -616,7 +583,6 @@
                         }
 
                         this.initProductSelect();
-                        this.initCustomerSelect();
                     },
 
                     initProductSelect() {
@@ -720,79 +686,6 @@
                         }
                     },
 
-                    initCustomerSelect() {
-                        if (!this.$refs.customerSelect) return;
-
-                        if (this.customerTs) {
-                            this.customerTs.destroy();
-                            this.customerTs = null;
-                        }
-
-                        this.customerTs = new TomSelect(this.$refs.customerSelect, {
-                            valueField: 'value',
-                            labelField: 'text',
-                            searchField: 'text',
-                            preload: 'focus', // UX Improvement
-                            openOnFocus: true, // UX Improvement
-                            load: (query, callback) => {
-                                var url = '{{ route("ajax.customers.search") }}';
-
-                                fetch(url, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                    },
-                                    body: JSON.stringify({ q: query })
-                                })
-                                    .then(response => response.json())
-                                    .then(json => {
-                                        callback(json);
-                                    }).catch(()=>{
-                                        callback();
-                                    });
-                            },
-                            render: {
-                                option: (item, escape) => {
-                                    return `
-                                        <div class="py-2 px-3 hover:bg-indigo-50">
-                                            <div class="font-medium text-gray-900">${escape(item.name)}</div>
-                                            <div class="text-xs text-gray-500">${escape(item.phone || 'No Phone')}</div>
-                                        </div>
-                                    `;
-                                }
-                            },
-                            onChange: (value) => {
-                                if (value) {
-                                    const item = this.customerTs.options[value];
-                                    if(item) {
-                                        // Update selected customer object structure to match what UI expects
-                                        // The UI expects { id, name, phone, ... }
-                                        // Our controller returns { value, text, name, phone }
-                                        // So we map value to id for consistency if needed, or just use item.
-                                        this.selectedCustomer = {
-                                            id: item.value,
-                                            name: item.name,
-                                            phone: item.phone,
-                                            // email and address are not returned by search currently.
-                                            // If needed we should add them to controller.
-                                            email: item.email || '',
-                                            address: item.address || ''
-                                        };
-                                        this.customerTs.clear();
-                                    }
-                                }
-                            }
-                        });
-                    },
-
-                    resetCustomer() {
-                        this.selectedCustomer = null;
-                        this.$nextTick(() => {
-                            this.customerTs && this.customerTs.focus();
-                        });
-                    },
-
                     clearStorage() {
                         localStorage.removeItem('pos_cart');
                         localStorage.removeItem('pos_customer');
@@ -870,16 +763,6 @@
                         const removedItem = this.cart[index];
                         this.cart.splice(index, 1);
                         this.$dispatch('toast', { message: 'Product "' + removedItem.name + '" removed from cart.', type: 'info' });
-                    },
-
-                    // Customer Modal Open
-                    openCustomerModal() {
-                        this.$dispatch('open-modal', { name: 'customer-modal' });
-                        this.$nextTick(() => {
-                            setTimeout(() => {
-                                this.$refs.nameInput && this.$refs.nameInput.focus();
-                            }, 100); // Small delay to ensure modal transition
-                        });
                     },
 
                     // Computed properties (simulated getters in Alpine)
@@ -1459,144 +1342,6 @@
             </div>
         </x-modal>
 
-        <!-- Create Customer Modal (Still using Blade/Alpine Hybrid for ease if reusable) -->
-        <x-modal name="customer-modal" focusable>
-            <div class="p-6" x-data="{
-                newCust: { name: '', email: '', phone: '', address: '', notes: '' },
-                errors: {},
-                loading: false,
-                async save() {
-                    this.errors = {}; // Reset errors
-
-                    if (!this.newCust.name.trim()) {
-                        this.errors.name = 'Nama wajib diisi.';
-                        return;
-                    }
-
-                    this.loading = true;
-                    try {
-                        const res = await fetch('{{ route("ajax.customers.store") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(this.newCust)
-                        });
-                        const data = await res.json();
-
-                        if (res.ok) {
-                            this.$dispatch('close-modal', { name: 'customer-modal' });
-                            this.$dispatch('customer-created', data);
-                            this.newCust = { name: '', email: '', phone: '', address: '', notes: '' };
-                            this.errors = {};
-                        } else {
-                            if (data.errors) {
-                                // Map Laravel validation errors to Alpine errors object
-                                // Laravel returns { errors: { name: ['Error msg'], ... } }
-                                Object.keys(data.errors).forEach(key => {
-                                    this.errors[key] = data.errors[key][0];
-                                });
-                            } else {
-                                // Fallback if generic error
-                                this.$dispatch('toast', { message: data.message || 'Error creating customer', type: 'error' });
-                            }
-                        }
-                    } catch(e) { console.error(e); }
-                    finally { this.loading = false; }
-                }
-            }">
-                <!-- Header -->
-                <div class="mb-6 space-y-1.5 text-center sm:text-left border-b border-gray-200 pb-4">
-                    <h3 class="text-lg font-semibold leading-none tracking-tight text-foreground">
-                        {{ __('Create New Customer') }}
-                    </h3>
-                    <p class="text-sm text-muted-foreground">
-                        {{ __('Add a new customer to your records for this sale.') }}
-                    </p>
-                </div>
-
-                <div class="space-y-4">
-                    <!-- Name -->
-                    <div>
-                        <x-form-input
-                            name="new_name"
-                            label="Full Name"
-                            x-model="newCust.name"
-                            x-ref="nameInput"
-                            required
-                        />
-                        <p x-show="errors.name" x-text="errors.name" class="text-sm font-medium text-red-600 mt-1" style="display: none;"></p>
-                    </div>
-
-                    <!-- Contact Info -->
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <div class="w-full sm:w-1/2">
-                            <x-form-input
-                                name="new_email"
-                                label="Email"
-                                type="email"
-                                x-model="newCust.email"
-                            />
-                            <p x-show="errors.email" x-text="errors.email" class="text-sm font-medium text-red-600 mt-1" style="display: none;"></p>
-                        </div>
-                        <div class="w-full sm:w-1/2">
-                            <x-form-input
-                                name="new_phone"
-                                label="Phone"
-                                x-model="newCust.phone"
-                            />
-                            <p x-show="errors.phone" x-text="errors.phone" class="text-sm font-medium text-red-600 mt-1" style="display: none;"></p>
-                        </div>
-                    </div>
-
-                    <!-- Address -->
-                    <div class="space-y-2">
-                        <x-input-label for="new_address" :value="__('Address')" />
-                        <textarea
-                            id="new_address"
-                            x-model="newCust.address"
-                            rows="3"
-                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="Full Address"
-                        ></textarea>
-                        <p x-show="errors.address" x-text="errors.address" class="text-sm font-medium text-red-600 mt-1" style="display: none;"></p>
-                    </div>
-
-                    <!-- Notes -->
-                    <div class="space-y-2">
-                        <x-input-label for="new_notes" :value="__('Notes')" />
-                        <textarea
-                            id="new_notes"
-                            x-model="newCust.notes"
-                            rows="3"
-                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="Additional notes..."
-                        ></textarea>
-                        <p x-show="errors.notes" x-text="errors.notes" class="text-sm font-medium text-red-600 mt-1" style="display: none;"></p>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-4">
-                        <x-secondary-button type="button" x-on:click="$dispatch('close-modal', { name: 'customer-modal' })">
-                            {{ __('Cancel') }}
-                        </x-secondary-button>
-
-                        <x-primary-button type="button" @click="save()" x-bind:disabled="loading">
-                            <template x-if="loading">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            </template>
-                            <span x-text="loading ? 'Saving...' : 'Save Customer'"></span>
-                        </x-primary-button>
-                    </div>
-                </div>
-            </div>
-        </x-modal>
-
         <!-- Cancel Confirmation Modal -->
         <x-modal name="cancel-modal" focusable>
             <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -2065,8 +1810,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- Listen for customer created -->
-        <div @customer-created.window="selectedCustomer = $event.detail; customerSearch = '';"></div>
     </div>
 </x-app-layout>

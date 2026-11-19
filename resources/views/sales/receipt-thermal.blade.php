@@ -192,10 +192,12 @@
             <td class="text-left">CASHIER:</td>
             <td class="text-right">{{ $sale->creator->name ?? 'Staff' }}</td>
         </tr>
-        <tr>
-            <td class="text-left">CUSTOMER:</td>
-            <td class="text-right">{{ $sale->customer->name ?? 'Guest / Walk-In' }}</td>
-        </tr>
+        @if($sale->customer)
+            <tr>
+                <td class="text-left">CUSTOMER:</td>
+                <td class="text-right">{{ $sale->customer->name }}</td>
+            </tr>
+        @endif
         <tr>
             <td class="text-left">METHOD:</td>
             <td class="text-right uppercase">{{ $sale->payment_method->label() ?? $sale->payment_method->value ?? 'Cash' }}</td>

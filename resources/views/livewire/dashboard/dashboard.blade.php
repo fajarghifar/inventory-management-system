@@ -140,7 +140,7 @@
                 <div class="p-4 border-b flex items-center justify-between">
                     <div>
                         <h3 class="font-bold text-sm text-foreground">Recent Sales Register</h3>
-                        <p class="text-xs text-muted-foreground">Latest customer checkout transactions</p>
+                        <p class="text-xs text-muted-foreground">Latest register checkout transactions</p>
                     </div>
                     <a href="{{ route('sales.index') }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">
                         View All Sales &rarr;
@@ -151,8 +151,8 @@
                         <thead class="text-xs text-muted-foreground uppercase bg-muted/40 border-b">
                             <tr>
                                 <th class="px-4 py-2.5">Invoice</th>
-                                <th class="px-4 py-2.5">Customer</th>
-                                <th class="px-4 py-2.5">Method</th>
+                                <th class="px-4 py-2.5">Time</th>
+                                <th class="px-4 py-2.5">Payment</th>
                                 <th class="px-4 py-2.5 text-right">Amount</th>
                                 <th class="px-4 py-2.5 text-center">Receipt</th>
                             </tr>
@@ -163,9 +163,9 @@
                                     <td class="px-4 py-3 font-mono font-medium text-xs text-foreground">
                                         {{ $sale['invoice_number'] }}
                                     </td>
-                                    <td class="px-4 py-3 text-xs">
-                                        <div class="font-medium text-foreground">{{ $sale['customer']['name'] ?? 'Walk-in Customer' }}</div>
-                                        <div class="text-[10px] text-muted-foreground">{{ \Carbon\Carbon::parse($sale['created_at'])->diffForHumans() }}</div>
+                                    <td class="px-4 py-3 text-xs text-muted-foreground">
+                                        <div class="font-medium text-foreground">{{ \Carbon\Carbon::parse($sale['sale_date'] ?? $sale['created_at'])->format('h:i A') }}</div>
+                                        <div class="text-[10px]">{{ \Carbon\Carbon::parse($sale['sale_date'] ?? $sale['created_at'])->diffForHumans() }}</div>
                                     </td>
                                     <td class="px-4 py-3 text-xs">
                                         <span class="inline-block px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">

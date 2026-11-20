@@ -248,4 +248,42 @@ class RecordSaleTest extends TestCase
         $this->assertEquals(10.00, $sale->total);
         $this->assertEquals(0, $sale->change);
     }
+
+    public function test_record_sale_direct_quantity_update_and_limits(): void
+    {
+        $this->actingAs($this->staff);
+
+        Livewire::test(RecordSale::class)
+            ->call('addToCart', $this->waterProduct->id)
+            ->assertSet('cart.' . $this->waterProduct->id . '.quantity', 1)
+            ->call('updateQty', $this->waterProduct->id, 5)
+            ->assertSet('cart.' . $this->waterProduct->id . '.quantity', 5)
+            ->assertSet('total', 50.00)
+            ->call('updateQty', $this->waterProduct->id, 0)
+            ->assertSet('cart', []);
+    }
+
+    public function test_record_sale_barcode_scanning_and_discount_update(): void
+    {
+        $this->actingAs($this->staff);
+
+        Livewire::test(RecordSale::class)
+            ->set('search', '8992761001001') // waterProduct SKU
+            ->call('handleBarcodeSearch')
+            ->assertSet('cart.' . $this->waterProduct->id . '.quantity', 1)
+            ->assertSet('search', '')
+            ->call('updateDiscount', 2.00)
+            ->assertSet('globalDiscount', 2.00)
+            ->assertSet('total', 8.00); // 10.00 - 2.00 = 8.00
+    }
+
+    public function test_mobile_pwa_viewport_and_safe_area_configuration(): void
+    {
+        $this->actingAs($this->staff);
+
+        $response = $this->get(route('sales.create'));
+        $response->assertOk();
+        $response->assertSee('viewport-fit=cover', false);
+        $response->assertSee('interactive-widget=resizes-content', false);
+    }
 }

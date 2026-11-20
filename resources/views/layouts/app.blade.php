@@ -3,7 +3,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}{{ !empty($title) ? ' | ' . $title : '' }}</title>
@@ -23,7 +23,7 @@
         <!-- Connectivity Offline/Online Banner -->
         <x-connectivity-banner />
 
-        <div class="min-h-screen bg-background flex flex-col pb-24 lg:pb-0">
+        <div class="min-h-[100dvh] bg-background flex flex-col pb-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
             <div class="flex-1">
                 @include('layouts.navigation')
 

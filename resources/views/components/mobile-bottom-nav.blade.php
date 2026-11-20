@@ -5,7 +5,7 @@
             window.dispatchEvent(new CustomEvent('toggle-mobile-menu'));
         }
     }"
-    class="block lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-gray-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
+    class="block lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-gray-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] select-none"
     style="padding-bottom: env(safe-area-inset-bottom, 0px);"
     aria-label="Mobile Bottom Navigation"
 >
@@ -15,7 +15,7 @@
         @php $isHome = request()->routeIs('dashboard'); @endphp
         <a
             href="{{ route('dashboard') }}"
-            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isHome ? 'text-brand font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
+            class="flex flex-col items-center justify-center min-h-[48px] py-1 transition-all group {{ $isHome ? 'text-brand font-bold' : 'text-gray-500 hover:text-gray-900' }}"
         >
             <div class="relative flex items-center justify-center w-7 h-7">
                 <svg class="w-5 h-5 transition-transform group-active:scale-90" fill="{{ $isHome ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@
         @php $isProducts = request()->routeIs(['products.*', 'categories.*', 'units.*', 'low-stock.*', 'stock.*']); @endphp
         <a
             href="{{ route('products.index') }}"
-            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isProducts ? 'text-brand font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
+            class="flex flex-col items-center justify-center min-h-[48px] py-1 transition-all group {{ $isProducts ? 'text-brand font-bold' : 'text-gray-500 hover:text-gray-900' }}"
         >
             <div class="relative flex items-center justify-center w-7 h-7">
                 <svg class="w-5 h-5 transition-transform group-active:scale-90" fill="{{ $isProducts ? 'currentColor' : 'none' }}" stroke="{{ $isProducts ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
@@ -53,12 +53,12 @@
         @php $isRecordSale = request()->routeIs('sales.create'); @endphp
         <a
             href="{{ route('sales.create') }}"
-            class="flex flex-col items-center justify-center py-1 group focus:outline-none"
+            class="flex flex-col items-center justify-center min-h-[48px] py-1 group focus:outline-none"
             title="Record Sale"
         >
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-active:scale-95 shadow-sm
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-200 group-active:scale-90 shadow-sm
                 {{ $isRecordSale
-                    ? 'bg-brand text-white shadow-emerald-900/25'
+                    ? 'bg-brand text-white shadow-emerald-900/25 ring-2 ring-brand-300'
                     : 'bg-brand-100 text-brand hover:bg-brand-200 group-hover:scale-105'
                 }}"
             >
@@ -73,7 +73,7 @@
         @php $isSales = request()->routeIs(['sales.index', 'sales.show']); @endphp
         <a
             href="{{ route('sales.index') }}"
-            class="flex flex-col items-center justify-center py-1 transition-all group {{ $isSales ? 'text-brand font-semibold' : 'text-gray-500 hover:text-gray-900' }}"
+            class="flex flex-col items-center justify-center min-h-[48px] py-1 transition-all group {{ $isSales ? 'text-brand font-bold' : 'text-gray-500 hover:text-gray-900' }}"
         >
             <div class="relative flex items-center justify-center w-7 h-7">
                 <svg class="w-5 h-5 transition-transform group-active:scale-90" fill="{{ $isSales ? 'currentColor' : 'none' }}" stroke="{{ $isSales ? 'none' : 'currentColor' }}" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@
         <button
             type="button"
             @click="openMenu()"
-            class="flex flex-col items-center justify-center py-1 text-gray-500 hover:text-gray-900 transition-all group focus:outline-none"
+            class="flex flex-col items-center justify-center min-h-[48px] py-1 text-gray-500 hover:text-gray-900 transition-all group focus:outline-none"
         >
             <div class="relative flex items-center justify-center w-7 h-7">
                 <svg class="w-5 h-5 transition-transform group-active:scale-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">

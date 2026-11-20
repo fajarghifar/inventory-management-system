@@ -178,23 +178,30 @@
                                 </div>
 
                                 {{-- Controls & Subtotal --}}
-                                <div class="flex items-center gap-3 shrink-0">
-                                    {{-- + / - Quantity Controls (>= 44px touch targets) --}}
-                                    <div class="flex items-center rounded-xl border border-gray-200 bg-gray-50 p-0.5">
+                                <div class="flex items-center gap-2.5 shrink-0">
+                                    {{-- + / - Quantity Controls (>= 44px touch targets on mobile) --}}
+                                    <div class="flex items-center rounded-xl border border-gray-200 bg-gray-50/80 p-0.5 select-none">
                                         <button
                                             type="button"
                                             wire:click="decrementQty({{ $item['product_id'] }})"
-                                            class="w-8 h-8 rounded-lg bg-white shadow-2xs hover:bg-gray-100 text-gray-700 font-bold flex items-center justify-center text-sm transition-all active:scale-90"
+                                            class="w-9 h-9 rounded-lg bg-white shadow-2xs hover:bg-gray-100 text-gray-700 font-bold flex items-center justify-center text-base transition-all active:scale-90"
+                                            aria-label="Decrease quantity"
                                         >
                                             &minus;
                                         </button>
-                                        <span class="w-9 text-center font-mono font-bold text-sm text-gray-900">
-                                            {{ $item['quantity'] }}
-                                        </span>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="{{ $item['max_quantity'] }}"
+                                            value="{{ $item['quantity'] }}"
+                                            wire:change="updateQty({{ $item['product_id'] }}, $event.target.value)"
+                                            class="w-11 h-9 p-0 text-center font-mono font-bold text-sm text-gray-900 bg-transparent border-none focus:ring-1 focus:ring-brand rounded"
+                                        />
                                         <button
                                             type="button"
                                             wire:click="incrementQty({{ $item['product_id'] }})"
-                                            class="w-8 h-8 rounded-lg bg-white shadow-2xs hover:bg-gray-100 text-gray-700 font-bold flex items-center justify-center text-sm transition-all active:scale-90"
+                                            class="w-9 h-9 rounded-lg bg-white shadow-2xs hover:bg-gray-100 text-gray-700 font-bold flex items-center justify-center text-base transition-all active:scale-90"
+                                            aria-label="Increase quantity"
                                         >
                                             &plus;
                                         </button>
@@ -209,7 +216,7 @@
                                     <button
                                         type="button"
                                         wire:click="removeFromCart({{ $item['product_id'] }})"
-                                        class="p-1 text-gray-300 hover:text-rose-600 transition-colors"
+                                        class="w-9 h-9 rounded-xl text-gray-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors"
                                         title="Remove item"
                                     >
                                         <x-heroicon-o-trash class="w-4 h-4" />
@@ -220,21 +227,46 @@
                     </div>
 
                     {{-- Summary Box --}}
-                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2 font-mono text-sm pt-4">
-                        <div class="flex justify-between text-gray-600">
+                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2.5 font-mono text-sm pt-4">
+                        <div class="flex justify-between text-gray-600 font-sans">
                             <span>Subtotal</span>
-                            <span class="font-bold text-gray-900">ETB {{ number_format($this->subtotal, 2) }}</span>
+                            <span class="font-bold font-mono text-gray-900">ETB {{ number_format($this->subtotal, 2) }}</span>
+                        </div>
+
+                        {{-- Discount Input / Display --}}
+                        <div class="flex items-center justify-between text-xs font-sans text-gray-600">
+                            <span class="flex items-center gap-1">
+                                <x-heroicon-o-tag class="w-3.5 h-3.5 text-gray-400" />
+                                <span>Discount (ETB)</span>
+                            </span>
+                            <div class="flex items-center gap-1 font-mono">
+                                <input
+                                    type="number"
+                                    inputmode="decimal"
+                                    step="any"
+                                    min="0"
+                                    max="{{ $this->subtotal }}"
+                                    wire:model.live.debounce.300ms="globalDiscount"
+                                    placeholder="0.00"
+                                    class="w-24 h-8 text-xs font-mono font-bold text-right rounded-lg border border-gray-300 px-2 focus:ring-1 focus:ring-brand focus:border-brand bg-white"
+                                />
+                                @if($globalDiscount > 0)
+                                    <button type="button" wire:click="$set('globalDiscount', 0)" class="text-gray-400 hover:text-rose-600 p-1" title="Remove discount">
+                                        <x-heroicon-o-x-mark class="w-3.5 h-3.5" />
+                                    </button>
+                                @endif
+                            </div>
                         </div>
 
                         @if($globalDiscount > 0)
-                            <div class="flex justify-between text-rose-600">
-                                <span>Discount</span>
-                                <span class="font-bold">- ETB {{ number_format($globalDiscount, 2) }}</span>
+                            <div class="flex justify-between text-rose-600 font-sans text-xs">
+                                <span>Discount applied</span>
+                                <span class="font-mono font-bold">- ETB {{ number_format((float)$globalDiscount, 2) }}</span>
                             </div>
                         @endif
 
                         <div class="pt-2 border-t border-gray-200 flex justify-between items-center text-base">
-                            <span class="font-bold text-gray-900">Total</span>
+                            <span class="font-bold text-gray-900 font-sans">Total</span>
                             <span class="font-black text-brand text-xl">
                                 ETB {{ number_format($this->total, 2) }}
                             </span>
@@ -314,7 +346,8 @@
                                 <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm font-bold text-gray-400">ETB</span>
                                 <input
                                     type="number"
-                                    step="0.01"
+                                    inputmode="decimal"
+                                    step="any"
                                     wire:model.live="cashReceived"
                                     placeholder="0.00"
                                     class="w-full h-13 pl-14 pr-4 font-mono text-xl font-bold text-gray-900 bg-gray-50/60 border border-gray-200 rounded-2xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-all"
@@ -426,7 +459,7 @@
                             type="text"
                             wire:model="notes"
                             placeholder="Optional note or customer reference..."
-                            class="w-full text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
+                            class="w-full text-base sm:text-xs bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
                         />
                     </div>
 
@@ -477,8 +510,9 @@
                             <input
                                 type="text"
                                 wire:model.live.debounce.250ms="search"
+                                wire:keydown.enter.prevent="handleBarcodeSearch"
                                 placeholder="Search products by name, SKU, or barcode..."
-                                class="w-full h-11 pl-11 pr-10 text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-all"
+                                class="w-full h-11 pl-11 pr-10 text-base sm:text-sm bg-gray-50/70 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand transition-all"
                             />
                             @if($search !== '')
                                 <button
@@ -492,7 +526,7 @@
                         </div>
 
                         {{-- Category Shortcuts Pills --}}
-                        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs select-none touch-scroll">
                             <button
                                 type="button"
                                 wire:click="selectCategory(null)"
@@ -686,21 +720,36 @@
 
                             {{-- Financial Calculations --}}
                             <div class="bg-gray-50/80 rounded-xl p-3.5 border border-gray-100 space-y-2 font-mono text-xs">
-                                <div class="flex justify-between text-gray-600">
+                                <div class="flex justify-between text-gray-600 font-sans">
                                     <span>Subtotal</span>
-                                    <span class="font-bold text-gray-900">ETB {{ number_format($this->subtotal, 2) }}</span>
+                                    <span class="font-bold text-gray-900 font-mono">ETB {{ number_format($this->subtotal, 2) }}</span>
+                                </div>
+
+                                {{-- Discount Row --}}
+                                <div class="flex items-center justify-between text-[11px] font-sans text-gray-600">
+                                    <span>Discount</span>
+                                    <input
+                                        type="number"
+                                        inputmode="decimal"
+                                        step="any"
+                                        min="0"
+                                        max="{{ $this->subtotal }}"
+                                        wire:model.live.debounce.300ms="globalDiscount"
+                                        placeholder="0.00"
+                                        class="w-20 h-6 text-xs font-mono font-bold text-right rounded border border-gray-300 px-1.5 focus:ring-1 focus:ring-brand focus:border-brand bg-white"
+                                    />
                                 </div>
 
                                 @if($globalDiscount > 0)
-                                    <div class="flex justify-between text-rose-600">
-                                        <span>Discount</span>
-                                        <span class="font-bold">- ETB {{ number_format($globalDiscount, 2) }}</span>
+                                    <div class="flex justify-between text-rose-600 font-sans">
+                                        <span>Discount applied</span>
+                                        <span class="font-bold font-mono">- ETB {{ number_format((float)$globalDiscount, 2) }}</span>
                                     </div>
                                 @endif
 
-                                <div class="pt-2 border-t border-gray-200 flex justify-between items-center text-sm">
+                                <div class="pt-2 border-t border-gray-200 flex justify-between items-center text-sm font-sans">
                                     <span class="font-bold text-gray-900">Total Price</span>
-                                    <span class="font-black text-brand text-lg">
+                                    <span class="font-black text-brand text-lg font-mono">
                                         ETB {{ number_format($this->total, 2) }}
                                     </span>
                                 </div>
@@ -736,7 +785,8 @@
                                             <span class="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-xs font-bold text-gray-400">ETB</span>
                                             <input
                                                 type="number"
-                                                step="0.01"
+                                                inputmode="decimal"
+                                                step="any"
                                                 wire:model.live="cashReceived"
                                                 placeholder="Amount received"
                                                 class="w-full h-10 pl-12 pr-3 font-mono text-sm font-bold text-gray-900 bg-gray-50/60 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
@@ -796,7 +846,7 @@
                  MOBILE BOTTOM FLOATING CART BAR (Visible only on mobile/tablet when cart has items)
                  ========================================================================= --}}
             @if(!empty($cart) && $step === 'select')
-                <div class="fixed bottom-16 inset-x-0 z-30 p-3 lg:hidden pointer-events-none animate-slide-up">
+                <div class="fixed bottom-floating-bar inset-x-0 z-30 p-3 lg:hidden pointer-events-none animate-slide-up">
                     <div class="max-w-lg mx-auto bg-gray-900/95 backdrop-blur-md text-white rounded-2xl shadow-xl p-3 flex items-center justify-between pointer-events-auto border border-white/10">
                         <div class="flex items-center gap-3 pl-1">
                             <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center font-bold text-sm">

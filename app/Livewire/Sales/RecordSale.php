@@ -145,6 +145,76 @@ class RecordSale extends Component
         }
     }
 
+    public function updateQty(int $productId, $qty): void
+    {
+        if (!isset($this->cart[$productId])) {
+            return;
+        }
+
+        $qty = (int) $qty;
+        if ($qty <= 0) {
+            $this->removeFromCart($productId);
+            return;
+        }
+
+        $max = $this->cart[$productId]['max_quantity'];
+        if ($qty > $max) {
+            $qty = $max;
+            $this->dispatch('toast', message: "Cannot exceed available stock ({$max}).", type: 'warning');
+        }
+
+        $this->cart[$productId]['quantity'] = $qty;
+
+        if ($this->paymentMethod === 'cash') {
+            $this->cashReceived = $this->total;
+        }
+    }
+
+    public function updateDiscount($amount): void
+    {
+        $amount = max(0, (float) $amount);
+        if ($amount > $this->subtotal) {
+            $amount = $this->subtotal;
+        }
+        $this->globalDiscount = $amount;
+        if ($this->paymentMethod === 'cash') {
+            $this->cashReceived = $this->total;
+        }
+    }
+
+    public function handleBarcodeSearch(): void
+    {
+        $term = trim($this->search);
+        if ($term === '') {
+            return;
+        }
+
+        // 1. Try exact SKU barcode match
+        $product = Product::where('is_active', true)
+            ->where('sku', $term)
+            ->first();
+
+        // 2. If not found by exact SKU, check if single product matches
+        if (!$product) {
+            $matches = Product::where('is_active', true)
+                ->where(function ($q) use ($term) {
+                    $q->where('name', 'like', "%{$term}%")
+                        ->orWhere('sku', 'like', "%{$term}%");
+                })
+                ->take(2)
+                ->get();
+
+            if ($matches->count() === 1) {
+                $product = $matches->first();
+            }
+        }
+
+        if ($product) {
+            $this->addToCart($product->id);
+            $this->search = '';
+        }
+    }
+
     public function removeFromCart(int $productId): void
     {
         unset($this->cart[$productId]);

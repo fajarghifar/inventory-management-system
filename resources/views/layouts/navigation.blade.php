@@ -1,5 +1,5 @@
-<section class="py-2.5 lg:py-3 bg-white border-b border-gray-200/80 shadow-2xs sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8" x-data="{ mobileMenuOpen: false }" @toggle-mobile-menu.window="mobileMenuOpen = !mobileMenuOpen">
+<section class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-2xs" style="padding-top: env(safe-area-inset-top, 0px);">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 lg:py-3" x-data="{ mobileMenuOpen: false }" @toggle-mobile-menu.window="mobileMenuOpen = !mobileMenuOpen">
         <!-- Desktop Menu -->
         <nav class="hidden items-center justify-between lg:flex w-full gap-3 xl:gap-5">
             <!-- Left: Brand Store Identity -->
@@ -204,8 +204,8 @@
                 x-transition:leave="duration-200 ease-in"
                 x-transition:leave-start="translate-x-0"
                 x-transition:leave-end="translate-x-full"
-                class="fixed inset-y-0 right-0 z-50 h-full w-[85%] max-w-sm border-l border-border bg-card p-5 shadow-2xl flex flex-col justify-between overflow-y-auto"
-                style="display: none;"
+                class="fixed inset-y-0 right-0 z-50 h-full w-[85%] max-w-sm border-l border-border bg-card p-5 shadow-2xl flex flex-col justify-between overflow-y-auto touch-scroll"
+                style="display: none; padding-top: calc(1.25rem + env(safe-area-inset-top, 0px)); padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));"
                 @click.stop>
 
                 <div>

@@ -89,6 +89,27 @@ class PwaOfflineSyncTest extends TestCase
         $swContent = file_get_contents(public_path('sw.js'));
         $this->assertStringContainsString('/livewire/', $swContent, 'Service Worker must contain bypass for Livewire');
         $this->assertStringContainsString('/offline', $swContent, 'Service Worker must precache offline fallback');
+        $this->assertStringContainsString('skipWaiting', $swContent, 'Service Worker must support skipWaiting');
+        $this->assertStringContainsString('inventory-pwa-v1.2.0', $swContent, 'Service Worker must have updated version');
+    }
+
+    public function test_service_worker_route_is_accessible_with_no_cache_headers(): void
+    {
+        $response = $this->get('/sw.js');
+        $response->assertStatus(200);
+        $this->assertStringContainsString('javascript', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('no-cache', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $this->assertStringContainsString('inventory-pwa-v1.2.0', $response->getContent());
+        $this->assertStringContainsString('skipWaiting', $response->getContent());
+    }
+
+    public function test_pwa_meta_component_includes_update_engine_and_no_cache_flag(): void
+    {
+        $view = $this->blade('<x-pwa-meta />');
+        $view->assertSee("updateViaCache: 'none'", false);
+        $view->assertSee("controllerchange");
+        $view->assertSee("registration.update()");
     }
 
     public function test_offline_fallback_page_is_publicly_accessible(): void

@@ -1,9 +1,9 @@
 /**
  * Service Worker for Inventory & Financial Management System PWA
- * Version: 1.0.0
+ * Version: 1.2.0 (Auto-Updating PWA Release 2026-11-20)
  */
 
-const CACHE_VERSION = 'inventory-pwa-v1.0.0';
+const CACHE_VERSION = 'inventory-pwa-v1.2.0-20261120';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -21,36 +21,42 @@ const PRECACHE_ASSETS = [
     '/favicon.ico'
 ];
 
-// Install Event - Precache static assets & skip waiting
+// Install Event - Precache static assets & immediately skip waiting
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(STATIC_CACHE).then((cache) => {
             return cache.addAll(PRECACHE_ASSETS).catch((err) => {
                 console.warn('[SW] Some precache assets could not be loaded:', err);
             });
-        }).then(() => self.skipWaiting())
+        }).then(() => {
+            // Force the waiting service worker to become the active service worker immediately
+            return self.skipWaiting();
+        })
     );
 });
 
-// Activate Event - Clean up outdated caches & claim clients
+// Activate Event - Clean up all outdated caches & immediately claim all clients
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== STATIC_CACHE && cacheName !== RUNTIME_CACHE) {
-                        console.log('[SW] Removing old cache:', cacheName);
+                        console.log('[SW] Purging outdated cache from previous version:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
-        }).then(() => self.clients.claim())
+        }).then(() => {
+            console.log('[SW] Successfully activated and claimed clients for:', CACHE_VERSION);
+            return self.clients.claim();
+        })
     );
 });
 
-// Message Event - Support immediate skipWaiting updates
+// Message Event - Support immediate skipWaiting updates via postMessage
 self.addEventListener('message', (event) => {
-    if (event.data && event.data.action === 'skipWaiting') {
+    if (event.data && (event.data.action === 'skipWaiting' || event.data === 'skipWaiting')) {
         self.skipWaiting();
     }
 });
@@ -65,12 +71,17 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 2. CRITICAL BYPASS: Livewire reactive calls must NEVER be cached or delayed
+    // 2. NEVER intercept the service worker file itself (always live from network)
+    if (url.pathname === '/sw.js') {
+        return;
+    }
+
+    // 3. CRITICAL BYPASS: Livewire reactive calls must NEVER be cached or delayed
     if (url.pathname.startsWith('/livewire/')) {
         return;
     }
 
-    // 3. CRITICAL BYPASS: Authentication & sensitive routes must never be cached
+    // 4. CRITICAL BYPASS: Authentication & sensitive routes must never be cached
     const bypassPaths = [
         '/login',
         '/logout',
@@ -84,7 +95,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 4. Navigation Requests (HTML Pages) -> Network-First with Offline Fallback
+    // 5. Navigation Requests (HTML Pages) -> Network-First with Offline Fallback
     if (request.mode === 'navigate') {
         event.respondWith(
             fetch(request)
@@ -119,10 +130,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 5. Static Assets (Vite build, images, fonts, styles, scripts) -> Stale-While-Revalidate
+    // 6. Static Assets (Vite build, images, fonts, styles, scripts, storage photos) -> Stale-While-Revalidate
     const isStaticAsset = (
         url.pathname.startsWith('/build/') ||
         url.pathname.startsWith('/images/') ||
+        url.pathname.startsWith('/storage/') ||
         url.pathname.startsWith('/fonts/') ||
         url.hostname.includes('fonts.googleapis.com') ||
         url.hostname.includes('fonts.gstatic.com') ||
@@ -151,7 +163,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 6. Read-only Catalog API endpoint (/ajax/products/catalog) -> Network-First with Cache Fallback
+    // 7. Read-only Catalog API endpoint (/ajax/products/catalog) -> Network-First with Cache Fallback
     if (url.pathname === '/ajax/products/catalog') {
         event.respondWith(
             fetch(request)

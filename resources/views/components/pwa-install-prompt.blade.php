@@ -5,6 +5,7 @@
         showIosModal: false,
         showHelpModal: false,
         showUpdateBanner: false,
+        isUpdating: false,
         updateRegistration: null,
         isIos: false,
         isStandalone: false,
@@ -78,10 +79,21 @@
         },
 
         applyUpdate() {
+            this.isUpdating = true;
             if (this.updateRegistration && this.updateRegistration.waiting) {
                 this.updateRegistration.waiting.postMessage({ action: 'skipWaiting' });
+            } else if (window.pwaRegistration && window.pwaRegistration.waiting) {
+                window.pwaRegistration.waiting.postMessage({ action: 'skipWaiting' });
+            } else if (typeof window.pwaApplyUpdate === 'function') {
+                window.pwaApplyUpdate();
+            } else {
+                window.location.reload();
             }
-            window.location.reload();
+
+            // Fallback reload if controllerchange is delayed
+            setTimeout(() => {
+                window.location.reload();
+            }, 600);
         }
     }"
     x-cloak
@@ -127,28 +139,58 @@
         </div>
     </div>
 
-    <!-- Update Available Notification Banner -->
+    <!-- Update Available Notification Banner (Mobile Bottom-Nav Friendly & High Visibility) -->
     <div
         x-show="showUpdateBanner"
-        x-transition
-        class="fixed bottom-4 left-4 max-w-sm w-full bg-indigo-900 border border-indigo-700 rounded-xl shadow-2xl p-4 text-white z-50"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="translate-y-8 opacity-0"
+        x-transition:enter-end="translate-y-0 opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="translate-y-0 opacity-100"
+        x-transition:leave-end="translate-y-8 opacity-0"
+        class="fixed bottom-20 lg:bottom-6 right-4 left-4 sm:left-auto sm:max-w-md bg-slate-900/95 dark:bg-slate-900/95 backdrop-blur-xl border border-emerald-500/60 rounded-2xl shadow-2xl p-4 text-white z-50 ring-1 ring-emerald-500/20"
         style="display: none;"
     >
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="p-2 bg-indigo-800 rounded-lg">
-                    <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <div class="flex items-start space-x-3.5">
+            <div class="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl flex-shrink-0 mt-0.5">
+                <svg class="w-5 h-5 animate-spin" x-show="isUpdating" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <svg class="w-5 h-5" x-show="!isUpdating" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 uppercase tracking-wider">
+                        Update Ready
+                    </span>
                 </div>
-                <div>
-                    <h5 class="text-xs font-semibold text-white">App Update Ready</h5>
-                    <p class="text-[11px] text-indigo-200">A new version is cached and ready.</p>
+                <h5 class="text-sm font-semibold text-white mt-1">App Update Available</h5>
+                <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">
+                    A new version of the app was deployed with latest changes. Tap to reload now without reinstalling.
+                </p>
+                <div class="mt-3 flex items-center space-x-2">
+                    <button
+                        @click="applyUpdate()"
+                        :disabled="isUpdating"
+                        class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-emerald-900/30 flex items-center space-x-1.5 disabled:opacity-50"
+                    >
+                        <span x-show="!isUpdating">Update & Reload</span>
+                        <span x-show="isUpdating">Updating...</span>
+                    </button>
+                    <button
+                        @click="showUpdateBanner = false"
+                        type="button"
+                        class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                    >
+                        Later
+                    </button>
                 </div>
             </div>
-            <button
-                @click="applyUpdate()"
-                class="px-2.5 py-1 bg-white text-indigo-900 rounded text-xs font-bold hover:bg-indigo-50 transition-colors"
-            >
-                Reload
+            <button @click="showUpdateBanner = false" class="text-slate-400 hover:text-white p-1 -mr-1 -mt-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
     </div>

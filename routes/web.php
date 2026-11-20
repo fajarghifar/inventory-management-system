@@ -102,4 +102,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::view('/offline', 'offline')->name('offline');
 
+// PWA Service Worker served with strict no-cache headers for instant client updates
+Route::get('/sw.js', function () {
+    $swPath = public_path('sw.js');
+    if (!file_exists($swPath)) {
+        abort(404);
+    }
+    return response(file_get_contents($swPath), 200, [
+        'Content-Type' => 'application/javascript; charset=utf-8',
+        'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0',
+        'Pragma' => 'no-cache',
+        'Expires' => '0',
+    ]);
+});
+
 require __DIR__.'/auth.php';

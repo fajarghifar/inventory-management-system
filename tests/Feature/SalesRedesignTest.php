@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Enums\UserRole;
 use App\Enums\SaleStatus;
 use App\Enums\PaymentMethod;
+use Carbon\Carbon;
 use Livewire\Livewire;
 use App\Livewire\Sales\SalesCatalog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -147,6 +148,79 @@ class SalesRedesignTest extends TestCase
             ->set('datePeriod', 'today')
             ->assertSee('INV-TODAY')
             ->assertDontSee('INV-LAST-MONTH');
+    }
+
+    public function test_sales_catalog_calendar_custom_range_filter(): void
+    {
+        $this->actingAs($this->admin);
+
+        Sale::create([
+            'invoice_number' => 'INV-IN-RANGE',
+            'created_by' => $this->staff->id,
+            'sale_date' => Carbon::parse('2026-11-12 14:00:00'),
+            'status' => SaleStatus::COMPLETED,
+            'subtotal' => 220.00,
+            'global_discount' => 0,
+            'total_discount' => 0,
+            'total' => 220.00,
+            'payment_method' => PaymentMethod::CASH,
+        ]);
+
+        Sale::create([
+            'invoice_number' => 'INV-OUT-OF-RANGE',
+            'created_by' => $this->staff->id,
+            'sale_date' => Carbon::parse('2026-11-25 14:00:00'),
+            'status' => SaleStatus::COMPLETED,
+            'subtotal' => 300.00,
+            'global_discount' => 0,
+            'total_discount' => 0,
+            'total' => 300.00,
+            'payment_method' => PaymentMethod::CASH,
+        ]);
+
+        Livewire::test(SalesCatalog::class)
+            ->call('setCustomRange', '2026-11-10 to 2026-11-15')
+            ->assertSee('INV-IN-RANGE')
+            ->assertDontSee('INV-OUT-OF-RANGE')
+            ->assertSet('datePeriod', 'custom')
+            ->call('clearCustomRange')
+            ->assertSet('datePeriod', 'all')
+            ->assertSee('INV-IN-RANGE')
+            ->assertSee('INV-OUT-OF-RANGE');
+    }
+
+    public function test_sales_catalog_calendar_single_date_filter(): void
+    {
+        $this->actingAs($this->admin);
+
+        Sale::create([
+            'invoice_number' => 'INV-EXACT-DAY',
+            'created_by' => $this->staff->id,
+            'sale_date' => Carbon::parse('2026-11-12 09:30:00'),
+            'status' => SaleStatus::COMPLETED,
+            'subtotal' => 220.00,
+            'global_discount' => 0,
+            'total_discount' => 0,
+            'total' => 220.00,
+            'payment_method' => PaymentMethod::CASH,
+        ]);
+
+        Sale::create([
+            'invoice_number' => 'INV-ANOTHER-DAY',
+            'created_by' => $this->staff->id,
+            'sale_date' => Carbon::parse('2026-11-13 09:30:00'),
+            'status' => SaleStatus::COMPLETED,
+            'subtotal' => 300.00,
+            'global_discount' => 0,
+            'total_discount' => 0,
+            'total' => 300.00,
+            'payment_method' => PaymentMethod::CASH,
+        ]);
+
+        Livewire::test(SalesCatalog::class)
+            ->call('setCustomRange', '2026-11-12')
+            ->assertSee('INV-EXACT-DAY')
+            ->assertDontSee('INV-ANOTHER-DAY');
     }
 
     public function test_sales_catalog_status_and_payment_filtering(): void

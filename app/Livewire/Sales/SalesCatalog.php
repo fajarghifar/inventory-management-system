@@ -7,6 +7,7 @@ use App\Enums\SaleStatus;
 use App\Enums\PaymentMethod;
 use App\Services\SaleService;
 use App\Exceptions\SaleException;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -24,7 +25,10 @@ class SalesCatalog extends Component
     public string $statusFilter = 'all'; // all, completed, pending, cancelled
 
     #[Url(as: 'period')]
-    public string $datePeriod = 'all'; // all, today, yesterday, this_week, this_month
+    public string $datePeriod = 'all'; // all, today, yesterday, this_week, this_month, custom
+
+    #[Url(as: 'range')]
+    public ?string $customRange = null; // "YYYY-MM-DD" or "YYYY-MM-DD to YYYY-MM-DD"
 
     #[Url(as: 'payment')]
     public string $paymentFilter = 'all'; // all, cash, transfer
@@ -67,9 +71,33 @@ class SalesCatalog extends Component
         $this->resetPage();
     }
 
+    public function setPeriod(string $period): void
+    {
+        $this->datePeriod = $period;
+        $this->customRange = null;
+        $this->resetPage();
+    }
+
+    public function setCustomRange(string $range): void
+    {
+        $trimmed = trim($range);
+        if ($trimmed !== '') {
+            $this->customRange = $trimmed;
+            $this->datePeriod = 'custom';
+            $this->resetPage();
+        }
+    }
+
+    public function clearCustomRange(): void
+    {
+        $this->customRange = null;
+        $this->datePeriod = 'all';
+        $this->resetPage();
+    }
+
     public function resetFilters(): void
     {
-        $this->reset(['search', 'statusFilter', 'datePeriod', 'paymentFilter', 'sortBy']);
+        $this->reset(['search', 'statusFilter', 'datePeriod', 'customRange', 'paymentFilter', 'sortBy']);
         $this->resetPage();
     }
 
@@ -117,31 +145,54 @@ class SalesCatalog extends Component
                 'Status',
             ]);
 
-            Sale::with(['customer', 'creator', 'items'])
-                ->latest('sale_date')
-                ->chunk(250, function ($sales) use ($handle) {
-                    foreach ($sales as $s) {
-                        fputcsv($handle, [
-                            $s->id,
-                            $s->invoice_number ?: '-',
-                            $s->sale_date ? $s->sale_date->format('Y-m-d H:i:s') : '-',
-                            $s->creator?->name ?? 'System',
-                            $s->customer?->name ?? 'Walk-in Customer',
-                            $s->payment_method ? $s->payment_method->label() : '-',
-                            $s->items->sum('quantity'),
-                            $s->subtotal,
-                            $s->total_discount,
-                            $s->total,
-                            $s->status ? $s->status->label() : '-',
-                        ]);
-                    }
-                });
+            $query = Sale::with(['customer', 'creator', 'items'])->latest('sale_date');
+            $this->applyDatePeriod($query, $this->datePeriod, $this->customRange);
+
+            $query->chunk(250, function ($sales) use ($handle) {
+                foreach ($sales as $s) {
+                    fputcsv($handle, [
+                        $s->id,
+                        $s->invoice_number ?: '-',
+                        $s->sale_date ? $s->sale_date->format('Y-m-d H:i:s') : '-',
+                        $s->creator?->name ?? 'System',
+                        $s->customer?->name ?? 'Walk-in Customer',
+                        $s->payment_method ? $s->payment_method->label() : '-',
+                        $s->items->sum('quantity'),
+                        $s->subtotal,
+                        $s->total_discount,
+                        $s->total,
+                        $s->status ? $s->status->label() : '-',
+                    ]);
+                }
+            });
             fclose($handle);
         }, $fileName, ['Content-Type' => 'text/csv']);
     }
 
-    protected function applyDatePeriod(Builder $query, string $period): void
+    protected function applyDatePeriod(Builder $query, string $period, ?string $range = null): void
     {
+        if ($period === 'custom' && !empty($range)) {
+            if (str_contains($range, ' to ')) {
+                $parts = explode(' to ', $range);
+                try {
+                    $start = Carbon::parse(trim($parts[0]))->startOfDay();
+                    $end = Carbon::parse(trim($parts[1]))->endOfDay();
+                    $query->whereBetween('sale_date', [$start, $end]);
+                    return;
+                } catch (\Exception $e) {
+                    // Fall through if parsing fails
+                }
+            } else {
+                try {
+                    $date = Carbon::parse(trim($range))->toDateString();
+                    $query->whereDate('sale_date', $date);
+                    return;
+                } catch (\Exception $e) {
+                    // Fall through if parsing fails
+                }
+            }
+        }
+
         match ($period) {
             'today' => $query->whereDate('sale_date', now()),
             'yesterday' => $query->whereDate('sale_date', now()->subDay()),
@@ -151,11 +202,35 @@ class SalesCatalog extends Component
         };
     }
 
+    protected function formatCustomRangeLabel(?string $range): string
+    {
+        if (empty($range)) {
+            return 'Custom';
+        }
+
+        if (str_contains($range, ' to ')) {
+            $parts = explode(' to ', $range);
+            try {
+                $d1 = Carbon::parse(trim($parts[0]))->format('M d, Y');
+                $d2 = Carbon::parse(trim($parts[1]))->format('M d, Y');
+                return "{$d1} – {$d2}";
+            } catch (\Exception $e) {
+                return $range;
+            }
+        }
+
+        try {
+            return Carbon::parse(trim($range))->format('M d, Y');
+        } catch (\Exception $e) {
+            return $range;
+        }
+    }
+
     public function render()
     {
         // 1. KPI Overview Metrics (Calculated for current date period)
         $periodQuery = Sale::query();
-        $this->applyDatePeriod($periodQuery, $this->datePeriod);
+        $this->applyDatePeriod($periodQuery, $this->datePeriod, $this->customRange);
 
         $totalTransactions = (clone $periodQuery)->count();
         $completedQuery = (clone $periodQuery)->where('status', SaleStatus::COMPLETED);
@@ -173,6 +248,7 @@ class SalesCatalog extends Component
                 'yesterday' => 'Yesterday',
                 'this_week' => 'This Week',
                 'this_month' => 'This Month',
+                'custom' => $this->formatCustomRangeLabel($this->customRange),
                 default => 'All Time',
             },
         ];
@@ -182,7 +258,7 @@ class SalesCatalog extends Component
             ->with(['customer', 'creator', 'items.product.unit']);
 
         // Date period filter
-        $this->applyDatePeriod($query, $this->datePeriod);
+        $this->applyDatePeriod($query, $this->datePeriod, $this->customRange);
 
         // Status filter
         if ($this->statusFilter !== 'all') {

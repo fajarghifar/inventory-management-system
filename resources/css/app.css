@@ -224,3 +224,67 @@
     }
 }
 
+/* ==========================================================================
+   Flatpickr Custom Calendar Theme (Deep Emerald)
+   ========================================================================== */
+.flatpickr-calendar {
+    border-radius: 1rem !important;
+    border: 1px solid #e2ece9 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    font-family: inherit !important;
+    padding: 0.5rem !important;
+    z-index: 9999 !important;
+}
+
+.flatpickr-months {
+    padding-bottom: 0.5rem !important;
+}
+
+.flatpickr-current-month {
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+}
+
+span.flatpickr-weekday {
+    font-weight: 600 !important;
+    color: #64748b !important;
+    font-size: 0.75rem !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange {
+    background: #087C50 !important;
+    border-color: #087C50 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-radius: 0.5rem !important;
+}
+
+.flatpickr-day.inRange {
+    background: #E8F7EF !important;
+    border-color: #E8F7EF !important;
+    color: #087C50 !important;
+    box-shadow: -5px 0 0 #E8F7EF, 5px 0 0 #E8F7EF !important;
+}
+
+.flatpickr-day.today {
+    border-color: #087C50 !important;
+    color: #087C50 !important;
+}
+
+.flatpickr-day:hover {
+    background: #f1f5f9 !important;
+    border-radius: 0.5rem !important;
+}
+
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: #066340 !important;
+    border-color: #066340 !important;
+}
+

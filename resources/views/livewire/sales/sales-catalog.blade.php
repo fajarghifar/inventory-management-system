@@ -100,8 +100,8 @@
 
         <!-- 3. Toolbar (Period Selector, Search, Status, Payment, Sorting) -->
         <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs space-y-3">
-            <!-- Quick Date Period Pills -->
-            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+            <!-- Quick Date Period Pills & Calendar Picker -->
+            <div class="flex flex-wrap items-center gap-1.5 pb-1 text-xs">
                 <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mr-1 whitespace-nowrap">Period:</span>
                 @php
                     $periods = [
@@ -115,12 +115,79 @@
                 @foreach($periods as $key => $label)
                     <button
                         type="button"
-                        wire:click="$set('datePeriod', '{{ $key }}')"
-                        class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors {{ $datePeriod === $key ? 'bg-brand text-white shadow-xs font-semibold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}"
+                        wire:click="setPeriod('{{ $key }}')"
+                        class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors {{ $datePeriod === $key && empty($customRange) ? 'bg-brand text-white shadow-xs font-semibold' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}"
                     >
                         {{ $label }}
                     </button>
                 @endforeach
+
+                <!-- Interactive Calendar Date Range Picker -->
+                <div
+                    x-data="{
+                        picker: null,
+                        init() {
+                            const initFlatpickr = () => {
+                                if (typeof window.flatpickr === 'function' && this.$refs.pickerInput) {
+                                    this.picker = window.flatpickr(this.$refs.pickerInput, {
+                                        mode: 'range',
+                                        dateFormat: 'Y-m-d',
+                                        altInput: false,
+                                        defaultDate: @js($customRange ? explode(' to ', $customRange) : null),
+                                        onClose: (selectedDates, dateStr) => {
+                                            if (dateStr) {
+                                                $wire.setCustomRange(dateStr);
+                                            }
+                                        }
+                                    });
+                                }
+                            };
+
+                            if (typeof window.flatpickr === 'function') {
+                                initFlatpickr();
+                            } else {
+                                window.addEventListener('load', initFlatpickr);
+                            }
+                        },
+                        openCalendar() {
+                            if (this.picker) {
+                                this.picker.open();
+                            } else if (this.$refs.pickerInput) {
+                                this.$refs.pickerInput.focus();
+                            }
+                        }
+                    }"
+                    class="relative inline-flex items-center"
+                >
+                    <input
+                        x-ref="pickerInput"
+                        type="text"
+                        class="sr-only"
+                        tabindex="-1"
+                        aria-hidden="true"
+                    />
+
+                    <button
+                        type="button"
+                        @click="openCalendar()"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors {{ $datePeriod === 'custom' && $customRange ? 'bg-brand text-white shadow-xs font-semibold' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200/80' }}"
+                        title="Click to select a custom date or date range from calendar"
+                    >
+                        <x-heroicon-o-calendar class="w-3.5 h-3.5 {{ $datePeriod === 'custom' && $customRange ? 'text-white' : 'text-gray-500' }}" />
+                        @if($datePeriod === 'custom' && $customRange)
+                            <span>{{ $stats['period_label'] }}</span>
+                            <span
+                                wire:click.stop="clearCustomRange"
+                                class="ml-1 p-0.5 rounded-full hover:bg-white/20 text-white cursor-pointer"
+                                title="Clear date filter"
+                            >
+                                <x-heroicon-o-x-mark class="w-3 h-3" />
+                            </span>
+                        @else
+                            <span>Calendar</span>
+                        @endif
+                    </button>
+                </div>
             </div>
 
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1 border-t border-gray-100">
@@ -179,7 +246,7 @@
                     </select>
 
                     <!-- Reset Filters Button -->
-                    @if($search !== '' || $statusFilter !== 'all' || $datePeriod !== 'all' || $paymentFilter !== 'all' || $sortBy !== 'latest')
+                    @if($search !== '' || $statusFilter !== 'all' || $datePeriod !== 'all' || !empty($customRange) || $paymentFilter !== 'all' || $sortBy !== 'latest')
                         <button
                             type="button"
                             wire:click="resetFilters"

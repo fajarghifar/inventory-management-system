@@ -25,53 +25,12 @@
 <!-- IndexedDB Storage Engine for Offline Capabilities -->
 <script src="/js/pwa-db.js"></script>
 
-<!-- Mobile Viewport & Zoom Lock Engine (Prevents iOS/Android pinch, double-tap & trackpad zooming) -->
+<!-- iOS Safari Pinch Gesture Lock (Does not interfere with Windows/mouse/touchpad scrolling) -->
 <script>
     (function() {
-        // 1. Prevent iOS Safari gesture events (pinch-to-zoom)
+        // Prevent iOS Safari page pinch-to-zoom without blocking normal window scrolling
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
-        }, { passive: false });
-        document.addEventListener('gesturechange', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-        document.addEventListener('gestureend', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-
-        // 2. Prevent multi-finger pinch touch zoom on Android and iOS
-        document.addEventListener('touchstart', function(e) {
-            if (e.touches && e.touches.length > 1) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        // 3. Prevent double-tap to zoom on interactive screens
-        var lastTouchEnd = 0;
-        document.addEventListener('touchend', function(e) {
-            var now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                var target = e.target;
-                var tag = (target && target.tagName) ? target.tagName.toLowerCase() : '';
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                }
-            }
-            lastTouchEnd = now;
-        }, { passive: false });
-
-        // 4. Prevent Ctrl + wheel/trackpad zoom
-        window.addEventListener('wheel', function(e) {
-            if (e.ctrlKey) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        // 5. Prevent Ctrl + / Ctrl - keyboard zooming
-        window.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
-                e.preventDefault();
-            }
         });
     })();
 </script>

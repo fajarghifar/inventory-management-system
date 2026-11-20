@@ -90,7 +90,7 @@ class PwaOfflineSyncTest extends TestCase
         $this->assertStringContainsString('/livewire/', $swContent, 'Service Worker must contain bypass for Livewire');
         $this->assertStringContainsString('/offline', $swContent, 'Service Worker must precache offline fallback');
         $this->assertStringContainsString('skipWaiting', $swContent, 'Service Worker must support skipWaiting');
-        $this->assertStringContainsString('inventory-pwa-v1.3.0', $swContent, 'Service Worker must have updated version');
+        $this->assertStringContainsString('inventory-pwa-v1.4.0', $swContent, 'Service Worker must have updated version');
     }
 
     public function test_service_worker_route_is_accessible_with_no_cache_headers(): void
@@ -100,7 +100,7 @@ class PwaOfflineSyncTest extends TestCase
         $this->assertStringContainsString('javascript', $response->headers->get('Content-Type'));
         $this->assertStringContainsString('no-cache', $response->headers->get('Cache-Control'));
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
-        $this->assertStringContainsString('inventory-pwa-v1.3.0', $response->getContent());
+        $this->assertStringContainsString('inventory-pwa-v1.4.0', $response->getContent());
         $this->assertStringContainsString('skipWaiting', $response->getContent());
     }
 

@@ -39,6 +39,7 @@
         overflow-x: hidden;
         width: 100%;
         height: 100%;
+        touch-action: pan-x pan-y;
     }
 
     body {
@@ -50,18 +51,21 @@
         overscroll-behavior-y: none;
         position: relative;
         -webkit-tap-highlight-color: transparent;
+        touch-action: pan-x pan-y;
     }
 
     /* Prevent accidental double-tap zoom & text selection on interactive controls */
     button,
     [role="button"],
     a,
+    label,
+    input,
+    select,
+    textarea,
     input[type="button"],
     input[type="submit"],
     input[type="reset"] {
         touch-action: manipulation;
-        -webkit-user-select: none;
-        user-select: none;
     }
 
     /* Custom Scrollbar */

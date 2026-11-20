@@ -1,9 +1,9 @@
 /**
  * Service Worker for Inventory & Financial Management System PWA
- * Version: 1.2.0 (Auto-Updating PWA Release 2026-11-20)
+ * Version: 1.3.0 (Fixed Mobile Viewport & Auto-Update Release 2026-11-20)
  */
 
-const CACHE_VERSION = 'inventory-pwa-v1.2.0-20261120';
+const CACHE_VERSION = 'inventory-pwa-v1.3.0-20261120';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 

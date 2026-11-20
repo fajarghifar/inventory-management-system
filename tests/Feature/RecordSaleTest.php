@@ -285,5 +285,7 @@ class RecordSaleTest extends TestCase
         $response->assertOk();
         $response->assertSee('viewport-fit=cover', false);
         $response->assertSee('interactive-widget=resizes-content', false);
+        $response->assertSee('user-scalable=no', false);
+        $response->assertSee('maximum-scale=1.0', false);
     }
 }

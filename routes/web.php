@@ -77,6 +77,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/slow-moving', 'slowMoving')->name('slow-moving');
             Route::get('/sales', 'sales')->name('sales');
             Route::get('/profit-loss', 'profitLoss')->name('profit-loss');
+
+            // Printable & PDF Views
+            Route::get('/print/overview', 'printOverview')->name('print.overview');
+            Route::get('/print/stock-valuation', 'printStockValuation')->name('print.stock-valuation');
+            Route::get('/print/sales', 'printSales')->name('print.sales');
+            Route::get('/print/profit-loss', 'printProfitLoss')->name('print.profit-loss');
+            Route::get('/print/slow-moving', 'printSlowMoving')->name('print.slow-moving');
+
+            // CSV & Excel Exports
+            Route::get('/export/stock-valuation-csv', 'exportStockValuationCsv')->name('export.stock-valuation-csv');
+            Route::get('/export/sales-csv', 'exportSalesCsv')->name('export.sales-csv');
+            Route::get('/export/slow-moving-csv', 'exportSlowMovingCsv')->name('export.slow-moving-csv');
         });
 
         // Settings & Users

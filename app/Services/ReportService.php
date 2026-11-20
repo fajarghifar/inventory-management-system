@@ -16,6 +16,162 @@ use Illuminate\Support\Collection;
 class ReportService
 {
     /**
+     * Get Reports Hub High-Level Business Overview.
+     */
+    public function getReportsHubOverview(string $period = 'this_month'): array
+    {
+        $now = Carbon::now();
+
+        // 1. Determine date range based on period
+        [$startDate, $endDate, $prevStartDate, $prevEndDate, $periodLabel] = match($period) {
+            'today' => [
+                $now->copy()->startOfDay(),
+                $now->copy()->endOfDay(),
+                $now->copy()->subDay()->startOfDay(),
+                $now->copy()->subDay()->endOfDay(),
+                'Today'
+            ],
+            'this_week' => [
+                $now->copy()->startOfWeek(),
+                $now->copy()->endOfWeek(),
+                $now->copy()->subWeek()->startOfWeek(),
+                $now->copy()->subWeek()->endOfWeek(),
+                'This Week'
+            ],
+            'this_year' => [
+                $now->copy()->startOfYear(),
+                $now->copy()->endOfYear(),
+                $now->copy()->subYear()->startOfYear(),
+                $now->copy()->subYear()->endOfYear(),
+                'This Year'
+            ],
+            default => [
+                $now->copy()->startOfMonth(),
+                $now->copy()->endOfMonth(),
+                $now->copy()->subMonth()->startOfMonth(),
+                $now->copy()->subMonth()->endOfMonth(),
+                'This Month'
+            ],
+        };
+
+        // 2. Current period sales
+        $periodSales = Sale::whereBetween('sale_date', [$startDate, $endDate])
+            ->where('status', 'completed');
+        $totalSales = (float) $periodSales->sum('total');
+        $totalTransactions = (int) $periodSales->count();
+
+        // Previous period sales for growth comparison
+        $prevPeriodSales = (float) Sale::whereBetween('sale_date', [$prevStartDate, $prevEndDate])
+            ->where('status', 'completed')
+            ->sum('total');
+
+        $salesGrowth = null;
+        if ($prevPeriodSales > 0) {
+            $salesGrowth = round((($totalSales - $prevPeriodSales) / $prevPeriodSales) * 100, 1);
+        }
+
+        // Today's sales specifically
+        $todayStart = $now->copy()->startOfDay();
+        $todayEnd = $now->copy()->endOfDay();
+        $todaySales = (float) Sale::whereBetween('sale_date', [$todayStart, $todayEnd])
+            ->where('status', 'completed')
+            ->sum('total');
+        $todayTransactions = (int) Sale::whereBetween('sale_date', [$todayStart, $todayEnd])
+            ->where('status', 'completed')
+            ->count();
+
+        // 3. Stock metrics
+        $valuation = $this->getStockValuationSummary();
+        $lowStockCount = Product::where('is_active', true)
+            ->whereColumn('quantity', '<=', 'min_stock')
+            ->count();
+        $outOfStockCount = Product::where('is_active', true)
+            ->where('quantity', '<=', 0)
+            ->count();
+
+        // 4. Estimated Profit for the period
+        $pnl = $this->getProfitAndLoss($startDate, $endDate);
+        $estimatedProfit = $pnl['estimated_net_profit'];
+        $grossProfit = $pnl['gross_profit'];
+        $profitMargin = $pnl['gross_margin'];
+
+        // 5. Recent Sales (Latest 5)
+        $recentSales = Sale::with('creator', 'items.product')
+            ->where('status', 'completed')
+            ->orderBy('sale_date', 'desc')
+            ->take(5)
+            ->get();
+
+        // 6. Top 5 Best Selling Products
+        $topProducts = SaleItem::whereHas('sale', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('sale_date', [$startDate, $endDate])
+                  ->where('status', 'completed');
+            })
+            ->select('product_id', DB::raw('SUM(quantity) as qty'), DB::raw('SUM(subtotal) as revenue'))
+            ->with('product.unit')
+            ->groupBy('product_id')
+            ->orderByDesc('qty')
+            ->take(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->product?->name ?? 'Product',
+                    'unit' => $item->product?->unit?->symbol ?? 'pcs',
+                    'qty' => (int) $item->qty,
+                    'revenue' => (float) $item->revenue,
+                    'image_url' => $item->product?->image_url,
+                ];
+            });
+
+        // 7. 7-day Sales & Profit Trend for the visual chart
+        $trendDays = collect();
+        for ($i = 6; $i >= 0; $i--) {
+            $dayDate = $now->copy()->subDays($i);
+            $dayStart = $dayDate->copy()->startOfDay();
+            $dayEnd = $dayDate->copy()->endOfDay();
+
+            $dayRevenue = (float) Sale::whereBetween('sale_date', [$dayStart, $dayEnd])
+                ->where('status', 'completed')
+                ->sum('total');
+
+            $dayCogs = (float) SaleItem::whereHas('sale', function ($q) use ($dayStart, $dayEnd) {
+                    $q->whereBetween('sale_date', [$dayStart, $dayEnd])
+                      ->where('status', 'completed');
+                })
+                ->sum(DB::raw('quantity * cost_price'));
+
+            $dayProfit = max(0, $dayRevenue - $dayCogs);
+
+            $trendDays->push([
+                'day' => $dayDate->format('D'),
+                'date' => $dayDate->format('M d'),
+                'revenue' => $dayRevenue,
+                'profit' => $dayProfit,
+            ]);
+        }
+
+        return [
+            'period' => $period,
+            'period_label' => $periodLabel,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'total_sales' => $totalSales,
+            'total_transactions' => $totalTransactions,
+            'sales_growth' => $salesGrowth,
+            'today_sales' => $todaySales,
+            'today_transactions' => $todayTransactions,
+            'stock_valuation' => $valuation,
+            'low_stock_count' => $lowStockCount,
+            'out_of_stock_count' => $outOfStockCount,
+            'estimated_profit' => $estimatedProfit,
+            'gross_profit' => $grossProfit,
+            'profit_margin' => $profitMargin,
+            'recent_sales' => $recentSales,
+            'top_products' => $topProducts,
+            'sales_trend' => $trendDays,
+        ];
+    }
+    /**
      * Get Current Stock Valuation Summary.
      */
     public function getStockValuationSummary(): array

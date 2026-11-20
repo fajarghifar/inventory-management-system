@@ -119,6 +119,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 5800.00,
                 'qty' => 40,
                 'min' => 5,
+                'image' => 'products/white-teff-grain.jpg',
                 'created_at' => Carbon::now()->subDays(60),
             ],
             // Cooking Oil
@@ -131,6 +132,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 1250.00,
                 'qty' => 50,
                 'min' => 10,
+                'image' => 'products/sunflower-oil.jpg',
                 'created_at' => Carbon::now()->subDays(45),
             ],
             // Ethiopian Coffee
@@ -143,6 +145,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 650.00,
                 'qty' => 60,
                 'min' => 10,
+                'image' => 'products/yirgacheffe-coffee.jpg',
                 'created_at' => Carbon::now()->subDays(35),
             ],
             // Ambo Water
@@ -155,6 +158,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 35.00,
                 'qty' => 120,
                 'min' => 24,
+                'image' => 'products/ambo-mineral-water.jpg',
                 'created_at' => Carbon::now()->subDays(50),
             ],
             // Habesha Beer
@@ -167,6 +171,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 65.00,
                 'qty' => 96,
                 'min' => 24,
+                'image' => 'products/ambo-mineral-water.jpg',
                 'created_at' => Carbon::now()->subDays(40),
             ],
             // Desta Laundry Soap
@@ -179,6 +184,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 45.00,
                 'qty' => 150,
                 'min' => 30,
+                'image' => 'products/desta-laundry-soap.jpg',
                 'created_at' => Carbon::now()->subDays(40),
             ],
             // Faffa Baby Food
@@ -191,6 +197,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 240.00,
                 'qty' => 45,
                 'min' => 10,
+                'image' => 'products/anchor-milk-powder.jpg',
                 'created_at' => Carbon::now()->subDays(30),
             ],
             // Wonji Sugar
@@ -203,6 +210,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 520.00,
                 'qty' => 70,
                 'min' => 15,
+                'image' => 'products/wonji-sugar.jpg',
                 'created_at' => Carbon::now()->subDays(25),
             ],
             // Coca-Cola
@@ -215,6 +223,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 30.00,
                 'qty' => 100,
                 'min' => 24,
+                'image' => 'products/coca-cola-bottle.jpg',
                 'created_at' => Carbon::now()->subDays(40),
             ],
             // Shola Butter
@@ -227,6 +236,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 550.00,
                 'qty' => 30,
                 'min' => 5,
+                'image' => 'products/shola-pure-butter.jpg',
                 'created_at' => Carbon::now()->subDays(20),
             ],
 
@@ -240,6 +250,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 380.00,
                 'qty' => 2,
                 'min' => 10, // Stock (2) <= Min (10)
+                'image' => 'products/ethiopian-berbere.jpg',
                 'created_at' => Carbon::now()->subDays(50),
             ],
             [
@@ -251,6 +262,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 280.00,
                 'qty' => 3,
                 'min' => 12, // Stock (3) <= Min (12)
+                'image' => 'products/hayat-cooking-oil.jpg',
                 'created_at' => Carbon::now()->subDays(40),
             ],
 
@@ -264,6 +276,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 2200.00,
                 'qty' => 12,
                 'min' => 2,
+                'image' => 'products/tomoca-coffee-beans.jpg',
                 'created_at' => Carbon::now()->subDays(105), // Created >90 days ago, 0 sales
             ],
             [
@@ -275,6 +288,7 @@ class DemoDataSeeder extends Seeder
                 'price' => 1300.00,
                 'qty' => 18,
                 'min' => 3,
+                'image' => 'products/yirgacheffe-coffee.jpg',
                 'created_at' => Carbon::now()->subDays(120), // Created >90 days ago, 0 sales
             ],
         ];
@@ -291,6 +305,7 @@ class DemoDataSeeder extends Seeder
                     'selling_price' => $data['price'],
                     'quantity' => $data['qty'],
                     'min_stock' => $data['min'],
+                    'image' => $data['image'] ?? null,
                     'is_active' => true,
                     'description' => 'Ethiopian retail item for supermarket stock & POS barcode verification.',
                     'created_at' => $data['created_at'],

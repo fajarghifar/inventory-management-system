@@ -71,9 +71,18 @@ class Product extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        if ($this->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->image)) {
+        if (!$this->image) {
+            return null;
+        }
+
+        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+            return $this->image;
+        }
+
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($this->image)) {
             return asset('storage/' . $this->image);
         }
+
         return null;
     }
 

@@ -179,4 +179,25 @@ class ProductRedesignTest extends TestCase
             ->call('deleteProduct', $product->id)
             ->assertForbidden();
     }
+
+    public function test_product_seeder_creates_authentic_ethiopian_products_with_images_and_prices(): void
+    {
+        $this->seed(\Database\Seeders\UnitSeeder::class);
+        $this->seed(\Database\Seeders\CategorySeeder::class);
+        $this->seed(\Database\Seeders\ProductSeeder::class);
+
+        $this->assertGreaterThanOrEqual(30, Product::count());
+
+        $ambo = Product::where('name', 'like', '%Ambo%')->first();
+        $this->assertNotNull($ambo);
+        $this->assertEquals(28.00, (float) $ambo->purchase_price);
+        $this->assertEquals(38.00, (float) $ambo->selling_price);
+        $this->assertNotNull($ambo->image);
+        $this->assertStringContainsString('products/', $ambo->image);
+        $this->assertStringContainsString('storage/products/', $ambo->image_url);
+
+        $teff = Product::where('name', 'like', '%Teff%')->first();
+        $this->assertNotNull($teff);
+        $this->assertNotNull($teff->image);
+    }
 }

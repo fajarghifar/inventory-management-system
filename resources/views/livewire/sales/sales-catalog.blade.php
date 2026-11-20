@@ -24,9 +24,8 @@
                     href="{{ route('sales.create') }}"
                     class="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-bold bg-brand hover:bg-brand-700 text-white rounded-xl shadow-sm transition-all active:scale-95"
                 >
-                    <x-heroicon-o-plus class="w-4 h-4" />
-                    <span>Create Sale</span>
-                    <span class="hidden md:inline-block text-[10px] bg-white/20 px-1.5 py-0.5 rounded text-white font-mono ml-0.5">F1</span>
+                    <x-heroicon-o-plus-circle class="w-4 h-4" />
+                    <span>Record Sale</span>
                 </a>
             </div>
         </div>

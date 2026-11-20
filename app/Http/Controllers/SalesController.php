@@ -22,6 +22,11 @@ class SalesController extends Controller
         return view('sales.create');
     }
 
+    public function pos()
+    {
+        return view('sales.pos');
+    }
+
     public function store(StoreSaleRequest $request, SaleService $saleService)
     {
         try {

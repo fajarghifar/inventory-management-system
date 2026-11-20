@@ -19,11 +19,10 @@
 
             <!-- Center: Navigation Menu Links -->
             <div class="flex items-center gap-1.5 xl:gap-2 flex-wrap xl:flex-nowrap justify-center">
-                <!-- Primary Action: POS Register [F1] -->
+                <!-- Primary Action: Record Sale -->
                 <a href="{{ route('sales.create') }}" class="inline-flex h-9 items-center justify-center rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap flex-shrink-0 {{ request()->routeIs('sales.create') ? 'bg-brand text-white shadow-emerald-900/15' : 'bg-brand-50 text-brand hover:bg-brand-100 border border-brand-200/70' }}">
-                    <x-heroicon-o-computer-desktop class="mr-1.5 h-4 w-4" />
-                    <span>POS Register</span>
-                    <span class="ml-1.5 text-[10px] font-mono px-1.5 py-0.5 rounded font-bold {{ request()->routeIs('sales.create') ? 'bg-white/20 text-white' : 'bg-brand-200/80 text-brand-900' }}">F1</span>
+                    <x-heroicon-o-plus-circle class="mr-1.5 h-4 w-4" />
+                    <span>Record Sale</span>
                 </a>
 
                 @can('admin')
@@ -229,16 +228,16 @@
 
                     <!-- Clean Grouped Menu Links -->
                     <div class="py-4 space-y-4">
-                        <!-- Quick POS Sale Launch Card -->
+                        <!-- Quick Record Sale Launch Card -->
                         <a href="{{ route('sales.create') }}" class="flex items-center justify-between p-3.5 rounded-xl bg-brand text-white shadow-sm hover:bg-brand-700 transition-colors">
                             <div class="flex items-center gap-2.5">
-                                <svg class="w-5 h-5 text-brand-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                <x-heroicon-o-plus-circle class="w-5 h-5 text-brand-200" />
                                 <div>
-                                    <div class="font-bold text-xs uppercase tracking-wider">Point of Sale</div>
-                                    <div class="text-[11px] text-brand-100">Open register & record sale</div>
+                                    <div class="font-bold text-xs uppercase tracking-wider">Record Sale</div>
+                                    <div class="text-[11px] text-brand-100">Quick direct sale recording</div>
                                 </div>
                             </div>
-                            <span class="text-xs font-bold bg-white/20 px-2 py-1 rounded">Open &rarr;</span>
+                            <span class="text-xs font-bold bg-white/20 px-2 py-1 rounded">Start &rarr;</span>
                         </a>
 
                         <!-- Daily Operations -->
@@ -255,6 +254,10 @@
                             <a href="{{ route('sales.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('sales.index') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
                                 <x-heroicon-o-receipt-percent class="w-4 h-4 text-muted-foreground" />
                                 <span>Sales History</span>
+                            </a>
+                            <a href="{{ route('sales.pos') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('sales.pos') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
+                                <x-heroicon-o-computer-desktop class="w-4 h-4 text-muted-foreground" />
+                                <span>Advanced POS Register</span>
                             </a>
                             <a href="{{ route('low-stock.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('low-stock.index') ? 'bg-accent text-accent-foreground font-semibold' : 'hover:bg-accent/50 text-foreground' }}">
                                 <x-heroicon-o-exclamation-triangle class="w-4 h-4 text-amber-500" />

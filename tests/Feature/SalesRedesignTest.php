@@ -74,7 +74,7 @@ class SalesRedesignTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Sales & Invoices', false);
-        $response->assertSee('Create Sale');
+        $response->assertSee('Record Sale');
     }
 
     public function test_sales_catalog_displays_transactions_and_kpis(): void

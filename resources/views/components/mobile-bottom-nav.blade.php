@@ -49,26 +49,24 @@
             <span class="text-[10px] tracking-tight leading-none mt-0.5">Products</span>
         </a>
 
-        {{-- 3. POS Register (Highlighted Primary Action, Cleanly Centered in Bar) --}}
-        @php $isPOS = request()->routeIs('sales.create'); @endphp
+        {{-- 3. Record Sale (Highlighted Primary Daily Action, Cleanly Centered in Bar) --}}
+        @php $isRecordSale = request()->routeIs('sales.create'); @endphp
         <a
             href="{{ route('sales.create') }}"
             class="flex flex-col items-center justify-center py-1 group focus:outline-none"
-            title="Open POS Register"
+            title="Record Sale"
         >
             <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-active:scale-95 shadow-sm
-                {{ $isPOS
+                {{ $isRecordSale
                     ? 'bg-brand text-white shadow-emerald-900/25'
                     : 'bg-brand-100 text-brand hover:bg-brand-200 group-hover:scale-105'
                 }}"
             >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
             </div>
-            <span class="text-[10px] font-bold leading-none mt-1 {{ $isPOS ? 'text-brand' : 'text-brand/90' }}">POS</span>
+            <span class="text-[9px] font-bold leading-none mt-1 whitespace-nowrap {{ $isRecordSale ? 'text-brand' : 'text-brand/90' }}">Record Sale</span>
         </a>
 
         {{-- 4. Sales History --}}

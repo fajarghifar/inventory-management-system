@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =========================================================================
     // Sales & POS (Available to Staff and Admin)
     // =========================================================================
+    Route::get('sales/pos', [SalesController::class, 'pos'])->name('sales.pos');
     Route::resource('sales', SalesController::class)->except(['edit', 'update']);
     Route::prefix('sales/{sale}')->name('sales.')->controller(SalesController::class)->group(function () {
         Route::get('print', 'print')->name('print');

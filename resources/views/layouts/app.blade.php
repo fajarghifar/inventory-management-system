@@ -3,7 +3,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}{{ !empty($title) ? ' | ' . $title : '' }}</title>
@@ -15,15 +15,21 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
+
+        <!-- PWA Configuration -->
+        <x-pwa-meta />
     </head>
     <body class="font-sans antialiased bg-background text-foreground">
-        <div class="min-h-screen bg-background flex flex-col">
+        <!-- Connectivity Offline/Online Banner -->
+        <x-connectivity-banner />
+
+        <div class="min-h-[100dvh] bg-background flex flex-col pb-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
             <div class="flex-1">
                 @include('layouts.navigation')
 
                 <!-- Page Heading -->
                 @isset($header)
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-7xl mx-auto py-3 sm:py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 @endisset
@@ -34,9 +40,14 @@
                 </main>
             </div>
 
-            <!-- Footer -->
-            @include('layouts.footer')
+            <!-- Footer (Desktop only) -->
+            <div class="hidden lg:block">
+                @include('layouts.footer')
+            </div>
         </div>
+
+        <!-- Mobile Bottom Navigation Bar -->
+        <x-mobile-bottom-nav />
         <x-toaster />
         <livewire:components.delete-modal />
         @livewireScripts
@@ -60,12 +71,12 @@
                 });
             });
 
-            // Global Currency Formatter
-            window.currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'Rp') }}";
+            // Global Currency Formatter (Default: Ethiopian Birr - ETB)
+            window.currencySymbol = "{{ \App\Models\Setting::get('currency_symbol', 'ETB') }}";
             window.currencyPosition = "{{ \App\Models\Setting::get('currency_position', 'left') }}";
-            window.currencyFraction = parseInt("{{ \App\Models\Setting::get('currency_fraction_digits', 0) }}");
-            window.thousandSeparator = "{{ \App\Models\Setting::get('currency_thousand_separator', '.') }}";
-            window.decimalSeparator = "{{ \App\Models\Setting::get('currency_decimal_separator', ',') }}";
+            window.currencyFraction = parseInt("{{ \App\Models\Setting::get('currency_fraction_digits', 2) }}");
+            window.thousandSeparator = "{{ \App\Models\Setting::get('currency_thousand_separator', ',') }}";
+            window.decimalSeparator = "{{ \App\Models\Setting::get('currency_decimal_separator', '.') }}";
 
             window.formatMoney = function(val) {
                 let amount = parseFloat(val) || 0;
@@ -94,5 +105,7 @@
             window.formatCurrency = window.formatMoney;
         </script>
 
+        <!-- PWA Install Experience -->
+        <x-pwa-install-prompt />
     </body>
 </html>

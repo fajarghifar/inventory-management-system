@@ -15,6 +15,7 @@ class Sale extends Model
 
     protected $fillable = [
         'invoice_number',
+        'offline_uuid',
         'customer_id',
         'created_by',
         'sale_date',

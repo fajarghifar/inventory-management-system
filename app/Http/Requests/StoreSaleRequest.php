@@ -25,6 +25,7 @@ class StoreSaleRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'offline_uuid' => ['nullable', 'string', 'uuid'],
             'customer_id' => ['nullable', 'exists:customers,id'],
             'sale_date' => ['required', 'date'],
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],

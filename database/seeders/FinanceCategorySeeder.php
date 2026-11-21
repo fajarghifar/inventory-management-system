@@ -81,12 +81,14 @@ class FinanceCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            FinanceCategory::create([
-                'name' => $category['name'],
-                'slug' => Str::slug($category['name']),
-                'type' => $category['type'],
-                'description' => $category['description'],
-            ]);
+            FinanceCategory::firstOrCreate(
+                ['slug' => Str::slug($category['name'])],
+                [
+                    'name' => $category['name'],
+                    'type' => $category['type'],
+                    'description' => $category['description'],
+                ]
+            );
         }
     }
 }

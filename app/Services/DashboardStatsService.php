@@ -66,10 +66,32 @@ class DashboardStatsService
             $income = (float) ($totals['income'] ?? 0);
             $expense = (float) ($totals['expense'] ?? 0);
 
+            // Operating expenses (excluding Product Purchases)
+            $operatingExpense = (float) FinanceTransaction::join('finance_categories', 'finance_transactions.finance_category_id', '=', 'finance_categories.id')
+                ->whereBetween('finance_transactions.transaction_date', [$startDate, $endDate])
+                ->where('finance_categories.type', 'expense')
+                ->where('finance_categories.name', '!=', 'Product Purchases')
+                ->sum('finance_transactions.amount');
+
             return [
                 'income' => $income,
                 'expense' => $expense,
+                'operating_expense' => $operatingExpense,
                 'net_cash_flow' => $income - $expense,
+            ];
+        });
+    }
+
+    /**
+     * Get Total Active Products, Categories, and On-Hand Physical Units
+     */
+    public function getInventoryCounts(): array
+    {
+        return Cache::remember('dashboard_inventory_counts', now()->addMinutes(10), function () {
+            return [
+                'total_products' => Product::where('is_active', true)->count(),
+                'total_categories' => \App\Models\Category::count(),
+                'total_units' => (int) Product::where('is_active', true)->sum('quantity'),
             ];
         });
     }

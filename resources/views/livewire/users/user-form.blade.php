@@ -41,6 +41,21 @@
                 placeholder="email@example.com"
             />
 
+            <!-- Role Selection -->
+            <div class="space-y-2">
+                <x-input-label for="role" :value="__('Role / Permission Level')" />
+                <select
+                    id="role"
+                    name="role"
+                    wire:model="role"
+                    class="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    <option value="staff">Staff (POS & Stock Availability Only)</option>
+                    <option value="admin">Administrator (Full Access: Finance, Settings, Reports, Users)</option>
+                </select>
+                <x-input-error :messages="$errors->get('role')" />
+            </div>
+
             <!-- Password -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-2">

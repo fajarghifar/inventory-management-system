@@ -9,26 +9,60 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 240 10% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 240 10% 3.9%;
+        --background: 160 12% 97%;          /* #F4F7F6 Clean soft off-white/cyan background */
+        --foreground: 200 25% 12%;          /* #162228 Modern deep charcoal */
+        --card: 0 0% 100%;                  /* #FFFFFF Pure white cards */
+        --card-foreground: 200 25% 12%;     /* #162228 */
         --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 3.9%;
-        --primary: 240 5.9% 10%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 240 4.8% 95.9%;
-        --secondary-foreground: 240 5.9% 10%;
-        --muted: 240 4.8% 95.9%;
-        --muted-foreground: 240 3.8% 46.1%;
-        --accent: 240 4.8% 95.9%;
-        --accent-foreground: 240 5.9% 10%;
+        --popover-foreground: 200 25% 12%;
+        --primary: 166 81% 25%;             /* #0C735B Brand Deep Emerald Green */
+        --primary-foreground: 0 0% 100%;    /* #FFFFFF */
+        --secondary: 164 36% 94%;           /* #E8F6F2 Soft mint tint */
+        --secondary-foreground: 166 81% 20%;/* #074E3E Deep pine */
+        --muted: 160 15% 94%;
+        --muted-foreground: 200 10% 45%;    /* #64748B Cool slate */
+        --accent: 164 36% 94%;              /* #E8F6F2 Soft mint */
+        --accent-foreground: 166 81% 20%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
-        --border: 240 5.9% 90%;
-        --input: 240 5.9% 90%;
-        --ring: 240 5.9% 10%;
-        --radius: 0.5rem;
+        --border: 160 14% 90%;              /* #E2ECE9 Soft divider border */
+        --input: 160 14% 88%;
+        --ring: 166 81% 25%;                /* #0C735B Focus ring */
+        --radius: 0.875rem;                 /* 14px modern rounded corner */
+    }
+
+    /* Stable HTML / Body Root Dimensions and Full Scrolling Support */
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: 100%;
+        min-height: 100%;
+    }
+
+    body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Prevent accidental double-tap zoom & text selection on interactive controls */
+    button,
+    [role="button"],
+    a,
+    label,
+    input,
+    select,
+    textarea,
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+        touch-action: manipulation;
     }
 
     /* Custom Scrollbar */
@@ -48,11 +82,64 @@
     }
 }
 
+/* ==========================================================================
+   Mobile PWA Stability & Typography Rules
+   ========================================================================== */
+
+/* Prevent iOS auto-zoom on form inputs by ensuring minimum 16px font-size on mobile devices */
+@media (max-width: 1024px) {
+    input,
+    select,
+    textarea,
+    .ts-control input {
+        font-size: 16px !important;
+    }
+
+    /* Ensure touch targets have adequate spacing */
+    .mobile-touch-target {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Safe Area Utility Classes */
+.pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+}
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pl-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+    padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Safe floating placement above bottom navigation */
+.bottom-floating-bar {
+    bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Smooth Touch Scrolling */
+.touch-scroll {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 /* Custom Tom Select overrides for Tailwind */
 
 /* Input Control (Trigger) */
 .ts-control {
-    @apply rounded-md border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3 py-2;
+    @apply rounded-xl border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#0C735B] sm:text-sm sm:leading-6 px-3 py-2;
     min-height: 2.5rem; /* 40px - h-10 */
     background-color: #ffffff !important;
     color: #111827 !important; /* text-gray-900 */
@@ -66,14 +153,14 @@
 
 /* Fix Focus Ring - Apply Tailwind ring when wrapper handles focus */
 .ts-wrapper.focus .ts-control {
-    @apply ring-2 ring-inset ring-indigo-600;
+    @apply ring-2 ring-inset ring-[#0C735B];
     box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000) !important;
     border-color: transparent;
 }
 
 /* Dropdown Container */
 .ts-dropdown {
-    @apply bg-white border border-gray-200 shadow-lg rounded-md mt-1 overflow-hidden;
+    @apply bg-white border border-gray-200 shadow-xl rounded-xl mt-1 overflow-hidden;
     z-index: 50 !important;
 }
 
@@ -89,11 +176,11 @@
 
 /* Selected State (Currently Selected Value) */
 .ts-dropdown .option.selected {
-    @apply font-medium bg-indigo-50 text-indigo-700;
+    @apply font-medium bg-[#E8F6F2] text-[#0C735B];
 }
 
 .ts-dropdown .active.selected {
-    @apply bg-indigo-100 text-indigo-800 !important;
+    @apply bg-[#D1EFE7] text-[#074E3E] !important;
 }
 
 /* Highlighted Match in Search */
@@ -111,3 +198,180 @@
     max-height: 300px !important;
     @apply p-1; /* Add internal padding for options container */
 }
+
+/* ==========================================================================
+   Mobile Touch & Responsive Table Enhancements
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+    /* PowerGrid table container smooth touch scrolling */
+    #power-grid-table-container,
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch !important;
+        overflow-x: auto !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #power-grid-table-base {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+        min-width: 100% !important;
+    }
+
+    /* Prevent table columns from squishing to 1 letter */
+    .power-grid-table,
+    #power-grid-table-container table {
+        min-width: max-content !important;
+        width: 100% !important;
+    }
+
+    /* Ensure headers and data cells remain readable and do not truncate awkwardly */
+    .power-grid-table th,
+    .power-grid-table td,
+    #power-grid-table-container table th,
+    #power-grid-table-container table td {
+        white-space: nowrap !important;
+        font-size: 0.8125rem !important; /* 13px */
+        padding-left: 0.625rem !important;
+        padding-right: 0.625rem !important;
+    }
+
+    /* Subtle touch scrollbar affordance for mobile users */
+    #power-grid-table-container::-webkit-scrollbar,
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 4px !important;
+    }
+
+    #power-grid-table-container::-webkit-scrollbar-thumb,
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background-color: rgba(99, 102, 241, 0.4) !important;
+        border-radius: 9999px !important;
+    }
+
+    #power-grid-table-container::-webkit-scrollbar-track,
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background-color: rgba(0, 0, 0, 0.04) !important;
+    }
+
+    /* Mobile action buttons inside tables */
+    .power-grid-table button,
+    .power-grid-table a {
+        touch-action: manipulation;
+        padding: 0.375rem 0.5rem !important;
+    }
+}
+
+/* ==========================================================================
+   POS Camera Barcode Scanner Viewport
+   ========================================================================== */
+#pos-camera-viewfinder video {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 320px;
+    max-height: 440px;
+    object-fit: cover !important;
+}
+
+#pos-camera-viewfinder {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #000000;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+@media print {
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+    body {
+        background-color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .print\:hidden {
+        display: none !important;
+    }
+    .bg-card {
+        border: 1px solid #e2e8f0;
+        box-shadow: none !important;
+    }
+    .grid {
+        gap: 1rem !important;
+    }
+    .break-inside-avoid {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* ==========================================================================
+   Flatpickr Custom Calendar Theme (Deep Emerald)
+   ========================================================================== */
+.flatpickr-calendar {
+    border-radius: 1rem !important;
+    border: 1px solid #e2ece9 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    font-family: inherit !important;
+    padding: 0.5rem !important;
+    z-index: 9999 !important;
+}
+
+.flatpickr-months {
+    padding-bottom: 0.5rem !important;
+}
+
+.flatpickr-current-month {
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+}
+
+span.flatpickr-weekday {
+    font-weight: 600 !important;
+    color: #64748b !important;
+    font-size: 0.75rem !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange {
+    background: #087C50 !important;
+    border-color: #087C50 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-radius: 0.5rem !important;
+}
+
+.flatpickr-day.inRange {
+    background: #E8F7EF !important;
+    border-color: #E8F7EF !important;
+    color: #087C50 !important;
+    box-shadow: -5px 0 0 #E8F7EF, 5px 0 0 #E8F7EF !important;
+}
+
+.flatpickr-day.today {
+    border-color: #087C50 !important;
+    color: #087C50 !important;
+}
+
+.flatpickr-day:hover {
+    background: #f1f5f9 !important;
+    border-radius: 0.5rem !important;
+}
+
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: #066340 !important;
+    border-color: #066340 !important;
+}
+

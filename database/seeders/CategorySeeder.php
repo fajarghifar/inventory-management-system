@@ -12,28 +12,40 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Material Dasar',
-                'description' => 'Bahan bangunan utama seperti pasir, semen, batu, bata, hebel, dan besi beton.'
+                'name' => 'Grains, Teff & Flour',
+                'description' => 'White and sergegna teff, wheat flour, barley, corn, and lentils (እህል እና ዱቄት)'
             ],
             [
-                'name' => 'Kayu & Atap',
-                'description' => 'Material kayu, triplek, kaso, serta penutup atap seperti genteng, asbes, seng, dan terpal.'
+                'name' => 'Edible Oil & Essentials',
+                'description' => 'Sunflower oil, palm oil, salt, Ethiopian spices, and berbere (የምግብ ዘይት እና ማጣፈጫ)'
             ],
             [
-                'name' => 'Cat & Finishing',
-                'description' => 'Segala jenis cat (tembok/kayu/besi), thinner, pelapis anti bocor (no drop), dan lem.'
+                'name' => 'Beverages & Soft Drinks',
+                'description' => 'Ambo mineral water, soft drinks, packed juices, and bottled water (መጠጦች)'
             ],
             [
-                'name' => 'Lantai & Dinding',
-                'description' => 'Penutup lantai dan dinding termasuk keramik, granit, plint, dan lis profil (kuku macan).'
+                'name' => 'Ethiopian Coffee & Tea',
+                'description' => 'Roasted Harar/Yirgacheffe coffee beans, ground coffee, and highland tea (ቡና እና ሻይ)'
             ],
             [
-                'name' => 'Pipa & Listrik',
-                'description' => 'Instalasi air (pipa PVC, kran, toren) dan instalasi listrik (kabel, lampu, saklar).'
+                'name' => 'Dairy & Bakery',
+                'description' => 'Fresh milk, butter, cheese, bread, and pastries (የወተት ተዋጽኦ እና ዳቦ)'
             ],
             [
-                'name' => 'Paku & Alat',
-                'description' => 'Barang kecil/receh seperti paku, baut, sekrup, engsel, gembok, dan peralatan tukang.'
+                'name' => 'Personal Care & Hygiene',
+                'description' => 'Bath soaps, laundry bars, toothpaste, shampoos, and sanitizers (የግል ንፅህና)'
+            ],
+            [
+                'name' => 'Cleaning & Household Goods',
+                'description' => 'Detergents, floor cleaners, kitchenware, thermos, and storage (የቤት እቃዎች)'
+            ],
+            [
+                'name' => 'Snacks & Confectionery',
+                'description' => 'Biscuits, chocolates, candies, and packaged nuts (ብስኩት እና ከረሜላ)'
+            ],
+            [
+                'name' => 'Stationery & General Goods',
+                'description' => 'Notebooks, pens, batteries, and store counter supplies (የጽህፈት መሳሪያዎች)'
             ],
         ];
 

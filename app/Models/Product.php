@@ -23,6 +23,12 @@ class Product extends Model
         'is_active',
         'description',
         'notes',
+        'image',
+    ];
+
+    protected $appends = [
+        'image_url',
+        'stock_status',
     ];
 
     protected $casts = [
@@ -51,5 +57,46 @@ class Product extends Model
     public function saleItems()
     {
         return $this->hasMany(SaleItem::class);
+    }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class)->latest();
+    }
+
+    public function stockAdjustments()
+    {
+        return $this->hasMany(StockAdjustment::class)->latest();
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+            return $this->image;
+        }
+
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($this->image)) {
+            return asset('storage/' . $this->image);
+        }
+
+        return null;
+    }
+
+    public function getStockStatusAttribute(): string
+    {
+        if (!$this->is_active) {
+            return 'inactive';
+        }
+        if ($this->quantity <= 0) {
+            return 'out_of_stock';
+        }
+        if ($this->quantity <= $this->min_stock) {
+            return 'low_stock';
+        }
+        return 'in_stock';
     }
 }

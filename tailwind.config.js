@@ -2,6 +2,7 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 export default {
+    darkMode: 'class',
     presets: [
         require("./vendor/power-components/livewire-powergrid/tailwind.config.js"),
     ],
@@ -22,6 +23,19 @@ export default {
                 sans: ["Inter", ...defaultTheme.fontFamily.sans],
             },
             colors: {
+                brand: {
+                    DEFAULT: "#0C735B",
+                    50: "#F0F9F6",
+                    100: "#E8F6F2",
+                    200: "#D1EFE7",
+                    300: "#A4DEC9",
+                    400: "#6FC2A7",
+                    500: "#0C735B",
+                    600: "#0A634E",
+                    700: "#074E3E",
+                    800: "#053C30",
+                    900: "#032A22",
+                },
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",

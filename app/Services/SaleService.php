@@ -9,12 +9,14 @@ use App\Models\Product;
 use App\Enums\SaleStatus;
 use App\Enums\PaymentMethod;
 use App\Exceptions\SaleException;
+use App\Enums\StockMovementType;
 use Illuminate\Support\Facades\DB;
 
 class SaleService
 {
     public function __construct(
-        protected FinanceTransactionService $financeService
+        protected FinanceTransactionService $financeService,
+        protected StockMovementService $stockMovementService
     ) {
     }
 
@@ -23,8 +25,24 @@ class SaleService
      */
     public function createSale(SaleData $data): Sale
     {
+        // Idempotency check: if offline sale with this UUID already exists, return existing sale
+        if ($data->offline_uuid) {
+            $existingSale = Sale::where('offline_uuid', $data->offline_uuid)->first();
+            if ($existingSale) {
+                return $existingSale;
+            }
+        }
+
         return DB::transaction(function () use ($data) {
             try {
+                // Double check inside transaction if offline_uuid was created concurrently
+                if ($data->offline_uuid) {
+                    $concurrentSale = Sale::where('offline_uuid', $data->offline_uuid)->lockForUpdate()->first();
+                    if ($concurrentSale) {
+                        return $concurrentSale;
+                    }
+                }
+
                 // Lock products for update
                 $productIds = collect($data->items)->pluck('product_id')->sort()->values()->all();
 
@@ -33,8 +51,20 @@ class SaleService
                     ->get()
                     ->keyBy('id');
 
+                // Pre-validate stock availability for all products before creating sale
+                foreach ($data->items as $itemData) {
+                    $product = $products->get($itemData->product_id);
+                    if (!$product) {
+                        throw SaleException::productNotFound($itemData->product_id);
+                    }
+                    if ($product->quantity < $itemData->quantity) {
+                        throw SaleException::insufficientStock($product->name, $itemData->quantity, $product->quantity);
+                    }
+                }
+
                 $sale = Sale::create([
                     'invoice_number' => $this->generateInvoiceNumber(),
+                    'offline_uuid' => $data->offline_uuid,
                     'customer_id' => $data->customer_id,
                     'created_by' => $data->created_by,
                     'sale_date' => $data->sale_date,
@@ -61,17 +91,16 @@ class SaleService
                         throw SaleException::productNotFound($itemData->product_id);
                     }
 
-                    if ($product->quantity < $itemData->quantity) {
-                        throw SaleException::insufficientStock(
-                            $product->name,
-                            $itemData->quantity,
-                            $product->quantity
-                        );
-                    }
-
-                    // Update stock
-                    $product->quantity -= $itemData->quantity;
-                    $product->save();
+                    // Update stock via centralized audit ledger
+                    $this->stockMovementService->recordMovement(
+                        product: $product,
+                        quantityChange: -$itemData->quantity,
+                        movementType: StockMovementType::SALE,
+                        userId: $data->created_by,
+                        reference: $sale,
+                        referenceNumber: $sale->invoice_number,
+                        notes: "POS Sale: Invoice #{$sale->invoice_number}"
+                    );
 
                     $unitPrice = $product->selling_price;
                     $quantity = $itemData->quantity;
@@ -157,13 +186,20 @@ class SaleService
                     throw SaleException::invalidStatus('cancel', $sale->status->label(), ['id' => $sale->id]);
                 }
 
-                // Restore stock for completed or pending sales
+                // Restore stock for completed or pending sales via audit ledger
                 if (in_array($sale->status, [SaleStatus::COMPLETED, SaleStatus::PENDING])) {
                     $sale->loadMissing('items.product');
 
                     foreach ($sale->items as $item) {
                         if ($item->product) {
-                            $item->product->increment('quantity', $item->quantity);
+                            $this->stockMovementService->recordMovement(
+                                product: $item->product,
+                                quantityChange: $item->quantity,
+                                movementType: StockMovementType::SALE_CANCELLATION,
+                                reference: $sale,
+                                referenceNumber: $sale->invoice_number,
+                                notes: "Sale cancelled - stock restored" . ($reason ? " ({$reason})" : "")
+                            );
                         }
                     }
                 }
@@ -235,7 +271,7 @@ class SaleService
                 throw SaleException::invalidStatus('restore', $sale->status->label(), ['id' => $sale->id]);
             }
 
-            // Must re-deduct stock
+            // Must re-deduct stock via audit ledger
             $sale->loadMissing('items.product');
 
             foreach ($sale->items as $item) {
@@ -245,15 +281,14 @@ class SaleService
                     throw SaleException::productNotFound($item->product_id);
                 }
 
-                if ($product->quantity < $item->quantity) {
-                    throw SaleException::insufficientStock(
-                        $product->name,
-                        $item->quantity,
-                        $product->quantity
-                    );
-                }
-
-                $product->decrement('quantity', $item->quantity);
+                $this->stockMovementService->recordMovement(
+                    product: $product,
+                    quantityChange: -$item->quantity,
+                    movementType: StockMovementType::SALE,
+                    reference: $sale,
+                    referenceNumber: $sale->invoice_number,
+                    notes: "Restored sale to pending status"
+                );
             }
 
             // Restore to PENDING

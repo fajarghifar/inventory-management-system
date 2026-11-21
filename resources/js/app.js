@@ -1,6 +1,8 @@
 import flatpickr from "flatpickr";
 import TomSelect from "tom-select";
 import "./bootstrap";
+import "./pos-audio";
+import "./pos-camera";
 import "./../../vendor/power-components/livewire-powergrid/dist/powergrid";
 
 // @ts-ignore
